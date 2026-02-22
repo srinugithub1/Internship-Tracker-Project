@@ -12,11 +12,6 @@ import {
     CheckCircle,
     Menu,
     X,
-    Code,
-    Briefcase,
-    CheckCircle,
-    Menu,
-    X,
     ChevronRight,
     Play,
     Rocket
