@@ -14,7 +14,11 @@ import {
     X,
     ChevronRight,
     Play,
-    Rocket
+    Rocket,
+    BrainCircuit,
+    Cpu,
+    Cloud,
+    Database
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -36,46 +40,43 @@ export default function LandingPage() {
 
     const courses = [
         {
-            title: "Live Project Training",
-            desc: "Work on real client projects and gain production-level experience under expert guidance.",
-            icon: Code,
-            image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop"
+            title: "GenAI",
+            desc: "Master Generative AI, LLMs, and prompt engineering to build the next generation of intelligent applications.",
+            icon: BrainCircuit,
+            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop"
         },
         {
-            title: "Industry Mentorship",
-            desc: "One-on-one guidance from seasoned professionals currently working in top tech companies.",
-            icon: Users,
-            image: "https://images.unsplash.com/photo-1522071823991-b9671f903f60?q=80&w=800&auto=format&fit=crop"
+            title: "CodeExpert",
+            desc: "Deep dive into advanced algorithms, clean code practices, and large-scale system architecture.",
+            icon: Cpu,
+            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop"
         },
         {
-            title: "Real-Time Development",
-            desc: "Master the full software development lifecycle from architecture to deployment.",
-            icon: Rocket,
-            image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=800&auto=format&fit=crop"
+            title: "AWS Cloud",
+            desc: "Learn to architect, deploy, and scale robust applications on the world's leading cloud platform.",
+            icon: Cloud,
+            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop"
         },
         {
-            title: "Placement Preparation",
-            desc: "Mock interviews, resume building, and personality development for your dream career.",
-            icon: Briefcase,
-            image: "https://images.unsplash.com/photo-1521791136064-7986c2923216?q=80&w=800&auto=format&fit=crop"
+            title: "Salesforce",
+            desc: "Become a certified Salesforce developer and master the world's #1 CRM platform for enterprises.",
+            icon: Database,
+            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
         }
     ];
 
     return (
         <div className="flex flex-col min-h-screen bg-white text-slate-900 selection:bg-[#0A3DFF]/10 font-sans">
             {/* STICKY HEADER */}
-            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 lg:px-12 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-sm h-16" : "bg-transparent h-20"
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 lg:px-12 ${isScrolled ? "bg-white shadow-md h-16" : "bg-white h-20"
                 }`}>
                 <div className="max-w-[1400px] mx-auto h-full flex items-center justify-between">
                     <Link href="/" className="flex items-center">
-                        <img
-                            src="/expertpedia-logo.png"
-                            alt="ExpertPedia AI"
-                            className="h-10 lg:h-12 w-auto object-contain transition-transform hover:scale-105"
-                            onError={(e) => {
-                                (e.target as any).src = "https://placehold.co/200x60/ffffff/0a3dff?text=ExpertPedia+AI";
-                            }}
-                        />
+                        <div className="flex items-center gap-2">
+                            <span className="text-[22px] font-black tracking-tighter text-[#0A3DFF]">
+                                Expert<span className="text-slate-900">Pedia AI</span>
+                            </span>
+                        </div>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -84,7 +85,7 @@ export default function LandingPage() {
                             <a
                                 key={link}
                                 href={`#${link.toLowerCase()}`}
-                                className="text-sm font-semibold text-slate-600 hover:text-[#0A3DFF] transition-colors relative group py-2"
+                                className="text-[15px] font-bold text-slate-900 transition-colors relative group py-2"
                             >
                                 {link}
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0A3DFF] transition-all duration-300 group-hover:w-full"></span>
@@ -94,11 +95,8 @@ export default function LandingPage() {
 
                     <div className="hidden md:flex items-center gap-4">
                         <Link href="/login">
-                            <span className="text-sm font-bold text-slate-700 hover:text-[#0A3DFF] cursor-pointer transition-colors">Login</span>
-                        </Link>
-                        <Link href="/login">
-                            <Button className="bg-[#0A3DFF] hover:bg-[#0835CC] text-white rounded-full px-8 h-11 font-bold shadow-lg shadow-[#0A3DFF]/20 transition-all active:scale-95">
-                                Apply Now
+                            <Button className="bg-[#0A3DFF] hover:bg-[#0835CC] text-white rounded-full px-10 h-11 font-black shadow-lg shadow-[#0A3DFF]/20 transition-all active:scale-95 uppercase tracking-wider text-xs">
+                                Login
                             </Button>
                         </Link>
                     </div>
@@ -122,7 +120,7 @@ export default function LandingPage() {
                             ))}
                             <div className="h-px bg-slate-100 w-full"></div>
                             <Link href="/login">
-                                <Button className="w-full bg-[#0A3DFF] h-12 rounded-xl font-bold">Apply Now</Button>
+                                <Button className="w-full bg-[#0A3DFF] h-12 rounded-xl font-bold">Login</Button>
                             </Link>
                         </div>
                     </motion.div>
@@ -131,7 +129,7 @@ export default function LandingPage() {
 
             <main className="flex-1">
                 {/* 1. HERO SECTION */}
-                <section id="home" className="relative h-screen min-h-[700px] w-full flex items-center justify-center overflow-hidden">
+                <section id="home" className="relative h-screen min-h-[750px] w-full flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 z-0">
                         <img
                             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2000&auto=format&fit=crop"
@@ -142,43 +140,51 @@ export default function LandingPage() {
                     </div>
 
                     <div className="container mx-auto px-6 lg:px-12 relative z-10">
-                        <div className="max-w-3xl">
+                        <div className="max-w-5xl">
                             <motion.span
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-[0.2em] mb-6"
+                                className="inline-block px-4 py-1.5 rounded-full bg-white text-[#0A3DFF] text-xs font-black uppercase tracking-[0.2em] mb-6 shadow-xl"
                             >
                                 India's Leading Technical Institute
                             </motion.span>
+
                             <motion.h1
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.8 }}
-                                className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tighter mb-8"
+                                className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tighter mb-10"
                             >
                                 Elevate Your <br />
                                 <span className="text-[#FFFFFF]">Career Potential.</span>
                             </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
+
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: 0.4, duration: 0.8 }}
-                                className="text-white/80 text-lg md:text-xl font-medium max-w-xl mb-10 leading-relaxed"
+                                className="mb-12 p-8 md:p-10 bg-white/10 backdrop-blur-xl rounded-[40px] border border-white/20 shadow-2xl inline-block"
                             >
-                                Join our premium internship program designed for modern engineering students. Master real-world technologies with professional guidance.
-                            </motion.p>
+                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                                    Empowering India's youth with AI skills through the <br />
+                                    <span className="text-[#0A3DFF] bg-white px-3 py-1 rounded-lg mt-2 inline-block">Bharat Unnati AI Fellowship.</span>
+                                </h2>
+                                <p className="text-white/80 mt-4 text-lg font-bold tracking-widest uppercase">
+                                    NEAT 6.0 powered | AICTE aligned
+                                </p>
+                            </motion.div>
+
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6, duration: 0.8 }}
                                 className="flex flex-col sm:flex-row gap-5"
                             >
-                                <Button className="bg-white text-[#0A3DFF] hover:bg-slate-100 h-16 px-10 rounded-full font-black text-lg shadow-2xl shadow-black/20 group">
-                                    Apply Now <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
-                                </Button>
-                                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 h-16 px-10 rounded-full font-bold text-lg backdrop-blur-sm">
-                                    Browse Courses
-                                </Button>
+                                <Link href="/login">
+                                    <Button className="bg-white text-[#0A3DFF] hover:bg-slate-100 h-16 px-12 rounded-full font-black text-xl shadow-2xl shadow-black/20 group uppercase tracking-widest">
+                                        Join Now <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
+                                    </Button>
+                                </Link>
                             </motion.div>
                         </div>
                     </div>
@@ -222,9 +228,6 @@ export default function LandingPage() {
                                         </div>
                                     ))}
                                 </div>
-                                <Button variant="ghost" className="text-[#0A3DFF] font-black p-0 hover:bg-transparent group h-auto">
-                                    Learn more about our mission <ChevronRight className="ml-1 transition-transform group-hover:translate-x-1" />
-                                </Button>
                             </div>
                         </motion.div>
                     </div>
@@ -271,9 +274,9 @@ export default function LandingPage() {
                                     <div className="p-8 space-y-4">
                                         <h3 className="text-xl font-black tracking-tight group-hover:text-[#0A3DFF] transition-colors">{course.title}</h3>
                                         <p className="text-slate-500 text-sm leading-relaxed font-semibold opacity-80">{course.desc}</p>
-                                        <Button variant="ghost" className="p-0 h-auto font-black text-xs uppercase tracking-widest text-[#0A3DFF] hover:bg-transparent group/btn">
-                                            Explore Modules <ArrowRight className="ml-2 h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
-                                        </Button>
+                                        <span className="inline-flex items-center text-[10px] uppercase tracking-widest font-black text-[#0A3DFF]">
+                                            Professional Training <ArrowRight className="ml-1 h-2 w-2" />
+                                        </span>
                                     </div>
                                 </motion.div>
                             ))}
@@ -323,15 +326,6 @@ export default function LandingPage() {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="inline-flex items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-[30px]">
-                                    <div className="bg-[#0A3DFF] p-3 rounded-2xl">
-                                        <CheckCircle className="text-white" size={24} />
-                                    </div>
-                                    <div>
-                                        <p className="text-white font-black">Certified Program</p>
-                                        <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-4">Earn Industry Credentials</p>
-                                    </div>
-                                </div>
                             </div>
                         </motion.div>
                     </div>
@@ -372,9 +366,11 @@ export default function LandingPage() {
                             </div>
 
                             <div className="pt-10">
-                                <Button className="bg-[#0A3DFF] hover:bg-[#0835CC] text-white h-20 px-16 rounded-full font-black text-xl shadow-3xl shadow-[#0A3DFF]/40 animate-bounce-subtle">
-                                    Secure Your Internship Today
-                                </Button>
+                                <Link href="/login">
+                                    <Button className="bg-[#0A3DFF] hover:bg-[#0835CC] text-white h-20 px-16 rounded-full font-black text-xl shadow-3xl shadow-[#0A3DFF]/40 animate-bounce-subtle uppercase tracking-widest">
+                                        Login to Get Started
+                                    </Button>
+                                </Link>
                             </div>
                         </motion.div>
                     </div>
@@ -386,7 +382,9 @@ export default function LandingPage() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
                         <div className="space-y-8">
-                            <img src="/expertpedia-logo.png" alt="ExpertPedia AI" className="h-12 w-auto object-contain" onError={(e) => { (e.target as any).src = "https://placehold.co/200x60/ffffff/0a3dff?text=ExpertPedia+AI"; }} />
+                            <span className="text-2xl font-black tracking-tighter text-[#0A3DFF]">
+                                Expert<span className="text-slate-900">Pedia AI</span>
+                            </span>
                             <p className="text-slate-500 text-sm font-semibold leading-relaxed">
                                 Empowering the next generation of engineers through elite technical internship training and professional mentorship since 2018.
                             </p>
@@ -402,9 +400,7 @@ export default function LandingPage() {
                         <div>
                             <h4 className="text-slate-900 font-black text-sm uppercase tracking-widest mb-8">Contact Us</h4>
                             <div className="flex flex-col gap-4 text-sm font-bold text-slate-500">
-                                <p>Internship HQ, HITEC City</p>
-                                <p>Hyderabad, Telangana 500081</p>
-                                <p className="text-[#0A3DFF] font-black mt-2">hello@expertpedia.ai</p>
+                                <p className="text-[#0A3DFF] font-black mt-2 underline decoration-2 underline-offset-4">info@learnersbyte.com</p>
                                 <p>+91 98765 43210</p>
                             </div>
                         </div>
