@@ -45,18 +45,27 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-    const distPath = path.resolve(__dirname, "..", "dist", "public");
+    // In development (tsx), __dirname is "server"
+    // In production (bundled), __dirname is "dist/server"
+    // Both need to point to <root>/dist/public
+    const distPath = path.resolve(__dirname, "..", "public");
+    const rootDistPath = path.resolve(__dirname, "..", "..", "dist", "public");
 
-    if (!fs.existsSync(distPath)) {
+    let finalPath = distPath;
+    if (!fs.existsSync(finalPath)) {
+        finalPath = rootDistPath;
+    }
+
+    if (!fs.existsSync(finalPath)) {
         throw new Error(
-            `Could not find the build directory: ${distPath}. Make sure to build the client first.`
+            `Could not find the build directory. Searched: ${distPath} and ${rootDistPath}. Make sure to build the client first.`
         );
     }
 
-    app.use(express.static(distPath));
+    app.use(express.static(finalPath));
 
     app.use("*", (_req, res) => {
-        res.sendFile(path.resolve(distPath, "index.html"));
+        res.sendFile(path.resolve(finalPath, "index.html"));
     });
 }
 
