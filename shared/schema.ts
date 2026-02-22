@@ -22,7 +22,7 @@ export const users = pgTable("users", {
 // Attendance Table
 export const attendance = pgTable("attendance", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   loginTime: text("login_time").notNull(), // Numerical millisecond string (e.g. "1740100000000")
   logoutTime: text("logout_time"),
   status: text("status"), // 'present', 'absent', 'half-day'
@@ -34,7 +34,7 @@ export const attendance = pgTable("attendance", {
 // Tasks Table
 export const tasks = pgTable("tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
-  internId: uuid("intern_id").notNull().references(() => users.id),
+  internId: uuid("intern_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description"),
   status: text("status").notNull().default("assigned"), // 'assigned', 'in_progress', 'completed'
@@ -49,7 +49,7 @@ export const tasks = pgTable("tasks", {
 // Daily Logs Table
 export const dailyLogs = pgTable("daily_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   logDate: date("log_date").defaultNow(),
   workDescription: text("work_description"),
   hoursSpent: decimal("hours_spent", { precision: 5, scale: 2 }),
@@ -65,7 +65,7 @@ export const dailyLogs = pgTable("daily_logs", {
 // Leave Requests Table
 export const leaveRequests = pgTable("leave_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   startDate: date("start_date").notNull(),
   endDate: date("end_date").notNull(),
   reason: text("reason"),
@@ -116,7 +116,7 @@ export const syllabus = pgTable("syllabus", {
 // Mentorship Table
 export const mentorship = pgTable("mentorship", {
   id: uuid("id").primaryKey().defaultRandom(),
-  internId: uuid("intern_id").notNull().references(() => users.id),
+  internId: uuid("intern_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // 'technical', 'hr', 'general', 'project'
   status: text("status").notNull().default("pending"), // 'pending', 'replied'
   description: text("description").notNull(),
