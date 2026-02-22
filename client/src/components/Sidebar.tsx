@@ -215,7 +215,7 @@ export default function Sidebar() {
     return (
         <div className="flex flex-col h-screen w-64 border-r bg-card shadow-sm fixed left-0 top-0 overflow-y-auto">
             <div className="p-6">
-                <Logo variant="expertpedia" className="h-10" />
+                <Logo className="h-10" />
                 <p className="text-xs text-muted-foreground mt-2">
                     {isAdmin ? "Admin Control Panel" : "Intern Portal"}
                 </p>

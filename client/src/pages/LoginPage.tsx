@@ -373,7 +373,7 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                         <ArrowLeft className="h-4 w-4" />
                         <span className="text-sm font-medium">Back to Home</span>
                     </Link>
-                    <Logo variant="expertpedia" className="h-16 mb-2" />
+                    <Logo className="h-16 mb-2" />
                 </div>
 
                 <Card className="shadow-2xl shadow-primary/10 glass border-white/20">

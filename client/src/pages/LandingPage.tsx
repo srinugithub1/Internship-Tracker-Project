@@ -73,7 +73,7 @@ export default function LandingPage() {
                 }`}>
                 <div className="max-w-[1400px] mx-auto h-full flex items-center justify-between">
                     <div className="flex items-center">
-                        <Logo className="h-10" variant="expertpedia" />
+                        <Logo className="h-10" />
                     </div>
 
                     {/* Desktop Navigation */}
@@ -379,7 +379,7 @@ export default function LandingPage() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
                         <div className="space-y-8">
-                            <Logo variant="learnersbyte" className="h-12" />
+                            <Logo className="h-12" />
                             <p className="text-slate-500 text-sm font-semibold leading-relaxed">
                                 Empowering the next generation of engineers through elite technical internship training and professional mentorship since 2018.
                             </p>
