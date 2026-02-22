@@ -41,8 +41,8 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Try multiple model names for regional compatibility
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-8b"];
+        // 2. AI Logic - Expanded model list for better compatibility
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro", "gemini-1.5-pro-latest", "gemini-pro"];
         let responseText = "";
         let lastError: any = null;
 
