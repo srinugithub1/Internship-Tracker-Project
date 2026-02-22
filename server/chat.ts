@@ -47,6 +47,8 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         return result.response.text();
     } catch (error: any) {
         console.error("[CHAT AI ERROR]:", error);
-        return "I'm experiencing a temporary technical glitch. Please try again in 1-2 minutes.";
+        // Let's show the specific error to help the user debug the API key
+        const errorMsg = error.message || "Unknown Error";
+        return `I'm having trouble connecting to Google AI. Error: ${errorMsg}. Please ensure your GEMINI_API_KEY is active and valid.`;
     }
 }
