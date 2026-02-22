@@ -44,25 +44,25 @@ export default function LandingPage() {
             title: "GenAI",
             desc: "Master Generative AI, LLMs, and prompt engineering to build the next generation of intelligent applications.",
             icon: BrainCircuit,
-            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop"
+            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=70&w=600&auto=format&fm=webp&fit=crop"
         },
         {
             title: "CodeExpert",
             desc: "Deep dive into advanced algorithms, clean code practices, and large-scale system architecture.",
             icon: Cpu,
-            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop"
+            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=70&w=600&auto=format&fm=webp&fit=crop"
         },
         {
             title: "AWS Cloud",
             desc: "Learn to architect, deploy, and scale robust applications on the world's leading cloud platform.",
             icon: Cloud,
-            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop"
+            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=70&w=600&auto=format&fm=webp&fit=crop"
         },
         {
             title: "Salesforce",
             desc: "Become a certified Salesforce developer and master the world's #1 CRM platform for enterprises.",
             icon: Database,
-            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
+            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=70&w=600&auto=format&fm=webp&fit=crop"
         }
     ];
 
@@ -129,7 +129,7 @@ export default function LandingPage() {
                 <section id="home" className="relative h-screen min-h-[750px] w-full flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 z-0">
                         <img
-                            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2000&auto=format&fit=crop"
+                            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=70&w=1200&auto=format&fm=webp&fit=crop"
                             alt="Training Classroom"
                             className="w-full h-full object-cover"
                         />
