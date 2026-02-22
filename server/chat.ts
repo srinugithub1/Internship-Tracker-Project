@@ -26,8 +26,6 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
             context += `\nIntern Stats:\n- Your Total Working Hours: ${totalHours.toFixed(2)}h\n- Your Pending Tasks: ${pendingTasks.length}\n- Latest Assigned Tasks: ${tasks.slice(0, 3).map(t => t.title).join(', ')}`;
         }
 
-        // 2. AI Logic
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `You are a helpful AI Assistant for the Bharat Unnati Internship Portal. 
     You are speaking to a ${isAdmin ? 'Portal Administrator' : 'Intern'}.
     
@@ -43,8 +41,28 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        const result = await model.generateContent(prompt);
-        return result.response.text();
+        // 2. AI Logic - Try multiple model names for regional compatibility
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-8b"];
+        let responseText = "";
+        let lastError: any = null;
+
+        for (const modelName of modelNames) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(prompt);
+                responseText = result.response.text();
+                if (responseText) break;
+            } catch (err: any) {
+                lastError = err;
+                console.warn(`[CHAT] Model ${modelName} failed, trying next... Error: ${err.message}`);
+            }
+        }
+
+        if (!responseText) {
+            throw lastError || new Error("All AI models failed to respond.");
+        }
+
+        return responseText;
     } catch (error: any) {
         console.error("[CHAT AI ERROR]:", error);
         // Let's show the specific error to help the user debug the API key
