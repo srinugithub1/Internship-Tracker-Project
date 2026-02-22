@@ -2,6 +2,7 @@ import express, { type Express, NextFunction, Request, Response } from "express"
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertAttendanceSchema, insertTaskSchema, insertDailyLogSchema, insertLeaveRequestSchema, insertAnnouncementSchema, insertResourceSchema, insertSessionLinkSchema, insertSyllabusSchema, insertMentorshipSchema, insertPaidInternshipSchema } from "@shared/schema";
+import { getChatResponse } from "./chat";
 
 // Helper: wraps async route handlers so uncaught errors go to Express error middleware
 const wrap = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) =>
@@ -427,6 +428,16 @@ export function registerRoutes(app: Express): Server {
         res.sendStatus(204);
     }));
 
+
+    // Chat API
+    app.post("/api/chat", wrap(async (req, res) => {
+        const { userId, message, isAdmin } = req.body;
+        if (!userId || !message) {
+            return res.status(400).json({ message: "userId and message are required" });
+        }
+        const responseData = await getChatResponse(userId, message, isAdmin);
+        res.json({ response: responseData });
+    }));
 
     const httpServer = createServer(app);
     return httpServer;
