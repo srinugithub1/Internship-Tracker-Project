@@ -9,8 +9,8 @@ export function Logo({
     className = "h-8",
     variant = "expertpedia"
 }: LogoProps) {
-    // Point to the official logo file that you will upload to the public folder
-    const logoPath = "/logo.png";
+    // Path to the official logo file uploaded by the user
+    const logoPath = "/learners%20byte%20expertpedia.jpg";
 
     return (
         <div className={`flex items-center ${className}`}>
