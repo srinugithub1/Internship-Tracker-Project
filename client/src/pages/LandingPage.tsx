@@ -72,9 +72,9 @@ export default function LandingPage() {
             <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 lg:px-12 ${isScrolled ? "bg-white shadow-md h-16" : "bg-white h-20"
                 }`}>
                 <div className="max-w-[1400px] mx-auto h-full flex items-center justify-between">
-                    <Link href="/" className="flex items-center">
+                    <div className="flex items-center">
                         <Logo className="h-10" variant="expertpedia" />
-                    </Link>
+                    </div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-10">
