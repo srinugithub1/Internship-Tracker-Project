@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 
-type FormState = { internId: string; title: string; description: string; dueDate: string; priority: string; status: string };
-const blank: FormState = { internId: "", title: "", description: "", dueDate: "", priority: "medium", status: "assigned" };
+type FormState = { internId: string; title: string; description: string; dueDate: string; priority: string; status: string; assignToAll: boolean };
+const blank: FormState = { internId: "", title: "", description: "", dueDate: "", priority: "medium", status: "assigned", assignToAll: false };
 
 const priorityStyle: Record<string, string> = {
     high: "bg-red-500/10 text-red-400 border-red-500/20",
@@ -40,7 +40,16 @@ export default function AdminTasks() {
     const { data: interns = [] } = useQuery<User[]>({ queryKey: ["/api/interns"] });
 
     const createMutation = useMutation({
-        mutationFn: (data: FormState) => apiRequest("POST", "/api/tasks", data),
+        mutationFn: (data: FormState) => {
+            if (data.assignToAll) {
+                const { assignToAll, ...template } = data;
+                return apiRequest("POST", "/api/tasks/bulk", {
+                    task: template,
+                    internIds: interns.map(i => i.id)
+                });
+            }
+            return apiRequest("POST", "/api/tasks", data);
+        },
         onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/tasks"] }); close(); },
     });
 
@@ -57,7 +66,7 @@ export default function AdminTasks() {
     const close = () => { setOpen(false); setEditId(null); setForm(blank); };
     const openCreate = () => { setForm(blank); setEditId(null); setOpen(true); };
     const openEdit = (t: Task) => {
-        setForm({ internId: t.internId, title: t.title, description: t.description ?? "", dueDate: t.dueDate ?? "", priority: t.priority ?? "medium", status: t.status });
+        setForm({ internId: t.internId, title: t.title, description: t.description ?? "", dueDate: t.dueDate ?? "", priority: t.priority ?? "medium", status: t.status, assignToAll: false });
         setEditId(t.id); setOpen(true);
     };
     const submit = () => editId ? updateMutation.mutate(form) : createMutation.mutate(form);
@@ -192,14 +201,30 @@ export default function AdminTasks() {
                         <DialogTitle className="text-xl font-black">{editId ? "Edit Task" : "Assign New Task"}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Assign To (Intern)</Label>
-                            <select className="w-full h-10 bg-white/5 border border-white/10 rounded-xl px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                value={form.internId} onChange={e => setForm(f => ({ ...f, internId: e.target.value }))}>
-                                <option value="" className="bg-background">Select an intern...</option>
-                                {interns.map(i => <option key={i.id} value={i.id} className="bg-background">{i.name}</option>)}
-                            </select>
-                        </div>
+                        {!editId && (
+                            <div className="flex items-center justify-between p-3 bg-primary/5 border border-primary/20 rounded-xl mb-2 focus-within:ring-2 focus-within:ring-primary/40 transition-all">
+                                <div className="space-y-0.5">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary">Assign to all interns</Label>
+                                    <p className="text-[10px] text-muted-foreground font-medium">Create this task for every active student</p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    className="h-5 w-10 appearance-none bg-white/10 rounded-full cursor-pointer relative checked:bg-primary transition-colors before:content-[''] before:absolute before:h-4 before:w-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 before:transition-transform checked:before:translate-x-5"
+                                    checked={form.assignToAll}
+                                    onChange={e => setForm(f => ({ ...f, assignToAll: e.target.checked }))}
+                                />
+                            </div>
+                        )}
+                        {!form.assignToAll && (
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Assign To (Intern)</Label>
+                                <select className="w-full h-10 bg-white/5 border border-white/10 rounded-xl px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    value={form.internId} onChange={e => setForm(f => ({ ...f, internId: e.target.value }))}>
+                                    <option value="" className="bg-background">Select an intern...</option>
+                                    {interns.map(i => <option key={i.id} value={i.id} className="bg-background">{i.name}</option>)}
+                                </select>
+                            </div>
+                        )}
                         <div className="space-y-1.5">
                             <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Task Title</Label>
                             <Input placeholder="e.g. Build REST API" className="h-10 bg-white/5 border-white/10 rounded-xl" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
@@ -237,7 +262,7 @@ export default function AdminTasks() {
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={close} className="rounded-xl">Cancel</Button>
-                        <Button onClick={submit} disabled={isPending || !form.title || !form.internId} className="rounded-xl font-bold">
+                        <Button onClick={submit} disabled={isPending || !form.title || (!form.assignToAll && !form.internId)} className="rounded-xl font-bold">
                             {isPending ? "Saving..." : editId ? "Update Task" : "Assign Task"}
                         </Button>
                     </DialogFooter>

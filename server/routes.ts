@@ -222,6 +222,23 @@ export function registerRoutes(app: Express): Server {
         res.json(task);
     }));
 
+    app.post("/api/tasks/bulk", wrap(async (req, res) => {
+        const { task, internIds } = req.body;
+        if (!task || !Array.isArray(internIds)) {
+            return res.status(400).json({ message: "Invalid payload: task template and internIds array required" });
+        }
+
+        // Use a dummy internId for validation since the template might not have one
+        const tempTask = { ...task, internId: internIds[0] || "00000000-0000-0000-0000-000000000000" };
+        const parsed = insertTaskSchema.safeParse(tempTask);
+        if (!parsed.success) return res.status(400).json(parsed.error);
+
+        // Remove the dummy internId from the template but keep other fields
+        const { internId, ...template } = parsed.data;
+        const createdTasks = await storage.createBulkTasks(template as any, internIds);
+        res.json(createdTasks);
+    }));
+
     app.put("/api/tasks/:id", wrap(async (req, res) => {
         const task = await storage.updateTask(req.params.id, req.body);
         res.json(task);

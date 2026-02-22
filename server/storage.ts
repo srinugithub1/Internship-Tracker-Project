@@ -56,6 +56,7 @@ export interface IStorage {
     getTasks(internId: string): Promise<Task[]>;
     getAllTasks(): Promise<Task[]>;
     createTask(task: NewTask): Promise<Task>;
+    createBulkTasks(task: NewTask, internIds: string[]): Promise<Task[]>;
     updateTask(id: string, data: Partial<NewTask>): Promise<Task>;
     updateTaskStatus(taskId: string, status: string): Promise<Task>;
     updateTaskProgress(id: string, data: { status?: string; todayProgress?: string; submissionLink?: string; remarks?: string }): Promise<Task>;
@@ -272,6 +273,14 @@ export class DatabaseStorage implements IStorage {
     async createTask(newTask: NewTask): Promise<Task> {
         const [task] = await db.insert(tasks).values(newTask).returning();
         return task;
+    }
+
+    async createBulkTasks(newTaskTemplate: NewTask, internIds: string[]): Promise<Task[]> {
+        const values = internIds.map(internId => ({
+            ...newTaskTemplate,
+            internId
+        }));
+        return await db.insert(tasks).values(values).returning();
     }
 
     async updateTask(id: string, data: Partial<NewTask>): Promise<Task> {
