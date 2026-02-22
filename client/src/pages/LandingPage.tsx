@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import {
     ArrowRight,
@@ -11,8 +12,14 @@ import {
     CheckCircle,
     Menu,
     X,
+    Code,
+    Briefcase,
+    CheckCircle,
+    Menu,
+    X,
     ChevronRight,
-    Play
+    Play,
+    Rocket
 } from "lucide-react";
 
 export default function LandingPage() {
