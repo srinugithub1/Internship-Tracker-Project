@@ -41,20 +41,21 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Expanded model list for better compatibility
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro", "gemini-1.5-pro-latest", "gemini-pro"];
+        // 2. AI Logic - Try multiple model names and force v1 for stability
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                const model = genAI.getGenerativeModel({ model: modelName });
+                // Explicitly use v1 to avoid v1beta 404 issues in some regions
+                const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Model ${modelName} failed, trying next... Error: ${err.message}`);
+                console.warn(`[CHAT] Model ${modelName} failed... Message: ${err.message}`);
             }
         }
 
