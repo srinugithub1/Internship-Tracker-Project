@@ -20,6 +20,7 @@ import {
     Cloud,
     Database
 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function LandingPage() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -72,11 +73,7 @@ export default function LandingPage() {
                 }`}>
                 <div className="max-w-[1400px] mx-auto h-full flex items-center justify-between">
                     <Link href="/" className="flex items-center">
-                        <div className="flex items-center gap-2">
-                            <span className="text-[22px] font-black tracking-tighter text-[#0A3DFF]">
-                                Expert<span className="text-slate-900">Pedia AI</span>
-                            </span>
-                        </div>
+                        <Logo className="h-10" variant="expertpedia" />
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -382,9 +379,7 @@ export default function LandingPage() {
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
                         <div className="space-y-8">
-                            <span className="text-2xl font-black tracking-tighter text-[#0A3DFF]">
-                                Expert<span className="text-slate-900">Pedia AI</span>
-                            </span>
+                            <Logo variant="learnersbyte" className="h-12" />
                             <p className="text-slate-500 text-sm font-semibold leading-relaxed">
                                 Empowering the next generation of engineers through elite technical internship training and professional mentorship since 2018.
                             </p>

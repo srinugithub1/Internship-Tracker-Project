@@ -9,9 +9,10 @@ import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast-internal";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Mail, Lock, Loader2, ArrowLeft, User, UserPlus, LogIn } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowLeft, User, UserPlus, LogIn } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
+import { Logo } from "@/components/Logo";
 
 // ─── Schemas ────────────────────────────────────────────────────────────
 const loginSchema = z.object({
@@ -372,10 +373,7 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                         <ArrowLeft className="h-4 w-4" />
                         <span className="text-sm font-medium">Back to Home</span>
                     </Link>
-                    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
-                        <Rocket className="h-8 w-8 text-primary" />
-                    </div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">InternTrack</p>
+                    <Logo variant="expertpedia" className="h-16 mb-2" />
                 </div>
 
                 <Card className="shadow-2xl shadow-primary/10 glass border-white/20">

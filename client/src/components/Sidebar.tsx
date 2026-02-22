@@ -24,6 +24,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { Logo } from "@/components/Logo";
 
 const internNavItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -214,8 +215,8 @@ export default function Sidebar() {
     return (
         <div className="flex flex-col h-screen w-64 border-r bg-card shadow-sm fixed left-0 top-0 overflow-y-auto">
             <div className="p-6">
-                <h2 className="text-2xl font-bold gradient-text">InternTrack</h2>
-                <p className="text-xs text-muted-foreground mt-1">
+                <Logo variant="expertpedia" className="h-10" />
+                <p className="text-xs text-muted-foreground mt-2">
                     {isAdmin ? "Admin Control Panel" : "Intern Portal"}
                 </p>
             </div>
