@@ -41,12 +41,11 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Nuclear Resilience Loop
+        // 2. AI Logic - Ultra Resilience Loop (Including 'latest' aliases)
         const configurations = [
+            { name: "gemini-1.5-flash-latest", version: "v1beta" },
             { name: "gemini-1.5-flash", version: "v1" },
-            { name: "models/gemini-1.5-flash", version: "v1" },
             { name: "gemini-1.5-flash", version: "v1beta" },
-            { name: "gemini-1.5-pro", version: "v1" },
             { name: "gemini-pro", version: "v1" }
         ];
 
@@ -65,22 +64,8 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
             }
         }
 
-        // 3. IF ALL FAILED - NUCLEAR DIAGNOSTIC (List Available Models)
-        let availableModels = "Not listed";
         if (!responseText) {
-            try {
-                const listUrl = `https://generativelanguage.googleapis.com/v1/models?key=${API_KEY}`;
-                const listResponse = await fetch(listUrl);
-                const listData = await listResponse.json();
-                if (listData.models) {
-                    availableModels = listData.models.slice(0, 8).map((m: any) => m.name.replace('models/', '')).join(", ");
-                } else {
-                    availableModels = "API Error: " + JSON.stringify(listData);
-                }
-            } catch (e: any) {
-                availableModels = "List Failed: " + e.message;
-            }
-            throw new Error(`Connectivity failed. \nMODELS FOUND FOR KEY: ${availableModels}\nLOG:\n${diagnosticLog}`);
+            throw new Error(`Connectivity failed. All models returned 404 (Not Found).\nLOG:\n${diagnosticLog}`);
         }
 
         return responseText;
@@ -94,12 +79,15 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         
         🚨 SERVER KEY ENDS IN: "...${lastFour}"
         
-        IS THE API ENABLED?
-        - If "MODELS FOUND FOR KEY" above is empty or shows an error, your API key is NOT correctly set up in Google AI Studio.
-        - Go to: aistudio.google.com/app/apikey.
-        - Ensure you have a key for the "Internship Chat Bot" project.
+        CRITICAL ISSUE: API DISABLED (404 Not Found)
+        This error happens when the "Generative Language API" is not enabled in your Google Cloud Project.
         
-        TECHNICAL LOG:
-        ${errorDetail}`;
+        REQUIRED FIX (Follow Carefully):
+        1. Go to: https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
+        2. Select project "Internship Chat Bot API" (or your main project) in the top blue bar.
+        3. Click the blue **"ENABLE"** button.
+        4. Wait 1 minute, then refresh your dashboard and try again.
+        
+        Wait, also double confirm you are using an **AI Studio key** (...lkVo) and NOT a Cloud Console key.`;
     }
 }
