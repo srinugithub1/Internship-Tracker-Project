@@ -10,6 +10,8 @@ export interface IStorage {
     updateUser(id: string, data: Partial<NewUser>): Promise<User>;
     deleteUser(id: string): Promise<void>;
     getAllInterns(): Promise<User[]>;
+    getUserByEmailAndRollNumber(email: string, rollNumber: string): Promise<User | undefined>;
+    updatePassword(userId: string, passwordHash: string): Promise<User>;
 
     // Attendance
     getAttendance(userId: string): Promise<Attendance[]>;
@@ -115,6 +117,25 @@ export class DatabaseStorage implements IStorage {
 
     async deleteUser(id: string): Promise<void> {
         await db.delete(users).where(eq(users.id, id));
+    }
+
+    async getUserByEmailAndRollNumber(email: string, rollNumber: string): Promise<User | undefined> {
+        const [user] = await db.select().from(users).where(
+            and(
+                eq(users.email, email),
+                eq(users.rollNumber, rollNumber),
+                eq(users.role, "intern")
+            )
+        );
+        return user;
+    }
+
+    async updatePassword(userId: string, passwordHash: string): Promise<User> {
+        const [user] = await db.update(users)
+            .set({ passwordHash })
+            .where(eq(users.id, userId))
+            .returning();
+        return user;
     }
 
     async getAttendance(userId: string): Promise<Attendance[]> {

@@ -2,6 +2,7 @@ import express, { type Express, NextFunction, Request, Response } from "express"
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, insertAttendanceSchema, insertTaskSchema, insertDailyLogSchema, insertLeaveRequestSchema, insertAnnouncementSchema, insertResourceSchema, insertSessionLinkSchema, insertSyllabusSchema, insertMentorshipSchema, insertPaidInternshipSchema } from "@shared/schema";
+import bcrypt from "bcryptjs";
 
 
 // Helper: wraps async route handlers so uncaught errors go to Express error middleware
@@ -40,8 +41,26 @@ export function registerRoutes(app: Express): Server {
         const { email, password } = req.body;
         const user = await storage.getUserByEmail(email);
 
-        if (!user || user.passwordHash !== password) {
+        if (!user) {
             return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Secure bcrypt comparison with plain-text fallback for existing users
+        let isCorrect = false;
+        try {
+            isCorrect = await bcrypt.compare(password, user.passwordHash);
+        } catch (e) {
+            // If it's not a valid hash, fallback to plain text comparison
+            isCorrect = user.passwordHash === password;
+        }
+
+        if (!isCorrect) {
+            // Final fallback check in case compare didn't throw but failed (plain vs plain)
+            if (user.passwordHash === password) {
+                isCorrect = true;
+            } else {
+                return res.status(401).json({ message: "Invalid email or password" });
+            }
         }
 
         res.json(user);
@@ -60,10 +79,55 @@ export function registerRoutes(app: Express): Server {
         if (!parsed.success) return res.status(400).json(parsed.error);
 
         try {
-            const user = await storage.createUser({ ...parsed.data, passwordHash: password });
+            const passwordHash = await bcrypt.hash(password, 10);
+            const user = await storage.createUser({ ...parsed.data, passwordHash });
             res.json(user);
         } catch (error: any) {
             res.status(500).json({ message: "Failed to create user", error: error.message });
+        }
+    }));
+
+    // Forgot Password Flow
+    app.post("/api/verify-intern", wrap(async (req, res) => {
+        const { email, rollNumber } = req.body;
+        if (!email || !rollNumber) {
+            return res.status(400).json({ message: "Email and Roll Number are required" });
+        }
+
+        const user = await storage.getUserByEmailAndRollNumber(email, rollNumber);
+        if (!user) {
+            return res.status(404).json({ message: "Details not found. Please check your information or contact Administration." });
+        }
+
+        // Return confirmation info (excluding sensitive data)
+        res.json({
+            name: user.name,
+            email: user.email,
+            phone: user.phone || "N/A"
+        });
+    }));
+
+    app.post("/api/reset-password", wrap(async (req, res) => {
+        const { email, rollNumber, newPassword } = req.body;
+        if (!email || !rollNumber || !newPassword) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters" });
+        }
+
+        const user = await storage.getUserByEmailAndRollNumber(email, rollNumber);
+        if (!user) {
+            return res.status(403).json({ message: "Verification failed. Please restart the process." });
+        }
+
+        try {
+            const passwordHash = await bcrypt.hash(newPassword, 10);
+            await storage.updatePassword(user.id, passwordHash);
+            res.json({ message: "Password updated successfully" });
+        } catch (error: any) {
+            res.status(500).json({ message: "Something went wrong. Please contact Administration.", error: error.message });
         }
     }));
 
@@ -85,10 +149,11 @@ export function registerRoutes(app: Express): Server {
             return res.status(400).json({ message: "User with this email already exists" });
         }
 
+        const passwordHash = await bcrypt.hash(password, 10);
         const user = await storage.createUser({
             name,
             email,
-            passwordHash: password,
+            passwordHash,
             role: role // 'admin' or 'sadmin'
         });
         res.json(user);
@@ -100,7 +165,7 @@ export function registerRoutes(app: Express): Server {
 
         const updateData: any = { name, email, role };
         if (password) {
-            updateData.passwordHash = password;
+            updateData.passwordHash = await bcrypt.hash(password, 10);
         }
 
         try {

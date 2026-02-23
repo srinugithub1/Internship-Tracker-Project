@@ -13,6 +13,8 @@ import { Mail, Lock, Loader2, ArrowLeft, User, UserPlus, LogIn } from "lucide-re
 import { Link } from "wouter";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ShieldCheck, Info } from "lucide-react";
 
 // ─── Schemas ────────────────────────────────────────────────────────────
 const loginSchema = z.object({
@@ -47,8 +49,181 @@ function redirectForRole(role: string, setLocation: (path: string) => void) {
     }
 }
 
+// ─── Forgot Password Modal ──────────────────────────────────────────────
+function ForgotPasswordModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+    const [step, setStep] = useState<1 | 2>(1);
+    const [loading, setLoading] = useState(false);
+    const [verifyData, setVerifyData] = useState({ email: "", rollNumber: "" });
+    const [internInfo, setInternInfo] = useState<{ name: string; email: string; phone: string } | null>(null);
+    const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
+    const { toast } = useToast();
+
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!verifyData.email || !verifyData.rollNumber) {
+            return toast({ title: "Error", description: "Email and Roll Number are required", variant: "destructive" });
+        }
+
+        setLoading(true);
+        try {
+            const data = await apiRequest("POST", "/api/verify-intern", verifyData);
+            setInternInfo(data);
+            setStep(2);
+        } catch (error: any) {
+            toast({
+                title: "Verification Failed",
+                description: error.message || "Details not found. Please check your information or contact Administration.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passwords.newPassword.length < 6) {
+            return toast({ title: "Invalid Password", description: "Password must be at least 6 characters", variant: "destructive" });
+        }
+        if (passwords.newPassword !== passwords.confirmPassword) {
+            return toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+        }
+
+        setLoading(true);
+        try {
+            await apiRequest("POST", "/api/reset-password", {
+                ...verifyData,
+                newPassword: passwords.newPassword
+            });
+            toast({ title: "Success! 🎉", description: "Password updated successfully. You can now login." });
+            onOpenChange(false);
+            // Reset state for next time
+            setStep(1);
+            setVerifyData({ email: "", rollNumber: "" });
+            setPasswords({ newPassword: "", confirmPassword: "" });
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.message || "Something went wrong. Please contact Administration.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={(v) => { if (!loading) onOpenChange(v); }}>
+            <DialogContent className="glass border-white/20 shadow-2xl max-w-md rounded-2xl p-0 overflow-hidden">
+                <div className="bg-primary/10 p-6 flex flex-col items-center gap-3 border-b border-white/10">
+                    <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-lg ring-4 ring-primary/10">
+                        {step === 1 ? <ShieldCheck className="h-6 w-6" /> : <Lock className="h-6 w-6" />}
+                    </div>
+                    <div className="text-center">
+                        <DialogTitle className="text-xl font-black tracking-tight uppercase">
+                            {step === 1 ? "Verify Identity" : "Reset Password"}
+                        </DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">
+                            {step === 1 ? "Intern Portal Password Recovery" : "Identity Confirmed. Choose a new password."}
+                        </DialogDescription>
+                    </div>
+                </div>
+
+                <div className="p-6">
+                    {step === 1 ? (
+                        <form onSubmit={handleVerify} className="space-y-4">
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                                    <Mail className="h-3 w-3 text-primary" /> Email Address
+                                </Label>
+                                <Input
+                                    value={verifyData.email}
+                                    onChange={(e) => setVerifyData({ ...verifyData, email: e.target.value })}
+                                    placeholder="Enter your registered email"
+                                    type="email"
+                                    required
+                                    className="h-11 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                                    <span className="h-3 w-3 bg-primary/20 flex items-center justify-center text-[8px] rounded-sm">#</span> Roll Number / ID
+                                </Label>
+                                <Input
+                                    value={verifyData.rollNumber}
+                                    onChange={(e) => setVerifyData({ ...verifyData, rollNumber: e.target.value })}
+                                    placeholder="Enter your Student Roll Number"
+                                    required
+                                    className="h-11 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                                />
+                            </div>
+                            <Button type="submit" className="w-full h-12 font-bold rounded-xl gap-2 mt-2" disabled={loading}>
+                                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Verify Identity"}
+                            </Button>
+                        </form>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="bg-secondary/40 p-4 rounded-xl border border-white/10 space-y-2">
+                                <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                                    <Info className="h-3 w-3 text-primary" /> Confirmed Intern Records:
+                                </h4>
+                                <div className="grid grid-cols-2 gap-y-2">
+                                    <div className="text-xs text-muted-foreground font-medium">Name:</div>
+                                    <div className="text-xs font-bold">{internInfo?.name}</div>
+                                    <div className="text-xs text-muted-foreground font-medium">Email:</div>
+                                    <div className="text-xs font-bold">{internInfo?.email}</div>
+                                    <div className="text-xs text-muted-foreground font-medium">Mobile:</div>
+                                    <div className="text-xs font-bold">{internInfo?.phone}</div>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleReset} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                                        <Lock className="h-3 w-3 text-primary" /> New Password
+                                    </Label>
+                                    <Input
+                                        type="password"
+                                        value={passwords.newPassword}
+                                        onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                                        placeholder="Min 6 characters"
+                                        required
+                                        className="h-11 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                                        <Lock className="h-3 w-3 text-primary" /> Confirm Password
+                                    </Label>
+                                    <Input
+                                        type="password"
+                                        value={passwords.confirmPassword}
+                                        onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                                        placeholder="Repeat new password"
+                                        required
+                                        className="h-11 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                                    />
+                                </div>
+                                <Button type="submit" className="w-full h-12 font-bold rounded-xl gap-2 mt-2" disabled={loading}>
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Update Password"}
+                                </Button>
+                            </form>
+                        </div>
+                    )}
+                </div>
+
+                <DialogFooter className="p-4 bg-secondary/20 flex flex-row justify-center sm:justify-center border-t border-white/10">
+                    <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading} className="text-xs font-bold text-muted-foreground hover:text-foreground">
+                        Cancel & Return to Login
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 // ─── Login Form ─────────────────────────────────────────────────────────
-function LoginForm({ onSwitch }: { onSwitch: () => void }) {
+function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () => void }) {
     const [, setLocation] = useLocation();
     const { toast } = useToast();
     const form = useForm<LoginData>({
@@ -94,9 +269,18 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
 
             {/* Password */}
             <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <Lock className="h-3 w-3 text-primary" /> Password
-                </Label>
+                <div className="flex justify-between items-center">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <Lock className="h-3 w-3 text-primary" /> Password
+                    </Label>
+                    <button
+                        type="button"
+                        onClick={onForgot}
+                        className="text-[10px] font-black uppercase text-primary hover:underline tracking-tighter"
+                    >
+                        Forgot Password?
+                    </button>
+                </div>
                 <Input
                     {...form.register("password")}
                     type="password"
@@ -351,6 +535,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
 // ─── Main Page ────────────────────────────────────────────────────────────
 export default function LoginPage({ initialTab = "login" }: { initialTab?: "login" | "signup" }) {
     const [tab, setTab] = useState<"login" | "signup">(initialTab as "login" | "signup");
+    const [forgotOpen, setForgotOpen] = useState(false);
 
     return (
         <div className="min-h-screen relative flex items-center justify-center bg-background p-4 overflow-hidden">
@@ -422,7 +607,7 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                                     exit={{ opacity: 0, x: 12 }}
                                     transition={{ duration: 0.22 }}
                                 >
-                                    <LoginForm onSwitch={() => setTab("signup")} />
+                                    <LoginForm onSwitch={() => setTab("signup")} onForgot={() => setForgotOpen(true)} />
                                 </motion.div>
                             ) : (
                                 <motion.div
@@ -443,6 +628,8 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                     Admin accounts are created by system administrators only.
                 </p>
             </motion.div>
+
+            <ForgotPasswordModal open={forgotOpen} onOpenChange={setForgotOpen} />
         </div>
     );
 }
