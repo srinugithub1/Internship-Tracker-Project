@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { storage } from "./storage";
 
-const API_KEY = process.env.GEMINI_API_KEY || "";
+const API_KEY = (process.env.GEMINI_API_KEY || "").trim();
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export async function getChatResponse(userId: string, userMessage: string, isAdmin: boolean = false) {
@@ -41,15 +41,14 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Try multiple model names and force v1 for stability
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+        // 2. AI Logic - Standard model names
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                // Explicitly use v1 to avoid v1beta 404 issues in some regions
-                const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+                const model = genAI.getGenerativeModel({ model: modelName });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
