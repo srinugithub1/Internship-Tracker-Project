@@ -41,21 +41,20 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Use absolute standard model names
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+        // 2. AI Logic - Standard model names
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                // Remove explicit apiVersion to let the SDK handle the best endpoint for the key
                 const model = genAI.getGenerativeModel({ model: modelName });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Attempt with ${modelName} failed: ${err.message}`);
+                console.warn(`[CHAT] Failed with ${modelName}: ${err.message}`);
             }
         }
 
@@ -76,8 +75,10 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         SERVER KEY INFO: Using key starting with "${keySnippet}"
         
         NEXT STEPS:
-        1. Ensure your key on Render matches the key in your screenshot exactly.
-        2. Ensure you ENABLED the "Generative Language API" in the project where you created the key.
-        3. Try a different region if you are using a VPN.`;
+        1. Access Denied! Standard Google Cloud keys often fail for AI.
+        2. Go to: aistudio.google.com/app/apikey (Google AI Studio)
+        3. Click "Create API key" there.
+        4. Copy that NEW key into Render and click Save. 
+           (AI Studio keys work instantly where Cloud keys fail!)`;
     }
 }
