@@ -131,6 +131,20 @@ export function registerRoutes(app: Express): Server {
         }
     }));
 
+    app.post("/api/intern/update-popup-preference", wrap(async (req, res) => {
+        const { userId, show } = req.body;
+        if (!userId || typeof show !== "boolean") {
+            return res.status(400).json({ message: "User ID and preference (show) are required" });
+        }
+
+        try {
+            const user = await storage.updatePopupPreference(userId, show);
+            res.json(user);
+        } catch (error: any) {
+            res.status(500).json({ message: "Unable to save preference. Please try again.", error: error.message });
+        }
+    }));
+
     // Super Admin: User Management
     app.get("/api/admin/users", wrap(async (req, res) => {
         // In this implementation, we allow any admin to see other admins (as per user request "In Admin we want add Admin Users Tabs")

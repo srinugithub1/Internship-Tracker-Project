@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   startDate: date("start_date"),
   endDate: date("end_date"),
   teamLeadId: uuid("team_lead_id"),
+  showInstructionsPopup: boolean("show_instructions_popup").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

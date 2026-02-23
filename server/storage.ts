@@ -12,6 +12,7 @@ export interface IStorage {
     getAllInterns(): Promise<User[]>;
     getUserByEmailAndRollNumber(email: string, rollNumber: string): Promise<User | undefined>;
     updatePassword(userId: string, passwordHash: string): Promise<User>;
+    updatePopupPreference(userId: string, show: boolean): Promise<User>;
 
     // Attendance
     getAttendance(userId: string): Promise<Attendance[]>;
@@ -133,6 +134,14 @@ export class DatabaseStorage implements IStorage {
     async updatePassword(userId: string, passwordHash: string): Promise<User> {
         const [user] = await db.update(users)
             .set({ passwordHash })
+            .where(eq(users.id, userId))
+            .returning();
+        return user;
+    }
+
+    async updatePopupPreference(userId: string, show: boolean): Promise<User> {
+        const [user] = await db.update(users)
+            .set({ showInstructionsPopup: show })
             .where(eq(users.id, userId))
             .returning();
         return user;

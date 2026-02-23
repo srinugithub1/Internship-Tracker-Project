@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { InstructionModal } from "@/components/InstructionModal";
 
 // ─── Live clock ────────────────────────────────────────────────────────────────
 function useLiveClock() {
@@ -282,6 +283,10 @@ export default function Dashboard() {
     const [historyDay, setHistoryDay] = useState<{ date: string; sessions: any[] } | null>(null);
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const [currentUser, setCurrentUser] = useState(storedUser);
+    const [showInstructions, setShowInstructions] = useState(() => {
+        // Only show to interns who haven't opted out
+        return !isAdmin && user.showInstructionsPopup !== false;
+    });
 
     // ── Queries ──────────────────────────────────────────────────────────────
     const { data: attendance = [] } = useQuery<any[]>({ queryKey: [`/api/attendance/${user.id}`], enabled: !isAdmin, refetchInterval: 30_000 });
@@ -361,8 +366,13 @@ export default function Dashboard() {
             <main className="flex-1 ml-64 p-6">
                 <div className="max-w-[1300px] mx-auto space-y-5">
 
-                    {/* Modal */}
+                    {/* Modals */}
                     <HistoryModal day={historyDay} onClose={() => setHistoryDay(null)} />
+                    <InstructionModal
+                        open={showInstructions}
+                        onOpenChange={setShowInstructions}
+                        userId={user.id}
+                    />
 
                     {/* 1. Welcome Banner */}
                     <div className="rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 p-6 flex items-center justify-between shadow-2xl shadow-purple-500/30 relative overflow-hidden">
