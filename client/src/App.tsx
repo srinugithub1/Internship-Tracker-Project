@@ -64,14 +64,11 @@ function Router() {
     );
 }
 
-import { ChatAssistant } from "@/components/ChatAssistant";
-
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Router />
             <Toaster />
-            <ChatAssistant />
         </QueryClientProvider>
     );
 }
