@@ -18,7 +18,10 @@ import {
     BrainCircuit,
     Cpu,
     Cloud,
-    Database
+    Database,
+    MapPin,
+    Phone,
+    Mail
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
@@ -394,9 +397,19 @@ export default function LandingPage() {
                         </div>
                         <div>
                             <h4 className="text-slate-900 font-black text-sm uppercase tracking-widest mb-8">Contact Us</h4>
-                            <div className="flex flex-col gap-4 text-sm font-bold text-slate-500">
-                                <p className="text-[#0A3DFF] font-black mt-2 underline decoration-2 underline-offset-4">info@learnersbyte.com</p>
-                                <p>+91 98765 43210</p>
+                            <div className="flex flex-col gap-5 text-sm font-bold text-slate-500">
+                                <div className="flex items-start gap-4">
+                                    <MapPin className="h-6 w-6 text-[#0A3DFF] shrink-0 mt-0.5" />
+                                    <p className="leading-relaxed">T-hub, 4th Floor, Raidurgam panmaktha Hyderabad Knowledge City, Serilingampally, Hyderabad, Telangana 500081.</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Mail className="h-5 w-5 text-[#0A3DFF] shrink-0" />
+                                    <p className="text-[#0A3DFF] font-black underline decoration-2 underline-offset-4">info@learnersbyte.com</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Phone className="h-5 w-5 text-[#0A3DFF] shrink-0" />
+                                    <p>9247599672 / 73</p>
+                                </div>
                             </div>
                         </div>
                         <div>
