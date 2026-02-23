@@ -76,8 +76,21 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         return responseText;
     } catch (error: any) {
         console.error("[CHAT AI ERROR]:", error);
-        // Let's show the specific error to help the user debug the API key
-        const errorMsg = error.message || "Unknown Error";
-        return `I'm having trouble connecting to Google AI. Error: ${errorMsg}. Please ensure your GEMINI_API_KEY is active and valid.`;
+
+        let errorDetail = "Unknown Technical Error";
+        if (error.message) {
+            errorDetail = error.message;
+        } else if (typeof error === 'object') {
+            errorDetail = JSON.stringify(error);
+        } else {
+            errorDetail = String(error);
+        }
+
+        return `I'm having trouble connecting to Google AI. Detail: ${errorDetail}. 
+        
+        PLEASE CHECK:
+        1. Is your API Key from the SAME project where you enabled the API?
+        2. Did you click "Save" on Render after adding the key?
+        3. Try creating a NEW key at aistudio.google.com/app/apikey and use that.`;
     }
 }
