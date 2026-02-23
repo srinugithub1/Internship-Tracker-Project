@@ -41,26 +41,33 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Use the most stable configuration possible
-        const modelNames = ["gemini-1.5-flash", "gemini-pro"];
+        // 2. AI Logic - Comprehensive Resilience Loop
+        const configurations = [
+            { name: "gemini-1.5-flash", version: "v1" },
+            { name: "gemini-1.5-flash", version: "v1beta" },
+            { name: "gemini-pro", version: "v1beta" },
+            { name: "gemini-1.5-pro", version: "v1" }
+        ];
+
         let responseText = "";
+        let diagnosticLog = "";
         let lastError: any = null;
 
-        for (const modelName of modelNames) {
+        for (const config of configurations) {
             try {
-                // Try without explicit version first (let SDK use v1beta or v1 as needed)
-                const model = genAI.getGenerativeModel({ model: modelName });
+                const model = genAI.getGenerativeModel({ model: config.name }, { apiVersion: config.version });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Failed ${modelName} default: ${err.message}`);
+                diagnosticLog += `[${config.name} @ ${config.version}]: ${err.message}\n`;
+                console.warn(`[CHAT] Attempt failed: ${config.name} (${config.version})`);
             }
         }
 
         if (!responseText) {
-            throw lastError || new Error("Connection failed to return data.");
+            throw new Error(`Connectivity failed after multiple trials.\nLOG:\n${diagnosticLog}`);
         }
 
         return responseText;
@@ -74,19 +81,15 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         
         🚨 SERVER KEY ENDS IN: "...${lastFour}"
         
-        KEY MISMATCH WARNING:
-        - Your project "Internship Chat bot" (from your earlier screenshot) had a key ending in "...H4o".
-        - Your Render dashboard is currently using a key ending in "...${lastFour}".
+        DOES THIS MATCH YOUR NEW KEY?
+        Your AI Studio key should end in "...lkVo". 
+        If it says "...Lyug", you did NOT click "Save Changes" on Render!
         
-        If you are still seeing "NOT FOUND" errors, the key ending in "...${lastFour}" is either inactive or restricted in your region.
+        TECHNICAL LOG:
+        ${errorDetail}
         
-        FINAL INSTRUCTIONS:
-        1. Go to: aistudio.google.com/app/apikey.
-        2. Create a BRAND NEW key.
-        3. Copy it and UPDATE it in Render -> Settings -> Env Vars.
-        4. Click **"Save Changes"**.
-        5. Click **"Manual Deploy"** -> **"Clear cache and deploy"**.
-        
-        TECHNICAL DETAIL: ${errorDetail}`;
+        FINAL RECOMMENDATION:
+        Look at Step 103 in our chat—I circled the project dropdown. 
+        Ensure you are copying the key from "Internship Chat bot" and NOT "My First Project".`;
     }
 }
