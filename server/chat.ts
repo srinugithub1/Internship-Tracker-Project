@@ -80,17 +80,18 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
 
         return `Assistant Connection Refused. 
         
-        🚨 ATTENTION: SERVER KEY ENDS IN "...${lastFour}"
+        🚨 SERVER KEY ENDS IN: "...${lastFour}"
         
-        DOES THIS MATCH?
-        Check your Screenshot 2. If your key ends in "...H4o", but the server says "...${lastFour}", then you have NOT updated the key on Render!
+        KEY MISMATCH DETECTED:
+        Your Screenshot 2 (from "Internship Chat bot") shows your key ends in "...H4o".
+        But your Render settings are currently using a key ending in "...${lastFour}".
         
-        TECHNICAL DETAIL: ${errorDetail}
+        THIS IS THE WRONG KEY. The "...${lastFour}" key does not have the API enabled.
         
-        FINAL STEPS:
-        1. Copy the key from Screenshot 2 again.
-        2. In Render -> Settings -> Environment Variables, delete the old "GEMINI_API_KEY".
-        3. Add it again with the NEW value and click **"Save Changes"**.
+        FINAL FIX:
+        1. Copy the key from your Screenshot 2 (the one ending in "...H4o").
+        2. Paste that EXACT key into Render's GEMINI_API_KEY.
+        3. Click **"Save Changes"**.
         4. Click **"Manual Deploy"** -> **"Clear cache and deploy"**.`;
     }
 }
