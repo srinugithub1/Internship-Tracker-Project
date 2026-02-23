@@ -41,25 +41,34 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Standard model names
+        // 2. AI Logic - Force v1 stability
         const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                const model = genAI.getGenerativeModel({ model: modelName });
+                // Explicitly force v1 version
+                const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Failed with ${modelName}: ${err.message}`);
+                console.warn(`[CHAT] Failed ${modelName} on v1: ${err.message}`);
+
+                // Last ditch fallback to v1beta
+                try {
+                    const fallbackModel = genAI.getGenerativeModel({ model: modelName });
+                    const fbResult = await fallbackModel.generateContent(prompt);
+                    responseText = fbResult.response.text();
+                    if (responseText) break;
+                } catch (err2) { }
             }
         }
 
         if (!responseText) {
-            throw lastError || new Error("All AI models returned empty or failed.");
+            throw lastError || new Error("Connection failed to return data.");
         }
 
         return responseText;
@@ -67,18 +76,16 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         console.error("[CHAT AI ERROR]:", error);
 
         let errorDetail = error.message || String(error);
-        const keySnippet = API_KEY.substring(0, 5) + "..." + API_KEY.substring(API_KEY.length - 4);
+        const keySnippet = API_KEY.substring(API_KEY.length - 4);
 
         return `Assistant Connection Refused. 
         
         TECHNICAL DETAIL: ${errorDetail}
-        SERVER KEY INFO: Using key starting with "${keySnippet}"
+        SERVER KEY INFO: Using key ending in "...${keySnippet}"
         
-        NEXT STEPS:
-        1. Access Denied! Standard Google Cloud keys often fail for AI.
-        2. Go to: aistudio.google.com/app/apikey (Google AI Studio)
-        3. Click "Create API key" there.
-        4. Copy that NEW key into Render and click Save. 
-           (AI Studio keys work instantly where Cloud keys fail!)`;
+        RECOMMENDED FIX:
+        1. Access Denied (404/403)! This usually means the API version (v1/v1beta) is mismatched.
+        2. I have forced "v1" in this new code. Please click **"Clear cache and deploy"** on Render.
+        3. If it still fails, please use a NEW key from **aistudio.google.com/app/apikey** specifically.`;
     }
 }
