@@ -41,56 +41,43 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Standard model names with explicit v1 version
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
+        // 2. AI Logic - Use absolute standard model names
+        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                // Try v1 first as it's the stable GA endpoint
-                const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+                // Remove explicit apiVersion to let the SDK handle the best endpoint for the key
+                const model = genAI.getGenerativeModel({ model: modelName });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Model ${modelName} failed on v1... Message: ${err.message}`);
-
-                // Fallback to default/v1beta if v1 fails
-                try {
-                    const modelFallback = genAI.getGenerativeModel({ model: modelName });
-                    const resultFallback = await modelFallback.generateContent(prompt);
-                    responseText = resultFallback.response.text();
-                    if (responseText) break;
-                } catch (err2: any) {
-                    lastError = err2;
-                }
+                console.warn(`[CHAT] Attempt with ${modelName} failed: ${err.message}`);
             }
         }
 
         if (!responseText) {
-            throw lastError || new Error("All AI models failed to respond.");
+            throw lastError || new Error("All AI models returned empty or failed.");
         }
 
         return responseText;
     } catch (error: any) {
         console.error("[CHAT AI ERROR]:", error);
 
-        let errorDetail = "Unknown Technical Error";
-        if (error.message) {
-            errorDetail = error.message;
-        } else if (typeof error === 'object') {
-            errorDetail = JSON.stringify(error);
-        } else {
-            errorDetail = String(error);
-        }
+        let errorDetail = error.message || String(error);
+        const keySnippet = API_KEY.substring(0, 5) + "..." + API_KEY.substring(API_KEY.length - 4);
 
-        return `I'm having trouble connecting to Google AI. Detail: ${errorDetail}. 
+        return `Assistant Connection Refused. 
         
-        PLEASE CHECK:
-        1. Is your API Key from the SAME project where you enabled the API?
-        2. Did you click "Save" on Render after adding the key?
-        3. Try creating a NEW key at aistudio.google.com/app/apikey and use that.`;
+        TECHNICAL DETAIL: ${errorDetail}
+        SERVER KEY INFO: Using key starting with "${keySnippet}"
+        
+        NEXT STEPS:
+        1. Ensure your key on Render matches the key in your screenshot exactly.
+        2. Ensure you ENABLED the "Generative Language API" in the project where you created the key.
+        3. Try a different region if you are using a VPN.`;
     }
 }
