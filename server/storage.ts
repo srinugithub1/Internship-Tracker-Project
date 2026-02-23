@@ -220,7 +220,7 @@ export class DatabaseStorage implements IStorage {
 
     async getGroupedAttendance(): Promise<any[]> {
         // We fetch all records and group them in memory for consistency with the existing logic
-        // (Summing checkout - checkin durations as per Student Portal logic)
+        // (Summing Clock Out - Clock IN durations as per Student Portal logic)
         const records = await db.select().from(attendance).orderBy(desc(attendance.loginTime));
 
         const groupedMap = new Map<string, any>();

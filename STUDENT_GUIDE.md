@@ -42,10 +42,10 @@ Please follow these registration rules carefully to avoid account access issues:
 
 ### 5️⃣ Attendance Rules
 Attendance is a major component of your final evaluation.
-*   **Daily Check-In:** You must "Check-In" on the dashboard the moment you start your internship work.
-*   **Daily Check-Out:** You must "Check-Out" before leaving the portal for the day.
-*   **Pending Status:** If you forget to check-out, your status will remain "Pending," and your working hours for that day may not be counted.
-*   **Integrity:** Fake attendance or checking-in when you are not working is strictly prohibited and monitored via activity logs.
+*   **Daily Clock IN:** You must "Clock IN" on the dashboard the moment you start your internship work.
+*   **Daily Clock Out:** You must "Clock Out" before leaving the portal for the day.
+*   **Pending Status:** If you forget to Clock Out, your status will remain "Pending," and your working hours for that day may not be counted.
+*   **Integrity:** Fake attendance or Clocking IN when you are not working is strictly prohibited and monitored via activity logs.
 
 ---
 
@@ -74,7 +74,7 @@ Attendance is a major component of your final evaluation.
 ### 9️⃣ DO’s and DON’Ts
 
 **✅ DO’s:**
-- Login and check-in daily.
+- Login and Clock IN daily.
 - Use only your registered VTU email.
 - Maintain a professional and polite tone in all communications.
 - Complete all tasks with sincerity and on time.

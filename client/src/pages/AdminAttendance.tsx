@@ -54,7 +54,7 @@ export default function AdminAttendance() {
                                 Attendance Tracking
                             </h1>
                             <p className="text-muted-foreground mt-1 text-sm font-medium">
-                                Automated clock-in/out logs and calculated hours
+                                Automated Clock IN/Clock Out logs and calculated hours
                             </p>
                         </div>
                         <div className="bg-secondary/50 px-4 py-2 rounded-2xl border border-white/20 shadow-sm flex items-center gap-2">
@@ -226,8 +226,8 @@ function AttendanceDetailsModal({
                         <table className="w-full text-left border-separate border-spacing-0">
                             <thead>
                                 <tr className="bg-white/10">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-widest border-b border-white/10 text-center">Check-in Time</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-widest border-b border-white/10 text-center">Check-out Time</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-widest border-b border-white/10 text-center">Clock IN Time</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-widest border-b border-white/10 text-center">Clock Out Time</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">

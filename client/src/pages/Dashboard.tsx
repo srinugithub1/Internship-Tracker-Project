@@ -202,7 +202,7 @@ function HistoryModal({ day, onClose }: { day: { date: string; sessions: any[] }
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-primary/5">
-                                    {["#", "Check-in", "Check-out", "Duration"].map(h => (
+                                    {["#", "Clock IN", "Clock Out", "Duration"].map(h => (
                                         <th key={h} className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{h}</th>
                                     ))}
                                 </tr>
@@ -298,17 +298,17 @@ export default function Dashboard() {
 
     // ── Today open session ────────────────────────────────────────────────────
     const todayOpenSession = attendance.find(a => a.date === todayStr && !a.logoutTime) || null;
-    const isCheckedIn = !!todayOpenSession;
+    const isClockedIn = !!todayOpenSession;
 
-    // ── Check In / Out mutations ──────────────────────────────────────────────
-    const checkInMutation = useMutation({
+    // ── Clock IN / Out mutations ──────────────────────────────────────────────
+    const clockInMutation = useMutation({
         mutationFn: () => apiRequest("POST", "/api/attendance/login", { userId: user.id, clientTime: Date.now().toString() }),
-        onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/attendance/${user.id}`] }); toast({ title: "✅ Checked In!", description: `Recorded at ${format(new Date(), "hh:mm:ss aa")}` }); },
+        onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/attendance/${user.id}`] }); toast({ title: "✅ Clocked IN!", description: `Recorded at ${format(new Date(), "hh:mm:ss aa")}` }); },
         onError: (e: any) => toast({ title: "Error", description: e?.message, variant: "destructive" }),
     });
-    const checkOutMutation = useMutation({
+    const clockOutMutation = useMutation({
         mutationFn: () => apiRequest("POST", "/api/attendance/logout", { attendanceId: todayOpenSession?.id, clientTime: Date.now().toString() }),
-        onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/attendance/${user.id}`] }); toast({ title: "👋 Checked Out!", description: `Recorded at ${format(new Date(), "hh:mm:ss aa")}` }); },
+        onSuccess: () => { queryClient.invalidateQueries({ queryKey: [`/api/attendance/${user.id}`] }); toast({ title: "👋 Clocked Out!", description: `Recorded at ${format(new Date(), "hh:mm:ss aa")}` }); },
         onError: (e: any) => toast({ title: "Error", description: e?.message, variant: "destructive" }),
     });
 
@@ -390,15 +390,15 @@ export default function Dashboard() {
                                 <p className="text-white/60 text-xs font-bold">{format(now, "EEE, MMM dd yyyy")}</p>
                             </div>
                             <div className="flex flex-col items-center gap-1">
-                                <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">{isCheckedIn ? "End your day" : "Start your day"}</p>
-                                {!isCheckedIn
-                                    ? <Button className="bg-white text-purple-700 font-black rounded-xl hover:bg-white/90 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => checkInMutation.mutate()} disabled={checkInMutation.isPending}>
-                                        {checkInMutation.isPending ? "Checking..." : "Check In"}
+                                <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">{isClockedIn ? "End your day" : "Start your day"}</p>
+                                {!isClockedIn
+                                    ? <Button className="bg-white text-purple-700 font-black rounded-xl hover:bg-white/90 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockInMutation.mutate()} disabled={clockInMutation.isPending}>
+                                        {clockInMutation.isPending ? "Clocking IN..." : "Clock IN"}
                                     </Button>
-                                    : <Button className="bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => checkOutMutation.mutate()} disabled={checkOutMutation.isPending}>
-                                        {checkOutMutation.isPending ? "Saving..." : "Check Out"}
+                                    : <Button className="bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockOutMutation.mutate()} disabled={clockOutMutation.isPending}>
+                                        {clockOutMutation.isPending ? "Saving..." : "Clock Out"}
                                     </Button>}
-                                {isCheckedIn && todayOpenSession && (
+                                {isClockedIn && todayOpenSession && (
                                     <p className="text-white/50 text-[10px] mt-1">In since {fmtTime12(todayOpenSession.loginTime)}</p>
                                 )}
                             </div>
