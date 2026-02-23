@@ -75,17 +75,22 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     } catch (error: any) {
         console.error("[CHAT AI ERROR]:", error);
 
-        let errorDetail = error.message || String(error);
-        const keySnippet = API_KEY.substring(API_KEY.length - 4);
+        const errorDetail = error.message || String(error);
+        const lastFour = API_KEY.length >= 4 ? API_KEY.substring(API_KEY.length - 4) : "****";
 
         return `Assistant Connection Refused. 
         
-        TECHNICAL DETAIL: ${errorDetail}
-        SERVER KEY INFO: Using key ending in "...${keySnippet}"
+        🚨 ATTENTION: SERVER KEY ENDS IN "...${lastFour}"
         
-        RECOMMENDED FIX:
-        1. Access Denied (404/403)! This usually means the API version (v1/v1beta) is mismatched.
-        2. I have forced "v1" in this new code. Please click **"Clear cache and deploy"** on Render.
-        3. If it still fails, please use a NEW key from **aistudio.google.com/app/apikey** specifically.`;
+        DOES THIS MATCH?
+        Check your Screenshot 2. If your key ends in "...H4o", but the server says "...${lastFour}", then you have NOT updated the key on Render!
+        
+        TECHNICAL DETAIL: ${errorDetail}
+        
+        FINAL STEPS:
+        1. Copy the key from Screenshot 2 again.
+        2. In Render -> Settings -> Environment Variables, delete the old "GEMINI_API_KEY".
+        3. Add it again with the NEW value and click **"Save Changes"**.
+        4. Click **"Manual Deploy"** -> **"Clear cache and deploy"**.`;
     }
 }
