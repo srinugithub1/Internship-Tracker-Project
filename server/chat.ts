@@ -41,12 +41,15 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Ultra Resilience Loop (Including 'latest' aliases)
+        // 2. AI Logic - Ultra-Resilience Loop
         const configurations = [
+            { name: "gemini-1.5-flash-latest", version: "v1" },
             { name: "gemini-1.5-flash-latest", version: "v1beta" },
             { name: "gemini-1.5-flash", version: "v1" },
-            { name: "gemini-1.5-flash", version: "v1beta" },
-            { name: "gemini-pro", version: "v1" }
+            { name: "gemini-1.5-flash-8b-latest", version: "v1beta" },
+            { name: "gemini-1.5-flash-8b", version: "v1beta" },
+            { name: "gemini-pro", version: "v1" },
+            { name: "gemini-1.5-pro", version: "v1" }
         ];
 
         let responseText = "";
@@ -54,6 +57,7 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
 
         for (const config of configurations) {
             try {
+                // Try with and without 'models/' prefix automatically
                 const model = genAI.getGenerativeModel({ model: config.name }, { apiVersion: config.version });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
@@ -64,8 +68,23 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
             }
         }
 
+        // 3. FINAL FALLBACK: Manual Model Discovery (If all standard names fail)
         if (!responseText) {
-            throw new Error(`Connectivity failed. All models returned 404 (Not Found).\nLOG:\n${diagnosticLog}`);
+            try {
+                // This URL usually returns the list of models this key is allowed to use
+                const listUrl = `https://generativelanguage.googleapis.com/v1/models?key=${API_KEY}`;
+                const listResp = await fetch(listUrl);
+                const listData = await listResp.json();
+
+                if (listData.models && listData.models.length > 0) {
+                    const modelList = listData.models.map((m: any) => m.name.split('/').pop()).join(", ");
+                    throw new Error(`AUTHORIZED MODELS FOR THIS KEY: ${modelList}\n\nLOG:\n${diagnosticLog}`);
+                } else {
+                    throw new Error(`API KEY IS NOT AUTHORIZED FOR ANY MODELS.\nERROR: ${JSON.stringify(listData)}\n\nLOG:\n${diagnosticLog}`);
+                }
+            } catch (e: any) {
+                throw new Error(`Connectivity failed. All models returned 404 (Not Found).\nDIAGNOSTIC: ${e.message}\n\nLOG:\n${diagnosticLog}`);
+            }
         }
 
         return responseText;
