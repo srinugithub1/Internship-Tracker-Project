@@ -41,29 +41,21 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Force v1 stability
-        const modelNames = ["gemini-1.5-flash", "gemini-1.5-pro"];
+        // 2. AI Logic - Use the most stable configuration possible
+        const modelNames = ["gemini-1.5-flash", "gemini-pro"];
         let responseText = "";
         let lastError: any = null;
 
         for (const modelName of modelNames) {
             try {
-                // Explicitly force v1 version
-                const model = genAI.getGenerativeModel({ model: modelName }, { apiVersion: "v1" });
+                // Try without explicit version first (let SDK use v1beta or v1 as needed)
+                const model = genAI.getGenerativeModel({ model: modelName });
                 const result = await model.generateContent(prompt);
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
                 lastError = err;
-                console.warn(`[CHAT] Failed ${modelName} on v1: ${err.message}`);
-
-                // Last ditch fallback to v1beta
-                try {
-                    const fallbackModel = genAI.getGenerativeModel({ model: modelName });
-                    const fbResult = await fallbackModel.generateContent(prompt);
-                    responseText = fbResult.response.text();
-                    if (responseText) break;
-                } catch (err2) { }
+                console.warn(`[CHAT] Failed ${modelName} default: ${err.message}`);
             }
         }
 
@@ -82,16 +74,19 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         
         🚨 SERVER KEY ENDS IN: "...${lastFour}"
         
-        KEY MISMATCH DETECTED:
-        Your Screenshot 2 (from "Internship Chat bot") shows your key ends in "...H4o".
-        But your Render settings are currently using a key ending in "...${lastFour}".
+        KEY MISMATCH WARNING:
+        - Your project "Internship Chat bot" (from your earlier screenshot) had a key ending in "...H4o".
+        - Your Render dashboard is currently using a key ending in "...${lastFour}".
         
-        THIS IS THE WRONG KEY. The "...${lastFour}" key does not have the API enabled.
+        If you are still seeing "NOT FOUND" errors, the key ending in "...${lastFour}" is either inactive or restricted in your region.
         
-        FINAL FIX:
-        1. Copy the key from your Screenshot 2 (the one ending in "...H4o").
-        2. Paste that EXACT key into Render's GEMINI_API_KEY.
-        3. Click **"Save Changes"**.
-        4. Click **"Manual Deploy"** -> **"Clear cache and deploy"**.`;
+        FINAL INSTRUCTIONS:
+        1. Go to: aistudio.google.com/app/apikey.
+        2. Create a BRAND NEW key.
+        3. Copy it and UPDATE it in Render -> Settings -> Env Vars.
+        4. Click **"Save Changes"**.
+        5. Click **"Manual Deploy"** -> **"Clear cache and deploy"**.
+        
+        TECHNICAL DETAIL: ${errorDetail}`;
     }
 }
