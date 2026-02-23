@@ -41,17 +41,17 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
     - Never mention technical terms like "Database", "Context", or "API" to the user.
     - Keep responses under 3-4 sentences if possible.`;
 
-        // 2. AI Logic - Comprehensive Resilience Loop
+        // 2. AI Logic - Nuclear Resilience Loop
         const configurations = [
             { name: "gemini-1.5-flash", version: "v1" },
+            { name: "models/gemini-1.5-flash", version: "v1" },
             { name: "gemini-1.5-flash", version: "v1beta" },
-            { name: "gemini-pro", version: "v1beta" },
-            { name: "gemini-1.5-pro", version: "v1" }
+            { name: "gemini-1.5-pro", version: "v1" },
+            { name: "gemini-pro", version: "v1" }
         ];
 
         let responseText = "";
         let diagnosticLog = "";
-        let lastError: any = null;
 
         for (const config of configurations) {
             try {
@@ -60,14 +60,27 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
                 responseText = result.response.text();
                 if (responseText) break;
             } catch (err: any) {
-                lastError = err;
                 diagnosticLog += `[${config.name} @ ${config.version}]: ${err.message}\n`;
-                console.warn(`[CHAT] Attempt failed: ${config.name} (${config.version})`);
+                console.warn(`[CHAT] Failed: ${config.name} (${config.version})`);
             }
         }
 
+        // 3. IF ALL FAILED - NUCLEAR DIAGNOSTIC (List Available Models)
+        let availableModels = "Not listed";
         if (!responseText) {
-            throw new Error(`Connectivity failed after multiple trials.\nLOG:\n${diagnosticLog}`);
+            try {
+                const listUrl = `https://generativelanguage.googleapis.com/v1/models?key=${API_KEY}`;
+                const listResponse = await fetch(listUrl);
+                const listData = await listResponse.json();
+                if (listData.models) {
+                    availableModels = listData.models.slice(0, 8).map((m: any) => m.name.replace('models/', '')).join(", ");
+                } else {
+                    availableModels = "API Error: " + JSON.stringify(listData);
+                }
+            } catch (e: any) {
+                availableModels = "List Failed: " + e.message;
+            }
+            throw new Error(`Connectivity failed. \nMODELS FOUND FOR KEY: ${availableModels}\nLOG:\n${diagnosticLog}`);
         }
 
         return responseText;
@@ -81,15 +94,12 @@ export async function getChatResponse(userId: string, userMessage: string, isAdm
         
         🚨 SERVER KEY ENDS IN: "...${lastFour}"
         
-        DOES THIS MATCH YOUR NEW KEY?
-        Your AI Studio key should end in "...lkVo". 
-        If it says "...Lyug", you did NOT click "Save Changes" on Render!
+        IS THE API ENABLED?
+        - If "MODELS FOUND FOR KEY" above is empty or shows an error, your API key is NOT correctly set up in Google AI Studio.
+        - Go to: aistudio.google.com/app/apikey.
+        - Ensure you have a key for the "Internship Chat Bot" project.
         
         TECHNICAL LOG:
-        ${errorDetail}
-        
-        FINAL RECOMMENDATION:
-        Look at Step 103 in our chat—I circled the project dropdown. 
-        Ensure you are copying the key from "Internship Chat bot" and NOT "My First Project".`;
+        ${errorDetail}`;
     }
 }
