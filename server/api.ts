@@ -14,6 +14,16 @@ router.get("/", wrap(async (req: any, res: any) => {
     res.json(list);
 }));
 
+router.post("/", wrap(async (req: any, res: any) => {
+    console.log("[PAID-API] POST /api/paid-internships");
+    const parsed = insertPaidInternshipSchema.safeParse(req.body);
+    if (!parsed.success) {
+        return res.status(400).json({ message: "Validation error", error: parsed.error });
+    }
+    const result = await storage.createPaidInternship(parsed.data);
+    res.json(result);
+}));
+
 router.post("/bulk", wrap(async (req: any, res: any) => {
     const internships = req.body;
     console.log(`[PAID-API] POST /api/paid-internships/bulk - Items: ${Array.isArray(internships) ? internships.length : 0}`);
