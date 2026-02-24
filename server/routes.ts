@@ -75,12 +75,13 @@ export function registerRoutes(app: Express): Server {
             return res.status(403).json({ message: "enter registered email address" });
         }
 
-        const parsed = insertUserSchema.safeParse(req.body);
+        // Validate other fields but allow passwordHash to be missing since we'll hash it now
+        const parsed = insertUserSchema.omit({ passwordHash: true }).safeParse(req.body);
         if (!parsed.success) return res.status(400).json(parsed.error);
 
         try {
             const passwordHash = await bcrypt.hash(password, 10);
-            const user = await storage.createUser({ ...parsed.data, passwordHash });
+            const user = await storage.createUser({ ...parsed.data, passwordHash } as any);
             res.json(user);
         } catch (error: any) {
             res.status(500).json({ message: "Failed to create user", error: error.message });

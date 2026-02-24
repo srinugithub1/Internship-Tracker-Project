@@ -343,7 +343,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 collegeName: data.collegeName,
                 rollNumber: data.rollNumber,
                 address: data.address,
-                passwordHash: data.password,
+                password: data.password,
                 role: "intern",
             });
             // Auto-login after signup
@@ -354,7 +354,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
             localStorage.setItem("user", JSON.stringify(user));
             toast({
                 title: "Account Created! 🎉",
-                description: `Welcome, ${user.firstName}! You've been logged in.`,
+                description: `Welcome, ${user.name}! You've been logged in.`,
             });
             setLocation("/dashboard");
         } catch (e: any) {
