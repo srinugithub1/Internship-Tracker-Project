@@ -355,10 +355,30 @@ export function registerRoutes(app: Express): Server {
 
 
 
-    app.put("/api/tasks/:id", wrap(async (req, res) => {
-        const task = await storage.updateTask(req.params.id, req.body);
-        res.json(task);
+    // Bulk Assignment Endpoints
+    app.get("/api/admin/unassigned-tasks", wrap(async (req, res) => {
+        const unassigned = await storage.getUnassignedTasks();
+        res.json(unassigned);
     }));
+
+    app.get("/api/admin/interns-without-tasks", wrap(async (req, res) => {
+        const interns = await storage.getInternsWithNoTasks();
+        res.json(interns);
+    }));
+
+    app.post("/api/admin/tasks/bulk-assign", wrap(async (req, res) => {
+        const { taskIds, internIds } = req.body;
+        if (!taskIds || !internIds || !Array.isArray(taskIds) || !Array.isArray(internIds)) {
+            return res.status(400).json({ message: "Invalid request body" });
+        }
+        try {
+            const assigned = await storage.manualBulkAssign(taskIds, internIds);
+            res.json({ message: `Successfully assigned ${assigned.length} tasks to ${internIds.length} interns.`, tasks: assigned });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }));
+
 
     app.patch("/api/tasks/:id/status", wrap(async (req, res) => {
         const { status } = req.body;

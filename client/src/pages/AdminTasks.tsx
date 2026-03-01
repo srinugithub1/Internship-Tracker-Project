@@ -38,6 +38,13 @@ export default function AdminTasks() {
 
     const { data: tasks = [], isLoading } = useQuery<Task[]>({ queryKey: ["/api/tasks"] });
     const { data: interns = [] } = useQuery<User[]>({ queryKey: ["/api/interns"] });
+    const { data: unassignedTasks = [] } = useQuery<Task[]>({ queryKey: ["/api/admin/unassigned-tasks"] });
+    const { data: internsWithoutTasks = [] } = useQuery<User[]>({ queryKey: ["/api/admin/interns-without-tasks"] });
+
+    const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+    const [selectedInternIds, setSelectedInternIds] = useState<string[]>([]);
+
 
     const createMutation = useMutation({
         mutationFn: (data: FormState) => {
@@ -62,6 +69,20 @@ export default function AdminTasks() {
         mutationFn: (id: string) => apiRequest("DELETE", `/api/tasks/${id}`),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/tasks"] }),
     });
+
+    const bulkAssignMutation = useMutation({
+        mutationFn: (data: { taskIds: string[], internIds: string[] }) =>
+            apiRequest("POST", "/api/admin/tasks/bulk-assign", data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/unassigned-tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/interns-without-tasks"] });
+            setBulkDialogOpen(false);
+            setSelectedTaskIds([]);
+            setSelectedInternIds([]);
+        },
+    });
+
 
     const close = () => { setOpen(false); setEditId(null); setForm(blank); };
     const openCreate = () => { setForm(blank); setEditId(null); setOpen(true); };
@@ -97,10 +118,14 @@ export default function AdminTasks() {
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total:</span>
                                 <span className="text-lg font-black text-primary">{filtered.length}</span>
                             </div>
+                            <Button onClick={() => setBulkDialogOpen(true)} variant="outline" className="rounded-xl h-10 font-bold gap-2 border-primary/30 text-primary hover:bg-primary/10">
+                                <RotateCcw className="h-4 w-4" /> Not Assigned Tasks for Interns
+                            </Button>
                             <Button onClick={openCreate} className="rounded-xl h-10 font-bold gap-2 shadow-lg">
                                 <Plus className="h-4 w-4" /> Assign New Task
                             </Button>
                         </div>
+
                     </header>
 
                     {/* Filters */}
@@ -318,6 +343,84 @@ export default function AdminTasks() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            {/* Bulk Assign Dialog */}
+            <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
+                <DialogContent className="glass border-white/10 rounded-2xl max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black text-center text-primary">Assign Old Tasks to New Interns</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid grid-cols-2 gap-6 py-4">
+                        {/* Task List */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                                Unassigned Tasks
+                                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-[10px]">{unassignedTasks.length} Available</span>
+                            </h3>
+                            <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                                {unassignedTasks.map(t => (
+                                    <div
+                                        key={t.id}
+                                        className={`p-3 rounded-xl border transition-all cursor-pointer ${selectedTaskIds.includes(t.id) ? 'bg-primary/10 border-primary shadow-sm' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                                        onClick={() => setSelectedTaskIds(prev => prev.includes(t.id) ? prev.filter(id => id !== t.id) : [...prev, t.id])}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <input type="checkbox" checked={selectedTaskIds.includes(t.id)} readOnly className="h-4 w-4 rounded border-primary bg-transparent text-primary" />
+                                            <div>
+                                                <p className="text-sm font-bold">{t.title}</p>
+                                                <p className="text-[10px] opacity-60 line-clamp-1">{t.description || "No description provided."}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {unassignedTasks.length === 0 && <p className="text-xs italic text-muted-foreground text-center py-10">All tasks are currently assigned.</p>}
+                            </div>
+                        </div>
+
+                        {/* Intern List */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                                Interns with No Tasks
+                                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-[10px]">{internsWithoutTasks.length} Found</span>
+                            </h3>
+                            <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                                {internsWithoutTasks.map(i => (
+                                    <div
+                                        key={i.id}
+                                        className={`p-3 rounded-xl border transition-all cursor-pointer ${selectedInternIds.includes(i.id) ? 'bg-primary/10 border-primary shadow-sm' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                                        onClick={() => setSelectedInternIds(prev => prev.includes(i.id) ? prev.filter(id => id !== i.id) : [...prev, i.id])}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <input type="checkbox" checked={selectedInternIds.includes(i.id)} readOnly className="h-4 w-4 rounded border-primary bg-transparent text-primary" />
+                                            <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-[10px]">
+                                                {i.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold">{i.name}</p>
+                                                <p className="text-[10px] opacity-60">{i.email}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {internsWithoutTasks.length === 0 && <p className="text-xs italic text-muted-foreground text-center py-10">All active interns have at least one task.</p>}
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter className="mt-4 border-t border-white/10 pt-4">
+                        <div className="flex-1 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <span>Selected: <span className="text-primary">{selectedTaskIds.length}</span> Tasks & <span className="text-primary">{selectedInternIds.length}</span> Interns</span>
+                        </div>
+                        <Button variant="ghost" onClick={() => setBulkDialogOpen(false)} className="rounded-xl">Cancel</Button>
+                        <Button
+                            onClick={() => bulkAssignMutation.mutate({ taskIds: selectedTaskIds, internIds: selectedInternIds })}
+                            disabled={bulkAssignMutation.isPending || selectedTaskIds.length === 0 || selectedInternIds.length === 0}
+                            className="rounded-xl font-black px-8"
+                        >
+                            {bulkAssignMutation.isPending ? "Assigning..." : "Run Bulk Assignment"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
+

@@ -83,7 +83,13 @@ export interface IStorage {
     bulkCreatePaidInternships(internships: NewPaidInternship[]): Promise<PaidInternship[]>;
     checkPaidInternshipEmail(email: string): Promise<boolean>;
 
+    // Manual Bulk Assignment
+    getUnassignedTasks(): Promise<Task[]>;
+    getInternsWithNoTasks(): Promise<User[]>;
+    manualBulkAssign(taskIds: string[], internIds: string[]): Promise<Task[]>;
+
     // New Attendance Grouping
+
     getGroupedAttendance(): Promise<any[]>;
     getAttendanceDetails(userId: string, date: string): Promise<Attendance[]>;
 }
@@ -558,6 +564,44 @@ export class DatabaseStorage implements IStorage {
             topInterns: topInterns.rows
         };
     }
+
+    async getUnassignedTasks(): Promise<Task[]> {
+        return await db.select().from(tasks).where(isNull(tasks.internId));
+    }
+
+    async getInternsWithNoTasks(): Promise<User[]> {
+        // Subquery to get IDs of interns who HAVE tasks
+        const internsWithTasks = db.select({ internId: tasks.internId }).from(tasks).where(isNotNull(tasks.internId));
+
+        // Find interns who are NOT in that list
+        return await db.select().from(users).where(
+            and(
+                eq(users.role, "intern"),
+                sql`${users.id} NOT IN (${internsWithTasks})`
+            )
+        );
+    }
+
+    async manualBulkAssign(taskIds: string[], internIds: string[]): Promise<Task[]> {
+        const selectedTasks = await db.select().from(tasks).where(sql`${tasks.id} IN (${sql.raw(taskIds.map(id => `'${id}'`).join(','))})`);
+
+        const createdTasks: Task[] = [];
+
+        for (const internId of internIds) {
+            for (const taskTemplate of selectedTasks) {
+                const { id, internId: _, createdAt: __, ...data } = taskTemplate;
+                const [newTask] = await db.insert(tasks).values({
+                    ...data,
+                    internId,
+                    status: "assigned"
+                } as any).returning();
+                createdTasks.push(newTask);
+            }
+        }
+
+        return createdTasks;
+    }
+
 
     async getPaidInternships(): Promise<PaidInternship[]> {
         return await db.select().from(paidInternships).orderBy(desc(paidInternships.createdAt));
