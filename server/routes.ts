@@ -82,10 +82,23 @@ export function registerRoutes(app: Express): Server {
         try {
             const passwordHash = await bcrypt.hash(password, 10);
             const user = await storage.createUser({ ...parsed.data, passwordHash } as any);
+
+            // Automatically allocate eligible tasks for the new intern
+            if (user.role === "intern") {
+                try {
+                    console.log(`[AUTH] Automatically allocating tasks for new intern: ${user.id}`);
+                    await storage.allocateTasksForIntern(user.id);
+                } catch (allocError) {
+                    console.error(`[AUTH] Failed to auto-allocate tasks for ${user.id}:`, allocError);
+                    // Don't fail registration if allocation fails, but log it
+                }
+            }
+
             res.json(user);
         } catch (error: any) {
             res.status(500).json({ message: "Failed to create user", error: error.message });
         }
+
     }));
 
     // Forgot Password Flow
