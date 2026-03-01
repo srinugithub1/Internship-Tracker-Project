@@ -38,8 +38,9 @@ export default function AdminTasks() {
 
     const { data: tasks = [], isLoading } = useQuery<Task[]>({ queryKey: ["/api/tasks"] });
     const { data: interns = [] } = useQuery<User[]>({ queryKey: ["/api/interns"] });
-    const { data: unassignedTasks = [] } = useQuery<Task[]>({ queryKey: ["/api/admin/unassigned-tasks"] });
+    const { data: unassignedTasks = [] } = useQuery<Task[]>({ queryKey: ["/api/admin/task-templates"] });
     const { data: internsWithoutTasks = [] } = useQuery<User[]>({ queryKey: ["/api/admin/interns-without-tasks"] });
+
 
     const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
@@ -82,6 +83,12 @@ export default function AdminTasks() {
             setSelectedInternIds([]);
         },
     });
+
+    const selectAllTasks = () => setSelectedTaskIds(unassignedTasks.map(t => t.id));
+    const deselectAllTasks = () => setSelectedTaskIds([]);
+    const selectAllInterns = () => setSelectedInternIds(internsWithoutTasks.map(i => i.id));
+    const deselectAllInterns = () => setSelectedInternIds([]);
+
 
 
     const close = () => { setOpen(false); setEditId(null); setForm(blank); };
@@ -352,11 +359,16 @@ export default function AdminTasks() {
                     <div className="grid grid-cols-2 gap-6 py-4">
                         {/* Task List */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                                Unassigned Tasks
-                                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-[10px]">{unassignedTasks.length} Available</span>
-                            </h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Available Tasks</h3>
+                                <div className="flex gap-2">
+                                    <Button variant="link" size="sm" className="p-0 h-auto text-[10px] font-bold text-primary hover:no-underline" onClick={selectAllTasks}>Select All</Button>
+                                    <span className="text-[10px] opacity-30">|</span>
+                                    <Button variant="link" size="sm" className="p-0 h-auto text-[10px] font-medium text-muted-foreground hover:no-underline" onClick={deselectAllTasks}>Clear</Button>
+                                </div>
+                            </div>
                             <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+
                                 {unassignedTasks.map(t => (
                                     <div
                                         key={t.id}
@@ -378,11 +390,16 @@ export default function AdminTasks() {
 
                         {/* Intern List */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center justify-between">
-                                Interns with No Tasks
-                                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-[10px]">{internsWithoutTasks.length} Found</span>
-                            </h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Interns (No Tasks)</h3>
+                                <div className="flex gap-2">
+                                    <Button variant="link" size="sm" className="p-0 h-auto text-[10px] font-bold text-primary hover:no-underline" onClick={selectAllInterns}>Select All</Button>
+                                    <span className="text-[10px] opacity-30">|</span>
+                                    <Button variant="link" size="sm" className="p-0 h-auto text-[10px] font-medium text-muted-foreground hover:no-underline" onClick={deselectAllInterns}>Clear</Button>
+                                </div>
+                            </div>
                             <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+
                                 {internsWithoutTasks.map(i => (
                                     <div
                                         key={i.id}

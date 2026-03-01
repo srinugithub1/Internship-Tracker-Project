@@ -84,8 +84,9 @@ export interface IStorage {
     checkPaidInternshipEmail(email: string): Promise<boolean>;
 
     // Manual Bulk Assignment
-    getUnassignedTasks(): Promise<Task[]>;
+    getTaskTemplates(): Promise<Task[]>;
     getInternsWithNoTasks(): Promise<User[]>;
+
     manualBulkAssign(taskIds: string[], internIds: string[]): Promise<Task[]>;
 
     // New Attendance Grouping
@@ -565,9 +566,19 @@ export class DatabaseStorage implements IStorage {
         };
     }
 
-    async getUnassignedTasks(): Promise<Task[]> {
-        return await db.select().from(tasks).where(isNull(tasks.internId));
+    async getTaskTemplates(): Promise<Task[]> {
+        // Fetch all tasks but filter for unique title+description pairs in JS
+        // (SQL DISTINCT ON is not standard across all PG versions/Drizzle helpers)
+        const allTasks = await db.select().from(tasks);
+        const seen = new Set();
+        return allTasks.filter(task => {
+            const key = `${task.title}|${task.description}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
     }
+
 
     async getInternsWithNoTasks(): Promise<User[]> {
         // Subquery to get IDs of interns who HAVE tasks

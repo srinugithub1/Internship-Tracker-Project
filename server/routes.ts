@@ -356,10 +356,11 @@ export function registerRoutes(app: Express): Server {
 
 
     // Bulk Assignment Endpoints
-    app.get("/api/admin/unassigned-tasks", wrap(async (req, res) => {
-        const unassigned = await storage.getUnassignedTasks();
-        res.json(unassigned);
+    app.get("/api/admin/task-templates", wrap(async (req, res) => {
+        const templates = await storage.getTaskTemplates();
+        res.json(templates);
     }));
+
 
     app.get("/api/admin/interns-without-tasks", wrap(async (req, res) => {
         const interns = await storage.getInternsWithNoTasks();
