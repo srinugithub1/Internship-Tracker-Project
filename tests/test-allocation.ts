@@ -58,24 +58,40 @@ async function testAllocation() {
     }).returning();
     console.log(`Created Task C (Assigned): ${taskCAlreadyAssigned[0].id}`);
 
-    // 3. Trigger Allocation
-    console.log("Triggering allocation...");
-    const assigned = await storage.allocateTasksForIntern(testIntern.id);
-    console.log(`Assigned ${assigned.length} tasks.`);
+    // 3. Trigger Allocation (Regular - Should skip Task A)
+    console.log("Triggering regular allocation...");
+    const assignedRegular = await storage.allocateTasksForIntern(testIntern.id, false);
+    console.log(`Regular assigned ${assignedRegular.length} tasks.`);
 
-    // 4. Verify Results
-    const assignedIds = assigned.map(t => t.id);
-    const success =
-        !assignedIds.includes(taskABefore[0].id) &&
-        assignedIds.includes(taskBAfter[0].id) &&
-        !assignedIds.includes(taskCAlreadyAssigned[0].id);
+    // 4. Trigger Allocation (Forced - Should include Task A)
+    console.log("Triggering forced allocation (includeOld=true)...");
+    const assignedForced = await storage.allocateTasksForIntern(testIntern.id, true);
+    console.log(`Forced assigned ${assignedForced.length} tasks.`);
 
-    if (success && assigned.length === 1) {
-        console.log("✅ TEST PASSED: Only eligible tasks were assigned.");
+    // 5. Verify Results
+    const regularIds = assignedRegular.map(t => t.id);
+    const forcedIds = assignedForced.map(t => t.id);
+
+    const regularSuccess =
+        !regularIds.includes(taskABefore[0].id) &&
+        regularIds.includes(taskBAfter[0].id) &&
+        !regularIds.includes(taskCAlreadyAssigned[0].id) &&
+        regularIds.length === 1; // Only Task B should be assigned
+
+    const forcedSuccess =
+        forcedIds.includes(taskABefore[0].id) &&
+        !forcedIds.includes(taskBAfter[0].id) &&
+        !forcedIds.includes(taskCAlreadyAssigned[0].id) &&
+        forcedIds.length === 1; // Only Task A should be assigned now (Task B already assigned)
+
+    if (regularSuccess && forcedSuccess) {
+        console.log("✅ TEST PASSED: Old task allocation logic is correct.");
     } else {
         console.log("❌ TEST FAILED: Allocation logic incorrect.");
-        console.log("Assigned IDs:", assignedIds);
+        console.log("Regular Results:", regularIds);
+        console.log("Forced Results:", forcedIds);
     }
+
 
     // Cleanup
     await db.delete(tasks).where(eq(tasks.id, taskABefore[0].id));
@@ -84,8 +100,9 @@ async function testAllocation() {
     await storage.deleteUser(testIntern.id);
     await storage.deleteUser(testIntern2.id);
     console.log("Cleanup complete.");
-    process.exit(success ? 0 : 1);
+    process.exit(regularSuccess && forcedSuccess ? 0 : 1);
 }
+
 
 testAllocation().catch(err => {
     console.error("Test Error:", err);

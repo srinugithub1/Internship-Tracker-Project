@@ -328,8 +328,9 @@ export function registerRoutes(app: Express): Server {
 
     app.post("/api/tasks/allocate/:internId", wrap(async (req, res) => {
         const { internId } = req.params;
+        const includeOld = req.query.includeOld === "true";
         try {
-            const assignedTasks = await storage.allocateTasksForIntern(internId);
+            const assignedTasks = await storage.allocateTasksForIntern(internId, includeOld);
             if (assignedTasks.length === 0) {
                 return res.json({ message: "No new tasks available for assignment.", tasks: [] });
             }
@@ -338,6 +339,7 @@ export function registerRoutes(app: Express): Server {
             res.status(500).json({ message: error.message });
         }
     }));
+
 
 
     app.put("/api/tasks/:id", wrap(async (req, res) => {

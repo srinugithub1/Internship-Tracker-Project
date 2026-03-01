@@ -63,7 +63,8 @@ export interface IStorage {
     updateTask(id: string, data: Partial<NewTask>): Promise<Task>;
     updateTaskStatus(taskId: string, status: string): Promise<Task>;
     updateTaskProgress(id: string, data: { status?: string; todayProgress?: string; submissionLink?: string; remarks?: string }): Promise<Task>;
-    allocateTasksForIntern(internId: string): Promise<Task[]>;
+    allocateTasksForIntern(internId: string, includeOld?: boolean): Promise<Task[]>;
+
     deleteTask(id: string): Promise<void>;
 
 
@@ -349,7 +350,7 @@ export class DatabaseStorage implements IStorage {
         return task;
     }
 
-    async allocateTasksForIntern(internId: string): Promise<Task[]> {
+    async allocateTasksForIntern(internId: string, includeOld: boolean = false): Promise<Task[]> {
         const user = await this.getUser(internId);
         if (!user || user.role !== "intern") {
             throw new Error("Invalid intern ID");
@@ -359,9 +360,9 @@ export class DatabaseStorage implements IStorage {
 
         // Logic:
         // 1. Filter tasks where intern_id IS NULL OR reassignable IS TRUE
-        // 2. Filter tasks where task_created_date > intern_signup_date
+        // 2. Filter tasks where task_created_date > intern_signup_date (unless includeOld is true)
         // 3. Update those tasks to assign to this intern
-        console.log(`[ALLOCATION] Intern Signup: ${signupDate.toISOString()}`);
+        console.log(`[ALLOCATION] Intern Signup: ${signupDate.toISOString()}, Include Old: ${includeOld}`);
 
         const allUnassigned = await db.select().from(tasks)
             .where(
@@ -375,11 +376,16 @@ export class DatabaseStorage implements IStorage {
             if (!task.createdAt) return false;
             // Ignore if already assigned to THIS intern
             if (task.internId === internId) return false;
+
+            // If includeOld is true, we ignore the signup date restriction
+            if (includeOld) return true;
+
             return task.createdAt > signupDate;
         });
 
         console.log(`[ALLOCATION] Found ${allUnassigned.length} unassigned/reassignable tasks Total.`);
-        console.log(`[ALLOCATION] Found ${eligibleTasks.length} eligible tasks after date filtering.`);
+        console.log(`[ALLOCATION] Found ${eligibleTasks.length} eligible tasks after filtering.`);
+
 
         if (eligibleTasks.length > 0) {
             eligibleTasks.forEach(t => console.log(` - Task ${t.id} created at ${t.createdAt?.toISOString()}`));
