@@ -1,0 +1,93 @@
+import { storage } from "../server/storage";
+import { db } from "../server/db";
+import { users, tasks } from "../shared/schema";
+import { eq, sql } from "drizzle-orm";
+
+
+async function testAllocation() {
+    console.log("--- Starting Task Allocation Test ---");
+
+    // 0. Ensure Schema changes are applied to DB
+    try {
+        await db.execute(sql`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS reassignable BOOLEAN DEFAULT FALSE`);
+        await db.execute(sql`ALTER TABLE tasks ALTER COLUMN intern_id DROP NOT NULL`);
+        console.log("Schema verified/updated in database.");
+    } catch (err) {
+        console.warn("Schema update warning (might already be applied):", err);
+    }
+
+    // 1. Create a Test Intern
+    const internEmail = `test_intern_${Date.now()}@example.com`;
+    const testIntern = await storage.createUser({
+        name: "Test Intern",
+        email: internEmail,
+        passwordHash: "hashed_password",
+        role: "intern",
+    });
+    console.log(`Created Intern: ${testIntern.id} at ${testIntern.createdAt}`);
+
+    // 2. Create Tasks
+    // Task A: Created BEFORE intern signup (Should NOT be assigned)
+    const taskABefore = await db.insert(tasks).values({
+        title: "Task Created Before Signup",
+        description: "This task should not be assigned.",
+        createdAt: new Date(testIntern.createdAt!.getTime() - 10000)
+    }).returning();
+    console.log(`Created Task A (Before): ${taskABefore[0].id}`);
+
+    // Task B: Created AFTER intern signup (Should BE assigned)
+    const taskBAfter = await db.insert(tasks).values({
+        title: "Task Created After Signup",
+        description: "This task should be assigned.",
+        createdAt: new Date(testIntern.createdAt!.getTime() + 10000)
+    }).returning();
+    console.log(`Created Task B (After): ${taskBAfter[0].id}`);
+
+    // Task C: Already assigned to someone else (Should NOT be assigned)
+    // Need another intern for this test
+    const testIntern2 = await storage.createUser({
+        name: "Other Intern",
+        email: `other_${Date.now()}@example.com`,
+        passwordHash: "pass",
+        role: "intern"
+    });
+    const taskCAlreadyAssigned = await db.insert(tasks).values({
+        title: "Task Already Assigned",
+        internId: testIntern2.id,
+        createdAt: new Date(testIntern.createdAt!.getTime() + 10000)
+    }).returning();
+    console.log(`Created Task C (Assigned): ${taskCAlreadyAssigned[0].id}`);
+
+    // 3. Trigger Allocation
+    console.log("Triggering allocation...");
+    const assigned = await storage.allocateTasksForIntern(testIntern.id);
+    console.log(`Assigned ${assigned.length} tasks.`);
+
+    // 4. Verify Results
+    const assignedIds = assigned.map(t => t.id);
+    const success =
+        !assignedIds.includes(taskABefore[0].id) &&
+        assignedIds.includes(taskBAfter[0].id) &&
+        !assignedIds.includes(taskCAlreadyAssigned[0].id);
+
+    if (success && assigned.length === 1) {
+        console.log("✅ TEST PASSED: Only eligible tasks were assigned.");
+    } else {
+        console.log("❌ TEST FAILED: Allocation logic incorrect.");
+        console.log("Assigned IDs:", assignedIds);
+    }
+
+    // Cleanup
+    await db.delete(tasks).where(eq(tasks.id, taskABefore[0].id));
+    await db.delete(tasks).where(eq(tasks.id, taskBAfter[0].id));
+    await db.delete(tasks).where(eq(tasks.id, taskCAlreadyAssigned[0].id));
+    await storage.deleteUser(testIntern.id);
+    await storage.deleteUser(testIntern2.id);
+    console.log("Cleanup complete.");
+    process.exit(success ? 0 : 1);
+}
+
+testAllocation().catch(err => {
+    console.error("Test Error:", err);
+    process.exit(1);
+});

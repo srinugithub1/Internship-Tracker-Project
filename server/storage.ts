@@ -63,7 +63,9 @@ export interface IStorage {
     updateTask(id: string, data: Partial<NewTask>): Promise<Task>;
     updateTaskStatus(taskId: string, status: string): Promise<Task>;
     updateTaskProgress(id: string, data: { status?: string; todayProgress?: string; submissionLink?: string; remarks?: string }): Promise<Task>;
+    allocateTasksForIntern(internId: string): Promise<Task[]>;
     deleteTask(id: string): Promise<void>;
+
 
     // Syllabus
     getSyllabus(): Promise<Syllabus[]>;
@@ -347,7 +349,60 @@ export class DatabaseStorage implements IStorage {
         return task;
     }
 
+    async allocateTasksForIntern(internId: string): Promise<Task[]> {
+        const user = await this.getUser(internId);
+        if (!user || user.role !== "intern") {
+            throw new Error("Invalid intern ID");
+        }
+
+        const signupDate = user.createdAt || new Date(0);
+
+        // Logic:
+        // 1. Filter tasks where intern_id IS NULL OR reassignable IS TRUE
+        // 2. Filter tasks where task_created_date > intern_signup_date
+        // 3. Update those tasks to assign to this intern
+        console.log(`[ALLOCATION] Intern Signup: ${signupDate.toISOString()}`);
+
+        const allUnassigned = await db.select().from(tasks)
+            .where(
+                or(
+                    isNull(tasks.internId),
+                    eq(tasks.reassignable, true)
+                )
+            );
+
+        const eligibleTasks = allUnassigned.filter(task => {
+            if (!task.createdAt) return false;
+            // Ignore if already assigned to THIS intern
+            if (task.internId === internId) return false;
+            return task.createdAt > signupDate;
+        });
+
+        console.log(`[ALLOCATION] Found ${allUnassigned.length} unassigned/reassignable tasks Total.`);
+        console.log(`[ALLOCATION] Found ${eligibleTasks.length} eligible tasks after date filtering.`);
+
+        if (eligibleTasks.length > 0) {
+            eligibleTasks.forEach(t => console.log(` - Task ${t.id} created at ${t.createdAt?.toISOString()}`));
+        }
+
+        if (eligibleTasks.length === 0) {
+            return [];
+        }
+
+        const assignedTasks: Task[] = [];
+        for (const task of eligibleTasks) {
+            const [updated] = await db.update(tasks)
+                .set({ internId })
+                .where(eq(tasks.id, task.id))
+                .returning();
+            assignedTasks.push(updated);
+        }
+
+        return assignedTasks;
+    }
+
     async deleteTask(id: string): Promise<void> {
+
         await db.delete(tasks).where(eq(tasks.id, id));
     }
 

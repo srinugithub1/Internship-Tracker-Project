@@ -35,7 +35,7 @@ export const attendance = pgTable("attendance", {
 // Tasks Table
 export const tasks = pgTable("tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
-  internId: uuid("intern_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  internId: uuid("intern_id").references(() => users.id, { onDelete: "cascade" }), // Nullable for unassigned tasks
   title: text("title").notNull(),
   description: text("description"),
   status: text("status").notNull().default("assigned"), // 'assigned', 'in_progress', 'completed'
@@ -44,8 +44,10 @@ export const tasks = pgTable("tasks", {
   todayProgress: text("today_progress"),   // Intern's daily progress notes
   submissionLink: text("submission_link"), // Link to intern's submission
   remarks: text("remarks"),               // Additional intern remarks
+  reassignable: boolean("reassignable").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
 
 // Daily Logs Table
 export const dailyLogs = pgTable("daily_logs", {

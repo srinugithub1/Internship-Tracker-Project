@@ -41,14 +41,16 @@ CREATE TABLE attendance (
 -- Tasks Table
 CREATE TABLE tasks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    intern_id UUID NOT NULL REFERENCES users(id),
+    intern_id UUID REFERENCES users(id), -- Nullable for unassigned tasks
     title TEXT NOT NULL,
     description TEXT,
     status TEXT NOT NULL DEFAULT 'assigned', -- 'assigned', 'in_progress', 'completed'
     due_date DATE,
     priority TEXT DEFAULT 'medium', -- 'high', 'medium', 'low'
+    reassignable BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
 
 -- Daily Logs Table
 CREATE TABLE daily_logs (

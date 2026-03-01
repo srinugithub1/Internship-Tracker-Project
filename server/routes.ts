@@ -309,16 +309,36 @@ export function registerRoutes(app: Express): Server {
             return res.status(400).json({ message: "Invalid payload: task template and internIds array required" });
         }
 
-        // Use a dummy internId for validation since the template might not have one
-        const tempTask = { ...task, internId: internIds[0] || "00000000-0000-0000-0000-000000000000" };
+        // Use a dummy internId for validation if not present, but the schema now allows NULL
+        const tempTask = { ...task, internId: task.internId || internIds[0] || null };
         const parsed = insertTaskSchema.safeParse(tempTask);
         if (!parsed.success) return res.status(400).json(parsed.error);
 
-        // Remove the dummy internId from the template but keep other fields
+        // If internIds is empty, we just create one unassigned task if that was the intent, 
+        // but bulk usually implies multiple interns.
+        if (internIds.length === 0) {
+            const task = await storage.createTask(parsed.data);
+            return res.json([task]);
+        }
+
         const { internId, ...template } = parsed.data;
         const createdTasks = await storage.createBulkTasks(template as any, internIds);
         res.json(createdTasks);
     }));
+
+    app.post("/api/tasks/allocate/:internId", wrap(async (req, res) => {
+        const { internId } = req.params;
+        try {
+            const assignedTasks = await storage.allocateTasksForIntern(internId);
+            if (assignedTasks.length === 0) {
+                return res.json({ message: "No new tasks available for assignment.", tasks: [] });
+            }
+            res.json({ message: `Successfully assigned ${assignedTasks.length} tasks.`, tasks: assignedTasks });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }));
+
 
     app.put("/api/tasks/:id", wrap(async (req, res) => {
         const task = await storage.updateTask(req.params.id, req.body);
