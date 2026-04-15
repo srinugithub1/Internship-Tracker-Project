@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { type User } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -23,6 +23,9 @@ export default function AdminInterns() {
     const [open, setOpen] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
     const [form, setForm] = useState<FormState>(blank);
+
+    const [page, setPage] = useState(1);
+    const perPage = 10;
 
     const { data: interns = [], isLoading } = useQuery<User[]>({ queryKey: ["/api/interns"] });
 
@@ -55,6 +58,18 @@ export default function AdminInterns() {
         ((u as any).rollNumber ?? "").toLowerCase().includes(filterRoll.toLowerCase()) &&
         ((u as any).collegeName ?? "").toLowerCase().includes(filterCollege.toLowerCase())
     );
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+    const safePage = Math.min(page, totalPages);
+    const paginated = filtered.slice((safePage - 1) * perPage, safePage * perPage);
+
+    // Auto-reset page when filter changes
+    const prevFilter = JSON.stringify({ filterName, filterEmail, filterRoll, filterCollege });
+    const [lastFilter, setLastFilter] = useState(prevFilter);
+    if (prevFilter !== lastFilter) {
+        setPage(1);
+        setLastFilter(prevFilter);
+    }
 
     return (
         <div className="flex bg-secondary/30 min-h-screen">
@@ -91,7 +106,7 @@ export default function AdminInterns() {
                                 </thead>
                                 <tbody>
                                     {isLoading && <tr><td colSpan={7} className="p-20 text-center text-muted-foreground font-bold animate-pulse">Loading interns...</td></tr>}
-                                    {filtered.map(intern => (
+                                    {paginated.map(intern => (
                                         <tr key={intern.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
                                             <td className="p-5">
                                                 <div className="flex items-center gap-3">
@@ -125,6 +140,25 @@ export default function AdminInterns() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
+                                <span className="text-xs text-muted-foreground font-bold tabular-nums">
+                                    Showing {(safePage - 1) * perPage + 1} to {Math.min(safePage * perPage, filtered.length)} of {filtered.length} entries
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={safePage === 1} className="h-8 gap-1">
+                                        <ChevronLeft className="h-4 w-4" /> Prev
+                                    </Button>
+                                    <span className="text-xs font-black tabular-nums border border-white/10 px-3 py-1.5 rounded-lg bg-black/20">
+                                        {safePage} / {totalPages}
+                                    </span>
+                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={safePage === totalPages} className="h-8 gap-1">
+                                        Next <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>
