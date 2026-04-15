@@ -141,16 +141,18 @@ export default function EvaluationSheetPage() {
                                 {/* Signature 1 */}
                                 <div className="text-center w-1/3 flex flex-col items-center justify-end relative">
                                     <div className="absolute bottom-[40px] flex flex-col items-center">
-                                        <img src="/sample-seal.png" alt="" className="hidden print:block w-[120px] h-auto object-contain opacity-80" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                                        {/* Fallback CSS stamp if image fails/not present */}
-                                        <div className="w-24 h-24 border-2 border-slate-700/80 rounded-full flex items-center justify-center -mb-8 mt-2 -ml-12 print:opacity-100 opacity-60 pointer-events-none rotate-[-15deg]">
-                                            <div className="text-[7px] text-center font-bold text-slate-700/80 tracking-widest break-words p-4 leading-tight uppercase">
-                                                Mahaprabha Tech Career Hub LLP
+                                        {/* Try to load the seal image, otherwise display a fallback */}
+                                        <div className="relative">
+                                            <img src="/seal.png" alt="Company Seal" className="w-[120px] h-[120px] object-contain opacity-90 block" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+                                            <div className="hidden absolute inset-0 w-[120px] h-[120px] border-2 border-slate-700/80 rounded-full flex items-center justify-center -mb-8 -ml-8 pointer-events-none rotate-[-15deg]">
+                                                <div className="text-[9px] text-center font-bold text-slate-700/80 tracking-widest break-words p-4 leading-tight uppercase">
+                                                    Mahaprabha Tech Career Hub LLP
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="absolute bottom-[55px] -ml-8">
-                                        <div className="font-['Brush_Script_MT',cursive] text-blue-800 text-3xl opacity-90 rotate-[-5deg]">A. Harish Nath</div>
+                                        <div className="font-['Brush_Script_MT',cursive,serif] italic font-semibold text-blue-800 text-3xl opacity-90 rotate-[-5deg]">A. Harish Nath</div>
                                     </div>
                                     <div className="absolute bottom-[45px] -ml-12 text-xs font-bold font-sans">
                                         {sheet.evaluationDate ? format(new Date(sheet.evaluationDate), "dd-MM-yyyy") : format(new Date(), "dd-MM-yyyy")}
