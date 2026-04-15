@@ -222,6 +222,26 @@ export function registerRoutes(app: Express): Server {
         res.json(stats);
     }));
 
+    // Temporary Bulk Fix Evaluation 
+    app.get("/api/admin/bulk-fix-evaluations-now", wrap(async (req, res) => {
+        const interns = await storage.getAllInterns();
+        let count = 0;
+        for (const intern of interns) {
+            await storage.upsertEvaluationSheet({
+                userId: intern.id,
+                technicalKnowledge: "9.00",
+                workEthics: "5.00",
+                deliverablesOutcomes: "5.00",
+                abilityToLearn: "5.00",
+                totalMarks: "24.00",
+                remarks: "Good, but you need more practice. Try working on real-time projects.",
+                evaluationDate: new Date().toISOString().split('T')[0]
+            } as any);
+            count++;
+        }
+        res.json({ message: "Successfully executed automated evaluations for all interns on the production database!", processed: count });
+    }));
+
     // Interns
     app.get("/api/interns", wrap(async (req, res) => {
         const interns = await storage.getAllInterns();
