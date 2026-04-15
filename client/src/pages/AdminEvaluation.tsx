@@ -6,6 +6,7 @@ import { Search, Plus, RotateCcw, FileText, Download } from "lucide-react";
 import { useState } from "react";
 import { type User, type EvaluationSheet } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +29,7 @@ const blankMarks: MarksForm = {
 
 export default function AdminEvaluation() {
     const queryClient = useQueryClient();
+    const { toast } = useToast();
     const [search, setSearch] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedIntern, setSelectedIntern] = useState<User | null>(null);
@@ -42,7 +44,7 @@ export default function AdminEvaluation() {
     });
 
     const saveMutation = useMutation({
-        mutationFn: (data: { userId: string } & MarksForm) => {
+        mutationFn: async (data: { userId: string } & MarksForm) => {
             const totalMarks = (
                 (parseFloat(data.technicalKnowledge) || 0) +
                 (parseFloat(data.workEthics) || 0) +
@@ -50,21 +52,26 @@ export default function AdminEvaluation() {
                 (parseFloat(data.abilityToLearn) || 0)
             ).toFixed(2);
 
-            return apiRequest("POST", "/api/evaluation-sheets", {
+            const res = await apiRequest("POST", "/api/evaluation-sheets", {
                 userId: data.userId,
-                technicalKnowledge: data.technicalKnowledge,
-                workEthics: data.workEthics,
-                deliverablesOutcomes: data.deliverablesOutcomes,
-                abilityToLearn: data.abilityToLearn,
-                remarks: data.remarks,
+                technicalKnowledge: data.technicalKnowledge || "0",
+                workEthics: data.workEthics || "0",
+                deliverablesOutcomes: data.deliverablesOutcomes || "0",
+                abilityToLearn: data.abilityToLearn || "0",
+                remarks: data.remarks || "",
                 totalMarks
             });
+            return res;
         },
         onSuccess: () => {
+            toast({ title: "Success", description: "Evaluation saved successfully" });
             queryClient.invalidateQueries({ queryKey: ["/api/evaluation-sheets"] });
             setIsDialogOpen(false);
             setSelectedIntern(null);
             setFormData(blankMarks);
+        },
+        onError: (err: any) => {
+            toast({ title: "Error", description: err.message || "Failed to save evaluation", variant: "destructive" });
         }
     });
 
