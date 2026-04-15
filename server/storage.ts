@@ -97,6 +97,7 @@ export interface IStorage {
     // Evaluation Sheets
     getEvaluationSheetByUserId(userId: string): Promise<EvaluationSheet | undefined>;
     upsertEvaluationSheet(sheet: NewEvaluationSheet): Promise<EvaluationSheet>;
+    bulkUpsertEvaluationSheets(sheets: NewEvaluationSheet[]): Promise<EvaluationSheet[]>;
     getAllEvaluationSheets(): Promise<EvaluationSheet[]>;
 }
 
@@ -688,6 +689,15 @@ export class DatabaseStorage implements IStorage {
                 .returning();
             return inserted;
         }
+    }
+
+    async bulkUpsertEvaluationSheets(sheets: NewEvaluationSheet[]): Promise<EvaluationSheet[]> {
+        const results: EvaluationSheet[] = [];
+        for (const sheet of sheets) {
+            const result = await this.upsertEvaluationSheet(sheet);
+            results.push(result);
+        }
+        return results;
     }
 
     async getAllEvaluationSheets(): Promise<EvaluationSheet[]> {

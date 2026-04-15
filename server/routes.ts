@@ -603,6 +603,16 @@ export function registerRoutes(app: Express): Server {
         res.json(sheet);
     }));
 
+    app.post("/api/evaluation-sheets/bulk", wrap(async (req, res) => {
+        const { evaluations } = req.body;
+        if (!Array.isArray(evaluations)) {
+            return res.status(400).json({ message: "Invalid payload: evaluations must be an array" });
+        }
+
+        const results = await storage.bulkUpsertEvaluationSheets(evaluations);
+        res.json(results);
+    }));
+
 
 
     const httpServer = createServer(app);
