@@ -2,7 +2,7 @@ import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Plus, RotateCcw, FileText, Download, Users, Check } from "lucide-react";
+import { Search, Plus, RotateCcw, FileText, Download, Users, Check, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { useState, useMemo } from "react";
 import { type User, type EvaluationSheet } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -43,13 +43,20 @@ export default function AdminEvaluation() {
     const [bulkSearch, setBulkSearch] = useState("");
     const [selectedInternIds, setSelectedInternIds] = useState<Set<string>>(new Set());
 
+    // Pagination State
+    const [page, setPage] = useState(1);
+    const perPage = 10;
 
-    const { data: interns = [], isLoading: loadingInterns } = useQuery<User[]>({
+
+
+    const { data: interns = [], isLoading: loadingInterns, refetch: refetchInterns } = useQuery<User[]>({
         queryKey: ["/api/interns"],
+        refetchInterval: 30000,
     });
 
-    const { data: allSheets = [], isLoading: loadingSheets } = useQuery<EvaluationSheet[]>({
+    const { data: allSheets = [], isLoading: loadingSheets, refetch: refetchSheets } = useQuery<EvaluationSheet[]>({
         queryKey: ["/api/evaluation-sheets"],
+        refetchInterval: 30000,
     });
 
     const saveMutation = useMutation({
@@ -149,6 +156,18 @@ export default function AdminEvaluation() {
         intern.email.toLowerCase().includes(search.toLowerCase())
     );
 
+    const totalPages = Math.max(1, Math.ceil(filteredInterns.length / perPage));
+    const safePage = Math.min(page, totalPages);
+    const paginatedInterns = filteredInterns.slice((safePage - 1) * perPage, safePage * perPage);
+
+    // Auto-reset page when search changes
+    const [lastSearch, setLastSearch] = useState(search);
+    if (search !== lastSearch) {
+        setPage(1);
+        setLastSearch(search);
+    }
+
+
     return (
         <div className="flex bg-secondary/30 min-h-screen">
             <Sidebar />
@@ -159,13 +178,25 @@ export default function AdminEvaluation() {
                             <h1 className="text-3xl font-black tracking-tight">Evaluations & Marks</h1>
                             <p className="text-muted-foreground mt-1 text-sm font-medium">Evaluate intern performance and generate marks memos</p>
                         </div>
-                        <Button 
-                            onClick={() => setIsBulkDialogOpen(true)}
-                            className="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 gap-2 font-bold"
-                        >
-                            <Users className="h-5 w-5" />
-                            Bulk Evaluation
-                        </Button>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl shadow-sm">
+                                <div className="flex flex-col items-center border-r border-white/10 pr-4">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Total</span>
+                                    <span className="text-lg font-black text-primary leading-none">{interns.length}</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Evaluated</span>
+                                    <span className="text-lg font-black text-green-500 leading-none">{allSheets.length}</span>
+                                </div>
+                            </div>
+                            <Button 
+                                onClick={() => setIsBulkDialogOpen(true)}
+                                className="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 gap-2 font-bold"
+                            >
+                                <Users className="h-5 w-5" />
+                                Bulk Evaluation
+                            </Button>
+                        </div>
                     </header>
 
                     <div className="flex gap-4 items-center p-5 glass rounded-2xl border-white/10 shadow-xl">
@@ -202,12 +233,12 @@ export default function AdminEvaluation() {
                                     <tr>
                                         <td colSpan={8} className="p-8 text-center text-muted-foreground">Loading data...</td>
                                     </tr>
-                                ) : filteredInterns.length === 0 ? (
+                                ) : paginatedInterns.length === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="p-8 text-center text-muted-foreground">No interns found.</td>
                                     </tr>
                                 ) : (
-                                    filteredInterns.map(intern => {
+                                    paginatedInterns.map(intern => {
                                         const sheet = allSheets.find(s => s.userId === intern.id);
                                         return (
                                             <tr key={intern.id} className="hover:bg-muted/30 transition-colors">
@@ -240,6 +271,26 @@ export default function AdminEvaluation() {
                                 )}
                             </tbody>
                         </table>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
+                                <span className="text-xs text-muted-foreground font-bold tabular-nums">
+                                    Showing {(safePage - 1) * perPage + 1} to {Math.min(safePage * perPage, filteredInterns.length)} of {filteredInterns.length} entries
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={safePage === 1} className="h-8 gap-1 rounded-lg">
+                                        <ChevronLeft className="h-4 w-4" /> Prev
+                                    </Button>
+                                    <span className="text-xs font-black tabular-nums border border-white/10 px-3 py-1.5 rounded-lg bg-black/20">
+                                        {safePage} / {totalPages}
+                                    </span>
+                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={safePage === totalPages} className="h-8 gap-1 rounded-lg">
+                                        Next <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>
@@ -335,15 +386,27 @@ export default function AdminEvaluation() {
                         {/* Left Section: Selection */}
                         <div className="flex-1 flex flex-col bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
                             <div className="p-4 border-b border-white/10 space-y-4">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input 
-                                        placeholder="Search new interns..." 
-                                        className="pl-9 h-10 bg-black/20 border-white/10 rounded-xl"
-                                        value={bulkSearch}
-                                        onChange={(e) => setBulkSearch(e.target.value)}
-                                    />
+                                <div className="flex gap-2">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input 
+                                            placeholder="Search new interns..." 
+                                            className="pl-9 h-10 bg-black/20 border-white/10 rounded-xl"
+                                            value={bulkSearch}
+                                            onChange={(e) => setBulkSearch(e.target.value)}
+                                        />
+                                    </div>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl shrink-0"
+                                        onClick={() => { refetchInterns(); refetchSheets(); }}
+                                        title="Refresh Students"
+                                    >
+                                        <RefreshCw className={`h-4 w-4 ${(loadingInterns || loadingSheets) ? "animate-spin" : ""}`} />
+                                    </Button>
                                 </div>
+
                                 <div className="flex items-center justify-between px-2">
                                     <div className="flex items-center gap-2">
                                         <Checkbox 
