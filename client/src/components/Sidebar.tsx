@@ -16,6 +16,7 @@ import {
     UserCog,
     Save,
     X,
+    FileText,
     Zap
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ const internNavItems = [
     { name: "Tasks", href: "/tasks", icon: CheckSquare },
     { name: "Diary", href: "/logs", icon: BookOpen },
     { name: "Mentorship", href: "/mentorship", icon: Megaphone },
+    { name: "Marks Memo", href: "/evaluation-sheet", icon: FileText },
     { name: "Resources", href: "/resources", icon: Library },
 ];
 
@@ -195,6 +197,7 @@ const adminNavItems = [
     { name: "Announcements", href: "/admin/announcements", icon: Megaphone },
     { name: "Resources", href: "/admin/resources", icon: Library },
     { name: "Tasks", href: "/admin/tasks", icon: CheckSquare },
+    { name: "Evaluations", href: "/admin/evaluation", icon: FileText },
     { name: "Paid Internship", href: "/admin/paid-internship", icon: CreditCard },
     { name: "Super Admin", href: "/admin/super-admin", icon: Users },
 ];

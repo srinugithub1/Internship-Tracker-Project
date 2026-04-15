@@ -24,6 +24,8 @@ import AdminSessions from "@/pages/AdminSessions";
 import AdminAnnouncements from "@/pages/AdminAnnouncements";
 import AdminResources from "@/pages/AdminResources";
 import AdminPaidInternship from "@/pages/AdminPaidInternship";
+import AdminEvaluation from "@/pages/AdminEvaluation";
+import EvaluationSheet from "@/pages/EvaluationSheet";
 import SuperAdmin from "@/pages/SuperAdmin";
 import NotFound from "@/pages/not-found";
 
@@ -45,6 +47,7 @@ function Router() {
             <Route path="/mentorship" component={InternMentorship} />
             <Route path="/syllabus" component={InternSyllabus} />
             <Route path="/sessions" component={InternSessions} />
+            <Route path="/evaluation-sheet" component={EvaluationSheet} />
 
             {/* Admin Routes */}
             <Route path="/admin/interns" component={AdminInterns} />
@@ -57,6 +60,7 @@ function Router() {
             <Route path="/admin/announcements" component={AdminAnnouncements} />
             <Route path="/admin/resources" component={AdminResources} />
             <Route path="/admin/paid-internship" component={AdminPaidInternship} />
+            <Route path="/admin/evaluation" component={AdminEvaluation} />
             <Route path="/admin/super-admin" component={SuperAdmin} />
 
             <Route component={NotFound} />

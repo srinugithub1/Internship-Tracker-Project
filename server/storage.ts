@@ -1,4 +1,4 @@
-import { users, type User, type NewUser, attendance, type Attendance, type NewAttendance, tasks, type Task, type NewTask, dailyLogs, type DailyLog, type NewDailyLog, leaveRequests, type LeaveRequest, type NewLeaveRequest, announcements, type Announcement, type NewAnnouncement, resources, type Resource, type NewResource, sessionLinks, type SessionLink, type NewSessionLink, syllabus, type Syllabus, type NewSyllabus, mentorship, type Mentorship, type NewMentorship, paidInternships, type PaidInternship, type NewPaidInternship } from "@shared/schema";
+import { users, type User, type NewUser, attendance, type Attendance, type NewAttendance, tasks, type Task, type NewTask, dailyLogs, type DailyLog, type NewDailyLog, leaveRequests, type LeaveRequest, type NewLeaveRequest, announcements, type Announcement, type NewAnnouncement, resources, type Resource, type NewResource, sessionLinks, type SessionLink, type NewSessionLink, syllabus, type Syllabus, type NewSyllabus, mentorship, type Mentorship, type NewMentorship, paidInternships, type PaidInternship, type NewPaidInternship, evaluationSheets, type EvaluationSheet, type NewEvaluationSheet } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, isNull, isNotNull, sql } from "drizzle-orm";
 
@@ -93,6 +93,11 @@ export interface IStorage {
 
     getGroupedAttendance(): Promise<any[]>;
     getAttendanceDetails(userId: string, date: string): Promise<Attendance[]>;
+
+    // Evaluation Sheets
+    getEvaluationSheetByUserId(userId: string): Promise<EvaluationSheet | undefined>;
+    upsertEvaluationSheet(sheet: NewEvaluationSheet): Promise<EvaluationSheet>;
+    getAllEvaluationSheets(): Promise<EvaluationSheet[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -653,6 +658,40 @@ export class DatabaseStorage implements IStorage {
             console.log(`[DB-QUERY] CRITICAL DATABASE ERROR checking email "${normalizedEmail}":`, error);
             return false;
         }
+    }
+
+    // Evaluation Sheets
+    async getEvaluationSheetByUserId(userId: string): Promise<EvaluationSheet | undefined> {
+        const [sheet] = await db.select().from(evaluationSheets).where(eq(evaluationSheets.userId, userId));
+        return sheet;
+    }
+
+    async upsertEvaluationSheet(sheet: NewEvaluationSheet): Promise<EvaluationSheet> {
+        // Check if exists
+        const [existing] = await db.select().from(evaluationSheets).where(eq(evaluationSheets.userId, sheet.userId));
+        
+        if (existing) {
+            const [updated] = await db.update(evaluationSheets)
+                .set({
+                    ...sheet,
+                    evaluationDate: sheet.evaluationDate || new Date().toISOString().split('T')[0]
+                })
+                .where(eq(evaluationSheets.userId, sheet.userId))
+                .returning();
+            return updated;
+        } else {
+            const [inserted] = await db.insert(evaluationSheets)
+                .values({
+                    ...sheet,
+                    evaluationDate: sheet.evaluationDate || new Date().toISOString().split('T')[0]
+                })
+                .returning();
+            return inserted;
+        }
+    }
+
+    async getAllEvaluationSheets(): Promise<EvaluationSheet[]> {
+        return await db.select().from(evaluationSheets);
     }
 }
 

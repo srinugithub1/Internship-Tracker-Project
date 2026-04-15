@@ -140,6 +140,20 @@ export const paidInternships = pgTable("paid_internships", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Evaluation Sheets Table
+export const evaluationSheets = pgTable("evaluation_sheets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  technicalKnowledge: decimal("technical_knowledge", { precision: 4, scale: 2 }).notNull().default("0"),
+  workEthics: decimal("work_ethics", { precision: 4, scale: 2 }).notNull().default("0"),
+  deliverablesOutcomes: decimal("deliverables_outcomes", { precision: 4, scale: 2 }).notNull().default("0"),
+  abilityToLearn: decimal("ability_to_learn", { precision: 4, scale: 2 }).notNull().default("0"),
+  totalMarks: decimal("total_marks", { precision: 5, scale: 2 }).notNull().default("0"),
+  remarks: text("remarks"),
+  evaluationDate: date("evaluation_date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Zod Schemas for validation
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
@@ -163,6 +177,8 @@ export const insertMentorshipSchema = createInsertSchema(mentorship);
 export const selectMentorshipSchema = createSelectSchema(mentorship);
 export const insertPaidInternshipSchema = createInsertSchema(paidInternships);
 export const selectPaidInternshipSchema = createSelectSchema(paidInternships);
+export const insertEvaluationSheetSchema = createInsertSchema(evaluationSheets);
+export const selectEvaluationSheetSchema = createSelectSchema(evaluationSheets);
 
 export type User = z.infer<typeof selectUserSchema>;
 export type NewUser = z.infer<typeof insertUserSchema>;
@@ -186,3 +202,5 @@ export type Mentorship = z.infer<typeof selectMentorshipSchema>;
 export type NewMentorship = z.infer<typeof insertMentorshipSchema>;
 export type PaidInternship = z.infer<typeof selectPaidInternshipSchema>;
 export type NewPaidInternship = z.infer<typeof insertPaidInternshipSchema>;
+export type EvaluationSheet = z.infer<typeof selectEvaluationSheetSchema>;
+export type NewEvaluationSheet = z.infer<typeof insertEvaluationSheetSchema>;

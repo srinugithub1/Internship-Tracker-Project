@@ -1,7 +1,7 @@
 import express, { type Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertAttendanceSchema, insertTaskSchema, insertDailyLogSchema, insertLeaveRequestSchema, insertAnnouncementSchema, insertResourceSchema, insertSessionLinkSchema, insertSyllabusSchema, insertMentorshipSchema, insertPaidInternshipSchema } from "@shared/schema";
+import { insertUserSchema, insertAttendanceSchema, insertTaskSchema, insertDailyLogSchema, insertLeaveRequestSchema, insertAnnouncementSchema, insertResourceSchema, insertSessionLinkSchema, insertSyllabusSchema, insertMentorshipSchema, insertPaidInternshipSchema, insertEvaluationSheetSchema } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
 
@@ -562,6 +562,25 @@ export function registerRoutes(app: Express): Server {
     app.delete("/api/mentorship/:id", wrap(async (req, res) => {
         await storage.deleteMentorship(req.params.id);
         res.sendStatus(204);
+    }));
+    
+    // Evaluation Sheets
+    app.get("/api/evaluation-sheets", wrap(async (req, res) => {
+        const sheets = await storage.getAllEvaluationSheets();
+        res.json(sheets);
+    }));
+
+    app.get("/api/evaluation-sheets/:userId", wrap(async (req, res) => {
+        const sheet = await storage.getEvaluationSheetByUserId(req.params.userId);
+        if (!sheet) return res.status(404).json({ message: "Evaluation sheet not found" });
+        res.json(sheet);
+    }));
+
+    app.post("/api/evaluation-sheets", wrap(async (req, res) => {
+        const parsed = insertEvaluationSheetSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json(parsed.error);
+        const sheet = await storage.upsertEvaluationSheet(parsed.data);
+        res.json(sheet);
     }));
 
 
