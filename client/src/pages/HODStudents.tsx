@@ -202,11 +202,11 @@ export default function HODStudents() {
                             <div className="flex items-start justify-between relative z-10">
                                 <div className="flex gap-6">
                                     <div className="h-20 w-20 rounded-3xl bg-primary flex items-center justify-center text-primary-foreground text-3xl font-black shadow-2xl shadow-primary/40 border-4 border-white/10">
-                                        {selectedIntern?.name.charAt(0)}
+                                        {selectedIntern?.name?.charAt(0)}
                                     </div>
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <h2 className="text-3xl font-black tracking-tight">{selectedIntern?.name}</h2>
+                                            <DialogTitle className="text-3xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
                                             <Badge className="bg-green-500/10 text-green-500 border-green-500/20 rounded-lg">
                                                 Active Intern
                                             </Badge>
@@ -236,7 +236,7 @@ export default function HODStudents() {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none mb-1">University</p>
-                                                <p className="font-bold text-sm">{selectedIntern?.universityName || "N/A"}</p>
+                                                <p className="font-bold text-sm">{selectedIntern?.university || "N/A"}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
@@ -245,7 +245,7 @@ export default function HODStudents() {
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none mb-1">College</p>
-                                                <p className="font-bold text-sm">{selectedIntern?.collegeName || "N/A"}</p>
+                                                <p className="font-bold text-sm">{selectedIntern?.college || selectedIntern?.collegeName || "N/A"}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
@@ -298,11 +298,11 @@ export default function HODStudents() {
                                 <div className="h-4 w-full bg-black/20 rounded-full overflow-hidden border border-white/10 p-1 mb-4">
                                     <div 
                                         className={`h-full transition-all duration-1000 rounded-full shadow-lg ${
-                                            ((selectedIntern as any).progress || 0) > 70 ? 'bg-gradient-to-r from-green-600 to-green-400 shadow-green-500/20' :
-                                            ((selectedIntern as any).progress || 0) > 30 ? 'bg-gradient-to-r from-primary to-blue-400 shadow-primary/20' :
+                                            ((selectedIntern as any)?.progress || 0) > 70 ? 'bg-gradient-to-r from-green-600 to-green-400 shadow-green-500/20' :
+                                            ((selectedIntern as any)?.progress || 0) > 30 ? 'bg-gradient-to-r from-primary to-blue-400 shadow-primary/20' :
                                             'bg-muted shadow-none'
                                         }`}
-                                        style={{ width: `${(selectedIntern as any).progress || 0}%` }}
+                                        style={{ width: `${(selectedIntern as any)?.progress || 0}%` }}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
