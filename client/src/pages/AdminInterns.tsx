@@ -10,16 +10,17 @@ import { type User } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
-type FormState = { name: string; email: string; phone: string; rollNumber: string; collegeName: string; address: string; hodName: string; hodEmail: string };
-const blank: FormState = { name: "", email: "", phone: "", rollNumber: "", collegeName: "", address: "", hodName: "", hodEmail: "" };
+type FormState = { name: string; email: string; phone: string; university: string; college: string; department: string; hodName: string; hodEmail: string };
+const blank: FormState = { name: "", email: "", phone: "", university: "", college: "", department: "", hodName: "", hodEmail: "" };
 
 export default function AdminInterns() {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [filterName, setFilterName] = useState("");
     const [filterEmail, setFilterEmail] = useState("");
-    const [filterRoll, setFilterRoll] = useState("");
+    const [filterUniversity, setFilterUniversity] = useState("");
     const [filterCollege, setFilterCollege] = useState("");
+    const [filterDept, setFilterDept] = useState("");
     const [open, setOpen] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
     const [form, setForm] = useState<FormState>(blank);
@@ -52,9 +53,9 @@ export default function AdminInterns() {
             name: u.name,
             email: u.email,
             phone: u.phone ?? "",
-            rollNumber: (u as any).rollNumber ?? "",
-            collegeName: (u as any).collegeName ?? "",
-            address: (u as any).address ?? "",
+            university: (u as any).university ?? "",
+            college: (u as any).college ?? "",
+            department: (u as any).department ?? "",
             hodName: (u as any).hodName ?? "",
             hodEmail: (u as any).hodEmail ?? ""
         });
@@ -64,8 +65,9 @@ export default function AdminInterns() {
     const filtered = interns.filter(u =>
         u.name.toLowerCase().includes(filterName.toLowerCase()) &&
         u.email.toLowerCase().includes(filterEmail.toLowerCase()) &&
-        ((u as any).rollNumber ?? "").toLowerCase().includes(filterRoll.toLowerCase()) &&
-        ((u as any).collegeName ?? "").toLowerCase().includes(filterCollege.toLowerCase())
+        ((u as any).university ?? "").toLowerCase().includes(filterUniversity.toLowerCase()) &&
+        ((u as any).college ?? "").toLowerCase().includes(filterCollege.toLowerCase()) &&
+        ((u as any).department ?? "").toLowerCase().includes(filterDept.toLowerCase())
     );
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
@@ -73,7 +75,7 @@ export default function AdminInterns() {
     const paginated = filtered.slice((safePage - 1) * perPage, safePage * perPage);
 
     // Auto-reset page when filter changes
-    const prevFilter = JSON.stringify({ filterName, filterEmail, filterRoll, filterCollege });
+    const prevFilter = JSON.stringify({ filterName, filterEmail, filterUniversity, filterCollege, filterDept });
     const [lastFilter, setLastFilter] = useState(prevFilter);
     if (prevFilter !== lastFilter) {
         setPage(1);
@@ -96,11 +98,12 @@ export default function AdminInterns() {
                         </div>
                     </header>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 glass rounded-2xl border-white/10 shadow-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 glass rounded-2xl border-white/10 shadow-xl">
                         <Input placeholder="Filter by Name" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterName} onChange={e => setFilterName(e.target.value)} />
                         <Input placeholder="Filter by Email" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterEmail} onChange={e => setFilterEmail(e.target.value)} />
-                        <Input placeholder="Roll Number" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterRoll} onChange={e => setFilterRoll(e.target.value)} />
-                        <Input placeholder="College Name" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterCollege} onChange={e => setFilterCollege(e.target.value)} />
+                        <Input placeholder="University" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterUniversity} onChange={e => setFilterUniversity(e.target.value)} />
+                        <Input placeholder="College" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterCollege} onChange={e => setFilterCollege(e.target.value)} />
+                        <Input placeholder="Department" className="pl-4 h-11 bg-white/5 border-white/10 rounded-xl" value={filterDept} onChange={e => setFilterDept(e.target.value)} />
                     </div>
 
                     <div className="glass rounded-2xl border-white/10 shadow-2xl overflow-hidden">
@@ -108,7 +111,7 @@ export default function AdminInterns() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-white/10 bg-white/5">
-                                        {["Name", "Email", "Phone", "Roll Number", "College Name", "HOD Name", "Actions"].map(h => (
+                                        {["Name", "Email", "Phone", "University", "College", "Department", "HOD Name", "Actions"].map(h => (
                                             <th key={h} className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">{h}</th>
                                         ))}
                                     </tr>
@@ -127,8 +130,9 @@ export default function AdminInterns() {
                                             </td>
                                             <td className="p-5 text-sm text-blue-500 font-medium">{intern.email}</td>
                                             <td className="p-5 text-sm font-medium">{(intern as any).phone || "N/A"}</td>
-                                            <td className="p-5 text-sm font-bold text-primary/80">{(intern as any).rollNumber || "N/A"}</td>
-                                            <td className="p-5 text-sm font-medium">{(intern as any).collegeName || "N/A"}</td>
+                                            <td className="p-5 text-sm font-bold text-primary/80">{(intern as any).university || "N/A"}</td>
+                                            <td className="p-5 text-sm font-medium">{(intern as any).college || "N/A"}</td>
+                                            <td className="p-5 text-sm font-medium">{(intern as any).department || "N/A"}</td>
                                             <td className="p-5 text-sm font-black text-indigo-500">{(intern as any).hodName || "N/A"}</td>
                                             <td className="p-5">
                                                 <div className="flex items-center gap-2">
@@ -182,11 +186,11 @@ export default function AdminInterns() {
                             { label: "Full Name", key: "name", placeholder: "e.g. Harish Nath" },
                             { label: "Email", key: "email", placeholder: "e.g. harish@example.com" },
                             { label: "Phone", key: "phone", placeholder: "e.g. +91 9876543210" },
-                            { label: "Roll Number", key: "rollNumber", placeholder: "e.g. 23CS001" },
-                            { label: "College Name", key: "collegeName", placeholder: "e.g. IIT Madras" },
+                            { label: "University", key: "university", placeholder: "e.g. IIT Madras" },
+                            { label: "College", key: "college", placeholder: "e.g. Engineering College" },
+                            { label: "Department", key: "department", placeholder: "e.g. Computer Science" },
                             { label: "HOD Name", key: "hodName", placeholder: "e.g. Dr. Ramesh Babu" },
                             { label: "HOD Email", key: "hodEmail", placeholder: "e.g. hod.cs@college.edu" },
-                            { label: "Address", key: "address", placeholder: "e.g. Chennai, Tamil Nadu" },
                         ].map(({ label, key, placeholder }) => (
                             <div key={key} className="space-y-1.5">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</Label>

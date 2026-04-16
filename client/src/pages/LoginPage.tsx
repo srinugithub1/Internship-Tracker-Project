@@ -27,9 +27,9 @@ const signupSchema = z.object({
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
-    collegeName: z.string().min(2, "University name is required"),
-    rollNumber: z.string().min(1, "Student ID / Roll Number is required"),
-    address: z.string().min(5, "Address must be at least 5 characters"),
+    department: z.string().min(2, "Department is required"),
+    college: z.string().min(2, "College name is required"),
+    university: z.string().min(2, "University name is required"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
 }).refine((d) => d.password === d.confirmPassword, {
@@ -329,9 +329,9 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
             lastName: "",
             email: "",
             phone: "",
-            collegeName: "",
-            rollNumber: "",
-            address: "",
+            department: "",
+            college: "",
+            university: "",
             password: "",
             confirmPassword: ""
         },
@@ -344,9 +344,9 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 name: `${data.firstName} ${data.lastName}`,
                 email: data.email,
                 phone: data.phone,
-                collegeName: data.collegeName,
-                rollNumber: data.rollNumber,
-                address: data.address,
+                department: data.department,
+                college: data.college,
+                university: data.university,
                 password: data.password,
                 role: signupRole,
             });
@@ -463,78 +463,82 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
             {/* University */}
             <div className="space-y-1.5">
                 <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <div className="h-3 w-3 border-2 border-primary rounded-full" /> University
+                    <div className="h-3 w-3 border-2 border-primary rounded-full" /> University Name
                 </Label>
                 <Input
-                    {...form.register("collegeName")}
-                    placeholder="Your University"
+                    {...form.register("university")}
+                    placeholder="Enter University"
                     className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
                 />
-                {form.formState.errors.collegeName && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.collegeName.message}</p>
+                {form.formState.errors.university && (
+                    <p className="text-xs font-bold text-destructive">{form.formState.errors.university.message}</p>
                 )}
             </div>
 
-            {/* Student ID */}
-            <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <div className="h-3 w-3 bg-primary/20 flex items-center justify-center text-[8px]">#</div> Student ID / Roll Number
-                </Label>
-                <Input
-                    {...form.register("rollNumber")}
-                    placeholder="Student ID / Roll Number"
-                    className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
-                />
-                {form.formState.errors.rollNumber && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.rollNumber.message}</p>
-                )}
+            <div className="grid grid-cols-2 gap-4">
+                {/* College */}
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <div className="h-3 w-3 bg-primary/20 rounded-sm flex items-center justify-center text-[8px]">C</div> College Name
+                    </Label>
+                    <Input
+                        {...form.register("college")}
+                        placeholder="Enter College"
+                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                    />
+                    {form.formState.errors.college && (
+                        <p className="text-xs font-bold text-destructive">{form.formState.errors.college.message}</p>
+                    )}
+                </div>
+
+                {/* Department */}
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <div className="h-3 w-3 bg-primary/20 rounded-full flex items-center justify-center text-[8px]">D</div> Department
+                    </Label>
+                    <Input
+                        {...form.register("department")}
+                        placeholder="e.g. Computer Science"
+                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                    />
+                    {form.formState.errors.department && (
+                        <p className="text-xs font-bold text-destructive">{form.formState.errors.department.message}</p>
+                    )}
+                </div>
             </div>
 
-            {/* Address */}
-            <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <div className="h-3 w-3 bg-primary/20 rounded-full" /> Your Address
-                </Label>
-                <Input
-                    {...form.register("address")}
-                    placeholder="Your Address"
-                    className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
-                />
-                {form.formState.errors.address && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.address.message}</p>
-                )}
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+                {/* Password */}
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <Lock className="h-3 w-3 text-primary" /> Password
+                    </Label>
+                    <Input
+                        {...form.register("password")}
+                        type="password"
+                        placeholder="Create password"
+                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                    />
+                    {form.formState.errors.password && (
+                        <p className="text-xs font-bold text-destructive">{form.formState.errors.password.message}</p>
+                    )}
+                </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <Lock className="h-3 w-3 text-primary" /> Password
-                </Label>
-                <Input
-                    {...form.register("password")}
-                    type="password"
-                    placeholder="Create a strong password"
-                    className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
-                />
-                {form.formState.errors.password && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.password.message}</p>
-                )}
-            </div>
-
-            {/* Confirm Password */}
-            <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                    <Lock className="h-3 w-3 text-primary" /> Confirm Password
-                </Label>
-                <Input
-                    {...form.register("confirmPassword")}
-                    type="password"
-                    placeholder="Repeat password"
-                    className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
-                />
-                {form.formState.errors.confirmPassword && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.confirmPassword.message}</p>
-                )}
+                {/* Confirm Password */}
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <Lock className="h-3 w-3 text-primary" /> Confirm
+                    </Label>
+                    <Input
+                        {...form.register("confirmPassword")}
+                        type="password"
+                        placeholder="Repeat password"
+                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                    />
+                    {form.formState.errors.confirmPassword && (
+                        <p className="text-xs font-bold text-destructive">{form.formState.errors.confirmPassword.message}</p>
+                    )}
+                </div>
             </div>
 
             <Button

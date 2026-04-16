@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("intern"), // 'admin', 'sadmin', 'intern', 'hod'
   phone: text("phone"),
   collegeName: text("college_name"),
+  university: text("university"),
+  college: text("college"),
+  department: text("department"),
   rollNumber: text("roll_number"),
   address: text("address"),
   startDate: date("start_date"),

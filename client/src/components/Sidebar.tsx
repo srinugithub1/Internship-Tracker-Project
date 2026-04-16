@@ -51,8 +51,9 @@ function EditProfileModal({
     const [formData, setFormData] = useState({
         name: user.name || "",
         phone: user.phone || "",
-        collegeName: user.collegeName || "",
-        address: user.address || "",
+        university: user.university || "",
+        college: user.college || "",
+        department: user.department || "",
         hodName: user.hodName || "",
         hodEmail: user.hodEmail || "",
     });
@@ -129,15 +130,6 @@ function EditProfileModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Roll Number (Read-only)</Label>
-                            <Input
-                                value={user.rollNumber || "Not Assigned"}
-                                disabled
-                                className="bg-muted/50 border-white/5 rounded-xl h-11 font-medium opacity-70 cursor-not-allowed"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</Label>
                             <Input
                                 value={formData.phone}
@@ -147,23 +139,33 @@ function EditProfileModal({
                             />
                         </div>
 
-                        <div className="md:col-span-2 space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">College Name</Label>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Department</Label>
                             <Input
-                                value={formData.collegeName}
-                                onChange={(e) => setFormData({ ...formData, collegeName: e.target.value })}
+                                value={formData.department}
+                                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                                 className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="College Name"
+                                placeholder="e.g. Computer Science"
                             />
                         </div>
 
                         <div className="md:col-span-2 space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">University Name</Label>
                             <Input
-                                value={formData.address}
-                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                value={formData.university}
+                                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
                                 className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="Address"
+                                placeholder="University Name"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2 space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">College Name</Label>
+                            <Input
+                                value={formData.college}
+                                onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                placeholder="College Name"
                             />
                         </div>
 
