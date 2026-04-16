@@ -70,9 +70,12 @@ export function registerRoutes(app: Express): Server {
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
 
-        const isRegistered = await storage.checkPaidInternshipEmail(email);
-        if (!isRegistered) {
-            return res.status(403).json({ message: "enter registered email address" });
+        const isHOD = req.body.role === "hod";
+        if (!isHOD) {
+            const isRegistered = await storage.checkPaidInternshipEmail(email);
+            if (!isRegistered) {
+                return res.status(403).json({ message: "enter registered email address" });
+            }
         }
 
         // Validate other fields but allow passwordHash to be missing since we'll hash it now
@@ -212,6 +215,52 @@ export function registerRoutes(app: Express): Server {
         } catch (error: any) {
             res.status(500).json({ message: "Failed to delete admin", error: error.message });
         }
+    }));
+
+    // HOD Specific Endpoints
+    app.get("/api/hod/students", wrap(async (req, res) => {
+        const { hodEmail } = req.query;
+        if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });
+        
+        const interns = await storage.getAllInterns();
+        const filtered = interns.filter(i => (i as any).hodEmail === hodEmail);
+        res.json(filtered);
+    }));
+
+    app.get("/api/hod/stats", wrap(async (req, res) => {
+        const { hodEmail } = req.query;
+        if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });
+
+        const interns = await storage.getAllInterns();
+        const myInterns = interns.filter(i => (i as any).hodEmail === hodEmail);
+        const internIds = myInterns.map(i => i.id);
+
+        const allTasks = await storage.getAllTasks();
+        const myTasks = allTasks.filter(t => t.internId && internIds.includes(t.internId));
+        
+        const completedTasks = myTasks.filter(t => t.status === "completed").length;
+        const totalTasks = myTasks.length;
+
+        res.json({
+            totalStudents: myInterns.length,
+            totalTasks,
+            completedTasks,
+            completionRate: totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(1) : "0"
+        });
+    }));
+
+    app.get("/api/hod/attendance", wrap(async (req, res) => {
+        const { hodEmail } = req.query;
+        if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });
+
+        const interns = await storage.getAllInterns();
+        const myInterns = interns.filter(i => (i as any).hodEmail === hodEmail);
+        const internIds = myInterns.map(i => i.id);
+
+        const allAttendance = await storage.getAllAttendance();
+        const myAttendance = allAttendance.filter(a => internIds.includes(a.userId));
+        
+        res.json(myAttendance);
     }));
 
 

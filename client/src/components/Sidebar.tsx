@@ -224,12 +224,20 @@ const adminNavItems = [
     { name: "Super Admin", href: "/admin/super-admin", icon: Users },
 ];
 
+const hodNavItems = [
+    { name: "Dashboard", href: "/hod/dashboard", icon: LayoutDashboard },
+    { name: "My Students", href: "/hod/students", icon: Users },
+    { name: "Attendance Logs", href: "/hod/attendance", icon: HistoryIcon },
+];
+
 export default function Sidebar() {
     const [location, setLocation] = useLocation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const [user, setUser] = useState(storedUser);
     const isAdmin = user.role === 'admin' || user.role === 'sadmin';
+    const isHOD = user.role === 'hod';
+
     const navItems = isAdmin 
         ? adminNavItems.filter(item => {
             if (user.role === 'admin') {
@@ -237,7 +245,9 @@ export default function Sidebar() {
             }
             return true;
         })
-        : internNavItems;
+        : isHOD 
+            ? hodNavItems 
+            : internNavItems;
 
     const handleLogout = () => {
         localStorage.removeItem("user");

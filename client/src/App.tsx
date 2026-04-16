@@ -27,6 +27,9 @@ import AdminPaidInternship from "@/pages/AdminPaidInternship";
 import AdminEvaluation from "@/pages/AdminEvaluation";
 import EvaluationSheet from "@/pages/EvaluationSheet";
 import SuperAdmin from "@/pages/SuperAdmin";
+import HODDashboard from "@/pages/HODDashboard";
+import HODStudents from "@/pages/HODStudents";
+import HODAttendance from "@/pages/HODAttendance";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -62,6 +65,11 @@ function Router() {
             <Route path="/admin/paid-internship" component={AdminPaidInternship} />
             <Route path="/admin/evaluation" component={AdminEvaluation} />
             <Route path="/admin/super-admin" component={SuperAdmin} />
+            
+            {/* HOD Routes */}
+            <Route path="/hod/dashboard" component={HODDashboard} />
+            <Route path="/hod/students" component={HODStudents} />
+            <Route path="/hod/attendance" component={HODAttendance} />
 
             <Route component={NotFound} />
         </Switch>

@@ -44,6 +44,8 @@ type SignupData = z.infer<typeof signupSchema>;
 function redirectForRole(role: string, setLocation: (path: string) => void) {
     if (role === "admin" || role === "sadmin") {
         setLocation("/admin/interns");
+    } else if (role === "hod") {
+        setLocation("/hod/dashboard");
     } else {
         setLocation("/dashboard");
     }
@@ -318,6 +320,8 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
 function SignupForm({ onSwitch }: { onSwitch: () => void }) {
     const [, setLocation] = useLocation();
     const { toast } = useToast();
+    const [signupRole, setSignupRole] = useState<"intern" | "hod">("intern");
+
     const form = useForm<SignupData>({
         resolver: zodResolver(signupSchema),
         defaultValues: {
@@ -344,7 +348,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 rollNumber: data.rollNumber,
                 address: data.address,
                 password: data.password,
-                role: "intern",
+                role: signupRole,
             });
             // Auto-login after signup
             const user = await apiRequest("POST", "/api/login", {
@@ -356,7 +360,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 title: "Account Created! 🎉",
                 description: `Welcome, ${user.name}! You've been logged in.`,
             });
-            setLocation("/dashboard");
+            redirectForRole(user.role, setLocation);
         } catch (e: any) {
             toast({
                 title: "Sign Up Failed",
@@ -368,6 +372,29 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Role Switcher */}
+            <div className="flex rounded-xl bg-secondary/30 p-1 gap-1 mb-2 border border-white/5">
+                <button
+                    type="button"
+                    onClick={() => setSignupRole("intern")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "intern"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                        }`}
+                >
+                    <User className="h-3 w-3" /> Intern
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setSignupRole("hod")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "hod"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                        }`}
+                >
+                    <ShieldCheck className="h-3 w-3" /> HOD / College
+                </button>
+            </div>
             <div className="grid grid-cols-2 gap-4">
                 {/* First Name */}
                 <div className="space-y-1.5">
@@ -624,8 +651,8 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                     </CardContent>
                 </Card>
 
-                <p className="text-center text-xs text-muted-foreground mt-4 font-medium">
-                    Admin accounts are created by system administrators only.
+                <p className="text-center text-[10px] font-bold text-muted-foreground mt-4 uppercase tracking-widest opacity-60">
+                    Administrator and Super Admin accounts are created by authorized system personnel only.
                 </p>
             </motion.div>
 
