@@ -17,8 +17,10 @@ import {
     Save,
     X,
     FileText,
-    Zap
+    Zap,
+    ShieldCheck
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -89,139 +91,136 @@ function EditProfileModal({
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-            <div className="relative w-full max-w-xl mx-4 bg-background rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-700">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center">
-                            <UserCog className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-white/70 text-[10px] font-black uppercase tracking-widest leading-none mb-1">Account Settings</p>
-                            <h2 className="text-white font-black text-xl leading-none">Edit Profile</h2>
+        <Dialog open={true} onOpenChange={(v) => { if (!v) onClose(); }}>
+            <DialogContent className="max-w-xl p-0 overflow-hidden border-none bg-transparent shadow-none">
+                <div className="relative w-full bg-background rounded-2xl border border-white/10 shadow-2xl overflow-hidden glass">
+                    <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-700">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center">
+                                <UserCog className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                                <p className="text-white/70 text-[10px] font-black uppercase tracking-widest leading-none mb-1">Account Settings</p>
+                                <h2 className="text-white font-black text-xl leading-none">Edit Profile</h2>
+                            </div>
                         </div>
                     </div>
-                    <button onClick={onClose}
-                        className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                        <X className="h-4 w-4 text-white" />
-                    </button>
-                </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6 text-left">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
-                            <Input
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="Your Name"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Email (Read-only)</Label>
-                            <Input
-                                value={user.email}
-                                disabled
-                                className="bg-muted/50 border-white/5 rounded-xl h-11 font-medium opacity-70 cursor-not-allowed"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</Label>
-                            <Input
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="Phone Number"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                {user.role === 'intern' ? 'Department / Branch' : 'Department'}
-                            </Label>
-                            <Input
-                                value={formData.department}
-                                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder={user.role === 'intern' ? 'e.g. CSE / IT' : 'Department'}
-                            />
-                        </div>
-
-                        {user.role === 'intern' && (
+                    <form onSubmit={handleSubmit} className="p-6 space-y-6 text-left max-h-[80vh] overflow-y-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Student Id / Roll Number</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
                                 <Input
-                                    value={formData.rollNumber}
-                                    onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                    placeholder="Roll Number"
+                                    placeholder="Your Name"
+                                    required
                                 />
                             </div>
-                        )}
 
-                        <div className="md:col-span-2 space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">University Name</Label>
-                            <Input
-                                value={formData.university}
-                                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="University Name"
-                            />
-                        </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Email (Read-only)</Label>
+                                <Input
+                                    value={user.email}
+                                    disabled
+                                    className="bg-muted/50 border-white/5 rounded-xl h-11 font-medium opacity-70 cursor-not-allowed"
+                                />
+                            </div>
 
-                        <div className="md:col-span-2 space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">College Name</Label>
-                            <Input
-                                value={formData.college}
-                                onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="College Name"
-                            />
-                        </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</Label>
+                                <Input
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="Phone Number"
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Name</Label>
-                            <Input
-                                value={formData.hodName}
-                                onChange={(e) => setFormData({ ...formData, hodName: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="HOD Name"
-                            />
-                        </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                                    {user.role === 'intern' ? 'Department / Branch' : 'Department'}
+                                </Label>
+                                <Input
+                                    value={formData.department}
+                                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder={user.role === 'intern' ? 'e.g. CSE / IT' : 'Department'}
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Email</Label>
-                            <Input
-                                value={formData.hodEmail}
-                                onChange={(e) => setFormData({ ...formData, hodEmail: e.target.value })}
-                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="HOD Email"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
-                        <Button type="button" variant="outline" onClick={onClose} className="rounded-xl font-black text-sm px-6 h-11">
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={updateProfileMutation.isPending}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-sm px-8 h-11 gap-2 shadow-lg shadow-indigo-500/20"
-                        >
-                            {updateProfileMutation.isPending ? "Saving..." : (
-                                <><Save className="h-4 w-4" /> Save Changes</>
+                            {user.role === 'intern' && (
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Student Id / Roll Number</Label>
+                                    <Input
+                                        value={formData.rollNumber}
+                                        onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                                        className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                        placeholder="Roll Number"
+                                    />
+                                </div>
                             )}
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </div>
+
+                            <div className="md:col-span-2 space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">University Name</Label>
+                                <Input
+                                    value={formData.university}
+                                    onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="University Name"
+                                />
+                            </div>
+
+                            <div className="md:col-span-2 space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">College Name</Label>
+                                <Input
+                                    value={formData.college}
+                                    onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="College Name"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Name</Label>
+                                <Input
+                                    value={formData.hodName}
+                                    onChange={(e) => setFormData({ ...formData, hodName: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="HOD Name"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Email</Label>
+                                <Input
+                                    value={formData.hodEmail}
+                                    onChange={(e) => setFormData({ ...formData, hodEmail: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="HOD Email"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl font-black text-sm px-6 h-11">
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={updateProfileMutation.isPending}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-sm px-8 h-11 gap-2 shadow-lg shadow-indigo-500/20"
+                            >
+                                {updateProfileMutation.isPending ? "Saving..." : (
+                                    <><Save className="h-4 w-4" /> Save Changes</>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
 
