@@ -243,6 +243,29 @@ export function registerRoutes(app: Express): Server {
         res.json(studentsWithStats);
     }));
 
+    app.get("/api/hod/evaluations", wrap(async (req, res) => {
+        const { hodEmail } = req.query;
+        if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });
+
+        const interns = await storage.getAllInterns();
+        const myInterns = interns.filter(i => (i as any).hodEmail === hodEmail);
+        const internIds = myInterns.map(i => i.id);
+
+        const allSheets = await storage.getAllEvaluationSheets();
+        const mySheets = allSheets.filter(s => internIds.includes(s.userId));
+
+        // Combine intern data with sheets
+        const result = myInterns.map(intern => {
+            const sheet = mySheets.find(s => s.userId === intern.id);
+            return {
+                intern,
+                sheet
+            };
+        });
+
+        res.json(result);
+    }));
+
     app.get("/api/hod/stats", wrap(async (req, res) => {
         const { hodEmail } = req.query;
         if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });

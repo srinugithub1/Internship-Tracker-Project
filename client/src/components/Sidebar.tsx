@@ -247,6 +247,7 @@ const adminNavItems = [
 const hodNavItems = [
     { name: "Dashboard", href: "/hod/dashboard", icon: LayoutDashboard },
     { name: "My Students", href: "/hod/students", icon: Users },
+    { name: "Student Marks", href: "/hod/evaluations", icon: GraduationCap },
     { name: "Attendance Logs", href: "/hod/attendance", icon: HistoryIcon },
 ];
 

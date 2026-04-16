@@ -30,6 +30,7 @@ import SuperAdmin from "@/pages/SuperAdmin";
 import HODDashboard from "@/pages/HODDashboard";
 import HODStudents from "@/pages/HODStudents";
 import HODAttendance from "@/pages/HODAttendance";
+import HODEvaluations from "@/pages/HODEvaluations";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -70,6 +71,7 @@ function Router() {
             <Route path="/hod/dashboard" component={HODDashboard} />
             <Route path="/hod/students" component={HODStudents} />
             <Route path="/hod/attendance" component={HODAttendance} />
+            <Route path="/hod/evaluations" component={HODEvaluations} />
 
             <Route component={NotFound} />
         </Switch>
