@@ -182,25 +182,29 @@ function EditProfileModal({
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Name</Label>
-                                <Input
-                                    value={formData.hodName}
-                                    onChange={(e) => setFormData({ ...formData, hodName: e.target.value })}
-                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                    placeholder="HOD Name"
-                                />
-                            </div>
+                            {user.role === 'intern' && (
+                                <>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Name</Label>
+                                        <Input
+                                            value={formData.hodName}
+                                            onChange={(e) => setFormData({ ...formData, hodName: e.target.value })}
+                                            className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                            placeholder="HOD Name"
+                                        />
+                                    </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Email</Label>
-                                <Input
-                                    value={formData.hodEmail}
-                                    onChange={(e) => setFormData({ ...formData, hodEmail: e.target.value })}
-                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                    placeholder="HOD Email"
-                                />
-                            </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Email</Label>
+                                        <Input
+                                            value={formData.hodEmail}
+                                            onChange={(e) => setFormData({ ...formData, hodEmail: e.target.value })}
+                                            className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                            placeholder="HOD Email"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
