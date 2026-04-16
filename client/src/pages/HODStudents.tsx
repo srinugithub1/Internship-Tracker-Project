@@ -94,9 +94,23 @@ export default function HODStudents() {
                                         <Mail className="h-4 w-4 text-primary" />
                                         <span className="truncate">{intern.email}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground font-bold">
-                                        <Phone className="h-4 w-4 text-primary" />
-                                        <span>{intern.phone || "No Phone"}</span>
+                                    
+                                    {/* Work Progress Section */}
+                                    <div className="pt-4 space-y-2 mt-2 border-t border-white/5">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Work Progress</span>
+                                            <span className="text-[10px] font-black text-primary">{(intern as any).completedTasks || 0} / {(intern as any).totalTasks || 0} Tasks</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
+                                            <div 
+                                                className={`h-full transition-all duration-1000 ${
+                                                    ((intern as any).progress || 0) > 70 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]' :
+                                                    ((intern as any).progress || 0) > 30 ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]' :
+                                                    'bg-muted shadow-none'
+                                                }`}
+                                                style={{ width: `${(intern as any).progress || 0}%` }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 

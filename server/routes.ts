@@ -223,8 +223,24 @@ export function registerRoutes(app: Express): Server {
         if (!hodEmail) return res.status(400).json({ message: "HOD Email is required" });
         
         const interns = await storage.getAllInterns();
-        const filtered = interns.filter(i => (i as any).hodEmail === hodEmail);
-        res.json(filtered);
+        const myInterns = interns.filter(i => (i as any).hodEmail === hodEmail);
+
+        const allTasks = await storage.getAllTasks();
+        
+        const studentsWithStats = myInterns.map(intern => {
+            const internTasks = allTasks.filter(t => t.internId === intern.id);
+            const completed = internTasks.filter(t => t.status === "completed").length;
+            const total = internTasks.length;
+            
+            return {
+                ...intern,
+                totalTasks: total,
+                completedTasks: completed,
+                progress: total > 0 ? Math.round((completed / total) * 100) : 0
+            };
+        });
+
+        res.json(studentsWithStats);
     }));
 
     app.get("/api/hod/stats", wrap(async (req, res) => {
