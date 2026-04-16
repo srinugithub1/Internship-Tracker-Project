@@ -220,6 +220,7 @@ export default function AdminEvaluation() {
                                 <tr className="border-b bg-muted/50">
                                     <th className="p-4 text-xs font-semibold text-muted-foreground uppercase">Intern details</th>
                                     <th className="p-4 text-xs font-semibold text-muted-foreground uppercase">Roll Number</th>
+                                    <th className="p-4 text-xs font-semibold text-muted-foreground uppercase">HOD Name</th>
                                     <th className="p-4 text-xs font-semibold text-muted-foreground uppercase text-center">Tech (10)</th>
                                     <th className="p-4 text-xs font-semibold text-muted-foreground uppercase text-center">Ethics (5)</th>
                                     <th className="p-4 text-xs font-semibold text-muted-foreground uppercase text-center">Deliverables (5)</th>
@@ -249,6 +250,7 @@ export default function AdminEvaluation() {
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-sm font-medium">{intern.rollNumber || "—"}</td>
+                                                <td className="p-4 text-sm font-black text-indigo-500">{(intern as any).hodName || "—"}</td>
                                                 <td className="p-4 text-center font-medium">{sheet ? sheet.technicalKnowledge : "—"}</td>
                                                 <td className="p-4 text-center font-medium">{sheet ? sheet.workEthics : "—"}</td>
                                                 <td className="p-4 text-center font-medium">{sheet ? sheet.deliverablesOutcomes : "—"}</td>

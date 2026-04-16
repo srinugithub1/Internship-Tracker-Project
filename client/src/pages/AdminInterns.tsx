@@ -10,8 +10,8 @@ import { type User } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
-type FormState = { name: string; email: string; phone: string; rollNumber: string; collegeName: string; address: string };
-const blank: FormState = { name: "", email: "", phone: "", rollNumber: "", collegeName: "", address: "" };
+type FormState = { name: string; email: string; phone: string; rollNumber: string; collegeName: string; address: string; hodName: string; hodEmail: string };
+const blank: FormState = { name: "", email: "", phone: "", rollNumber: "", collegeName: "", address: "", hodName: "", hodEmail: "" };
 
 export default function AdminInterns() {
     const { toast } = useToast();
@@ -48,7 +48,16 @@ export default function AdminInterns() {
 
     const close = () => { setOpen(false); setEditId(null); setForm(blank); };
     const openEdit = (u: User) => {
-        setForm({ name: u.name, email: u.email, phone: u.phone ?? "", rollNumber: (u as any).rollNumber ?? "", collegeName: (u as any).collegeName ?? "", address: (u as any).address ?? "" });
+        setForm({
+            name: u.name,
+            email: u.email,
+            phone: u.phone ?? "",
+            rollNumber: (u as any).rollNumber ?? "",
+            collegeName: (u as any).collegeName ?? "",
+            address: (u as any).address ?? "",
+            hodName: (u as any).hodName ?? "",
+            hodEmail: (u as any).hodEmail ?? ""
+        });
         setEditId(u.id); setOpen(true);
     };
 
@@ -99,7 +108,7 @@ export default function AdminInterns() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-white/10 bg-white/5">
-                                        {["Name", "Email", "Phone", "Roll Number", "College Name", "Address", "Actions"].map(h => (
+                                        {["Name", "Email", "Phone", "Roll Number", "College Name", "HOD Name", "Actions"].map(h => (
                                             <th key={h} className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">{h}</th>
                                         ))}
                                     </tr>
@@ -120,7 +129,7 @@ export default function AdminInterns() {
                                             <td className="p-5 text-sm font-medium">{(intern as any).phone || "N/A"}</td>
                                             <td className="p-5 text-sm font-bold text-primary/80">{(intern as any).rollNumber || "N/A"}</td>
                                             <td className="p-5 text-sm font-medium">{(intern as any).collegeName || "N/A"}</td>
-                                            <td className="p-5 text-sm font-medium">{(intern as any).address || "N/A"}</td>
+                                            <td className="p-5 text-sm font-black text-indigo-500">{(intern as any).hodName || "N/A"}</td>
                                             <td className="p-5">
                                                 <div className="flex items-center gap-2">
                                                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-white/10 transition-all" onClick={() => openEdit(intern)}>
@@ -175,6 +184,8 @@ export default function AdminInterns() {
                             { label: "Phone", key: "phone", placeholder: "e.g. +91 9876543210" },
                             { label: "Roll Number", key: "rollNumber", placeholder: "e.g. 23CS001" },
                             { label: "College Name", key: "collegeName", placeholder: "e.g. IIT Madras" },
+                            { label: "HOD Name", key: "hodName", placeholder: "e.g. Dr. Ramesh Babu" },
+                            { label: "HOD Email", key: "hodEmail", placeholder: "e.g. hod.cs@college.edu" },
                             { label: "Address", key: "address", placeholder: "e.g. Chennai, Tamil Nadu" },
                         ].map(({ label, key, placeholder }) => (
                             <div key={key} className="space-y-1.5">

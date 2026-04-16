@@ -107,6 +107,7 @@ export default function AdminAttendance() {
                                     <tr className="border-b border-white/10 bg-white/5">
                                         <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Intern</th>
                                         <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Date</th>
+                                        <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">HOD Name</th>
                                         <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Working Hours</th>
                                         <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Status</th>
                                         <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest text-center">Action</th>
@@ -127,6 +128,9 @@ export default function AdminAttendance() {
                                             </td>
                                             <td className="p-5 text-sm font-bold opacity-80">
                                                 {record.date ? format(new Date(record.date), "MMM dd, yyyy") : "N/A"}
+                                            </td>
+                                            <td className="p-5 text-sm font-black text-indigo-500">
+                                                {interns?.find(i => i.id === record.userId)?.hodName || "N/A"}
                                             </td>
                                             <td className="p-5 text-sm font-black text-primary">
                                                 {record.totalHours || "0.00"} hrs

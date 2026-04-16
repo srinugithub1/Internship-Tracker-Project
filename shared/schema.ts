@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").unique().notNull(),
   passwordHash: text("password_hash").notNull(),
-  role: text("role").notNull().default("intern"), // 'admin', 'sadmin', 'intern'
+  role: text("role").notNull().default("intern"), // 'admin', 'sadmin', 'intern', 'hod'
   phone: text("phone"),
   collegeName: text("college_name"),
   rollNumber: text("roll_number"),
@@ -16,6 +16,8 @@ export const users = pgTable("users", {
   startDate: date("start_date"),
   endDate: date("end_date"),
   teamLeadId: uuid("team_lead_id"),
+  hodName: text("hod_name"),
+  hodEmail: text("hod_email"),
   showInstructionsPopup: boolean("show_instructions_popup").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });

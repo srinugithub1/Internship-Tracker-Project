@@ -53,6 +53,8 @@ function EditProfileModal({
         phone: user.phone || "",
         collegeName: user.collegeName || "",
         address: user.address || "",
+        hodName: user.hodName || "",
+        hodEmail: user.hodEmail || "",
     });
 
     const updateProfileMutation = useMutation({
@@ -162,6 +164,26 @@ function EditProfileModal({
                                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                 className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
                                 placeholder="Address"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Name</Label>
+                            <Input
+                                value={formData.hodName}
+                                onChange={(e) => setFormData({ ...formData, hodName: e.target.value })}
+                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                placeholder="HOD Name"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">HOD Email</Label>
+                            <Input
+                                value={formData.hodEmail}
+                                onChange={(e) => setFormData({ ...formData, hodEmail: e.target.value })}
+                                className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                placeholder="HOD Email"
                             />
                         </div>
                     </div>
