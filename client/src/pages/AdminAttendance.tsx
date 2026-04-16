@@ -2,8 +2,8 @@ import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import { Search, ChevronRight, ChevronLeft, RotateCcw, Calendar, Eye } from "lucide-react";
-import { useState } from "react";
+import { Search, ChevronRight, ChevronLeft, RotateCcw, Calendar, Eye, Activity } from "lucide-react";
+import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { type Attendance, type User } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -21,6 +21,15 @@ export default function AdminAttendance() {
     const { data: interns } = useQuery<User[]>({
         queryKey: ["/api/interns"],
     });
+
+    const userDayCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        (attendanceRecords || []).forEach((rec: any) => {
+            counts[rec.userId] = (counts[rec.userId] || 0) + 1;
+        });
+        return counts;
+    }, [attendanceRecords]);
+
 
     const getInternName = (id: string) => {
         return interns?.find((i) => i.id === id)?.name || "Unknown";
@@ -123,12 +132,20 @@ export default function AdminAttendance() {
                                                 {record.totalHours || "0.00"} hrs
                                             </td>
                                             <td className="p-5">
-                                                <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${record.status === 'present' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                    record.status === 'absent' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                                        'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-                                                    }`}>
-                                                    {record.status || 'N/A'}
-                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${record.status === 'present' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                                        record.status === 'absent' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                            'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                                                        }`}>
+                                                        {record.status || 'N/A'}
+                                                    </span>
+                                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/5 rounded-full border border-primary/10 shadow-sm" title="Total Days Present">
+                                                        <Activity className="h-3 w-3 text-primary/70" />
+                                                        <span className="text-[10px] font-bold text-primary">
+                                                            {userDayCounts[record.userId] || 0} Days
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="p-5 text-center">
                                                 <Button
