@@ -208,7 +208,14 @@ export default function Sidebar() {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const [user, setUser] = useState(storedUser);
     const isAdmin = user.role === 'admin' || user.role === 'sadmin';
-    const navItems = isAdmin ? adminNavItems : internNavItems;
+    const navItems = isAdmin 
+        ? adminNavItems.filter(item => {
+            if (user.role === 'admin') {
+                return item.name !== "Paid Internship" && item.name !== "Super Admin";
+            }
+            return true;
+        })
+        : internNavItems;
 
     const handleLogout = () => {
         localStorage.removeItem("user");
