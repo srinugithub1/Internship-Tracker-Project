@@ -30,6 +30,7 @@ const signupSchema = z.object({
     department: z.string().min(2, "Department is required"),
     college: z.string().min(2, "College name is required"),
     university: z.string().min(2, "University name is required"),
+    rollNumber: z.string().optional(),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
 }).refine((d) => d.password === d.confirmPassword, {
@@ -332,6 +333,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
             department: "",
             college: "",
             university: "",
+            rollNumber: "",
             password: "",
             confirmPassword: ""
         },
@@ -347,6 +349,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 department: data.department,
                 college: data.college,
                 university: data.university,
+                rollNumber: signupRole === "intern" ? data.rollNumber : undefined,
                 password: data.password,
                 role: signupRole,
             });
@@ -475,6 +478,24 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 )}
             </div>
 
+            {/* Student ID / Roll Number (Intern Only) */}
+            {signupRole === "intern" && (
+                <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <div className="h-3 w-3 bg-primary/20 flex items-center justify-center text-[8px] font-black italic">#</div> Student Id / Roll Number
+                    </Label>
+                    <Input
+                        {...form.register("rollNumber")}
+                        placeholder="e.g. 21CS001"
+                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        required
+                    />
+                    {form.formState.errors.rollNumber && (
+                        <p className="text-xs font-bold text-destructive">{form.formState.errors.rollNumber.message}</p>
+                    )}
+                </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
                 {/* College */}
                 <div className="space-y-1.5">
@@ -491,14 +512,15 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                     )}
                 </div>
 
-                {/* Department */}
+                {/* Department / Branch */}
                 <div className="space-y-1.5">
                     <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                        <div className="h-3 w-3 bg-primary/20 rounded-full flex items-center justify-center text-[8px]">D</div> Department
+                        <div className="h-3 w-3 bg-primary/20 rounded-full flex items-center justify-center text-[8px]">D</div> 
+                        {signupRole === "intern" ? "Department / Branch" : "Department"}
                     </Label>
                     <Input
                         {...form.register("department")}
-                        placeholder="e.g. Computer Science"
+                        placeholder={signupRole === "intern" ? "e.g. CSE / IT" : "e.g. Computer Science"}
                         className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
                     />
                     {form.formState.errors.department && (

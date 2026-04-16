@@ -54,6 +54,7 @@ function EditProfileModal({
         university: user.university || "",
         college: user.college || "",
         department: user.department || "",
+        rollNumber: user.rollNumber || "",
         hodName: user.hodName || "",
         hodEmail: user.hodEmail || "",
     });
@@ -140,14 +141,28 @@ function EditProfileModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Department</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                                {user.role === 'intern' ? 'Department / Branch' : 'Department'}
+                            </Label>
                             <Input
                                 value={formData.department}
                                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                                 className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
-                                placeholder="e.g. Computer Science"
+                                placeholder={user.role === 'intern' ? 'e.g. CSE / IT' : 'Department'}
                             />
                         </div>
+
+                        {user.role === 'intern' && (
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Student Id / Roll Number</Label>
+                                <Input
+                                    value={formData.rollNumber}
+                                    onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                                    className="bg-muted/30 border-white/10 rounded-xl h-11 font-medium"
+                                    placeholder="Roll Number"
+                                />
+                            </div>
+                        )}
 
                         <div className="md:col-span-2 space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">University Name</Label>
