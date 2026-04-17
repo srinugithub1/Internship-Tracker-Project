@@ -132,9 +132,10 @@ export default function LandingPage() {
                 <section id="home" className="relative h-screen min-h-[750px] w-full flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 z-0">
                         <img
-                            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=70&w=1200&auto=format&fm=webp&fit=crop"
+                            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=60&w=1200&auto=format&fm=webp&fit=crop"
                             alt="Training Classroom"
                             className="w-full h-full object-cover"
+                            loading="eager" // Hero image should load fast
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-[#0A3DFF]/90 via-[#0A3DFF]/60 to-transparent"></div>
                     </div>
@@ -198,9 +199,10 @@ export default function LandingPage() {
                                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#0A3DFF]/5 rounded-full -z-10 blur-3xl"></div>
                                 <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-[#0A3DFF]/10 rounded-full -z-10 blur-3xl"></div>
                                 <img
-                                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop"
+                                    src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=60&w=1000&auto=format&fit=crop&fm=webp"
                                     className="rounded-[40px] shadow-2xl w-full object-cover h-[500px]"
                                     alt="Mentorship Session"
+                                    loading="lazy"
                                 />
                                 <div className="absolute -bottom-8 -right-8 bg-[#0A3DFF] text-white p-8 rounded-[30px] hidden md:block shadow-2xl">
                                     <p className="text-4xl font-black mb-1">10k+</p>
@@ -263,6 +265,7 @@ export default function LandingPage() {
                                             src={course.image}
                                             alt={course.title}
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            loading="lazy"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         <div className="absolute bottom-4 left-4">
@@ -292,9 +295,10 @@ export default function LandingPage() {
 
                             <div className="lg:w-1/2 relative z-10 group">
                                 <img
-                                    src="https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=1200&auto=format&fit=crop"
+                                    src="https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=60&w=1000&auto=format&fit=crop&fm=webp"
                                     alt="Coding Session"
                                     className="rounded-[40px] shadow-2xl w-full h-[450px] object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                                    loading="lazy"
                                 />
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                                     <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center text-[#0A3DFF] shadow-2xl cursor-pointer hover:scale-110 transition-transform">
@@ -335,9 +339,10 @@ export default function LandingPage() {
                 <section id="success" className="relative py-32 lg:py-48 overflow-hidden bg-slate-900">
                     <div className="absolute inset-0 z-0">
                         <img
-                            src="https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=2000&auto=format&fit=crop"
+                            src="https://images.unsplash.com/photo-1556761175-b413da4baf72?q=50&w=1200&auto=format&fit=crop&fm=webp"
                             alt="Placement Success"
                             className="w-full h-full object-cover opacity-50"
+                            loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900"></div>
                     </div>
