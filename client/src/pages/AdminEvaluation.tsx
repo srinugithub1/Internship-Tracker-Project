@@ -164,14 +164,33 @@ export default function AdminEvaluation() {
         document.body.innerHTML = `
             <style>
                 @page { size: portrait; margin: 0; }
-                body { background: white !important; color: black !important; }
+                body { background: white !important; color: black !important; font-family: sans-serif; }
                 .memo-container { padding: 40px; margin: 0; width: 100%; box-sizing: border-box; }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid black; padding: 12px; font-size: 12px; text-align: center; }
+                th, td { border: 1px solid black; padding: 12px; font-size: 11px; text-align: center; }
                 .text-left { text-align: left; }
                 .font-bold { font-weight: bold; }
                 .text-center { text-align: center; }
-                .remarks-box { border: 1px solid black; min-height: 80px; padding: 10px; margin-top: 10px; font-size: 12px; }
+                .grid { display: grid; }
+                .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+                .gap-4 { gap: 1rem; }
+                .relative { position: relative; }
+                .absolute { position: absolute; }
+                .inset-0 { top: 0; left: 0; right: 0; bottom: 0; }
+                .flex { display: flex; }
+                .flex-col { flex-direction: column; }
+                .items-center { align-items: center; }
+                .justify-center { justify-content: center; }
+                .mt-16 { margin-top: 4rem; }
+                .mt-8 { margin-top: 2rem; }
+                .mb-8 { margin-bottom: 2rem; }
+                .border-t { border-top: 1px solid black; }
+                .w-full { width: 100%; }
+                .pt-2 { padding-top: 0.5rem; }
+                .h-28 { height: 7rem; }
+                .text-2xl { font-size: 1.5rem; }
+                .text-indigo-900 { color: #1e3a8a; }
+                .italic { font-style: italic; }
             </style>
             <div class="memo-container">
                 ${printArea}
@@ -727,19 +746,25 @@ export default function AdminEvaluation() {
                                 </p>
 
                                 {/* Signature Section */}
-                                <div className="grid grid-cols-3 gap-4 items-end mt-16">
-                                    <div className="flex flex-col items-center">
-                                        <div className="h-24 flex items-center justify-center mb-2">
-                                            <img src="/seal.png" alt="Signature Seal" className="max-h-full w-auto" />
+                                <div className="grid grid-cols-3 gap-4 items-end mt-16 pb-8">
+                                    <div className="flex flex-col items-center relative">
+                                        <div className="h-28 flex items-center justify-center mb-2 relative">
+                                            <img src="/seal.png" alt="Signature Seal" className="max-h-full w-auto opacity-70" />
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center pt-6">
+                                                <p className="text-[#1e3a8a] font-black text-2xl rotate-[-5deg] tracking-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                                                    A. Harish Nath
+                                                </p>
+                                                <p className="text-[#1e3a8a] font-black text-[10px] mt-0.5">15-04-2026</p>
+                                            </div>
                                         </div>
                                         <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the External Guide with date</p>
                                     </div>
                                     <div className="flex flex-col items-center pb-[2px]">
-                                        <div className="h-24 mb-2" />
+                                        <div className="h-28 mb-2" />
                                         <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the Internal Guide with date</p>
                                     </div>
                                     <div className="flex flex-col items-center pb-[2px]">
-                                        <div className="h-24 mb-2" />
+                                        <div className="h-28 mb-2" />
                                         <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the HoD with date</p>
                                     </div>
                                 </div>
