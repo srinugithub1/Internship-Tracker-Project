@@ -15,14 +15,10 @@ export default function EvaluationMemo({ user, sheet }: EvaluationMemoProps) {
                 .memo-font { font-family: 'Times New Roman', Times, serif; }
                 .memo-table td, .memo-table th { border: 1px solid black !important; padding: 12px 8px; text-align: center; }
                 .memo-table th { font-weight: bold; }
+                .sig-separator { border-left: 1px solid black; height: 100px; margin-bottom: 20px; }
             `}</style>
             
             <div className="memo-font w-full space-y-6">
-                {/* Institutional Logos */}
-                <div className="flex justify-between items-center mb-10">
-                    <img src="/learners byte expertpedia.jpg" alt="Institutional Header" className="max-w-[700px] w-full h-auto mx-auto" />
-                </div>
-
                 <h2 className="text-center font-bold text-lg md:text-xl px-4 uppercase leading-tight mb-2">
                     VIII Semester: INDUSTRY INTERNSHIP, REVIEW 1 - EVALUATION SHEET (External Guide)
                 </h2>
@@ -74,37 +70,43 @@ export default function EvaluationMemo({ user, sheet }: EvaluationMemoProps) {
                     </table>
                 </div>
 
-                <p className="text-[12px] md:text-[13px] font-bold text-center mt-6 px-12 leading-relaxed">
+                <p className="text-[12px] md:text-[13px] font-bold text-center mt-12 px-12 leading-relaxed">
                     *** The Internal Guide is responsible for maintaining the email correspondence containing feedback from the External Guide, as well as recording the marks awarded by the External Guide based on the provided evaluation rubrics.
                 </p>
 
-                {/* Signatures */}
-                <div className="flex justify-between items-end mt-28 px-4 h-32 relative">
+                {/* Signatures Area with Vertical Separators */}
+                <div className="flex justify-between items-end mt-32 px-4 h-40 relative">
                     {/* Signature 1: External Guide */}
-                    <div className="text-center w-1/3 flex flex-col items-center justify-end relative">
-                        <div className="absolute bottom-[40px] flex flex-col items-center">
+                    <div className="text-center w-1/3 flex flex-col items-center justify-end relative h-full">
+                        <div className="absolute top-[-20px] flex flex-col items-center">
                             <div className="relative">
-                                <img src="/seal.png" alt="Company Seal" className="w-[140px] h-[140px] object-contain opacity-80" />
+                                <img src="/seal.png" alt="Company Seal" className="w-[120px] h-[120px] object-contain opacity-80" />
                             </div>
                         </div>
-                        <div className="absolute bottom-[60px] -ml-4 z-10 w-full text-center">
+                        <div className="absolute top-[-5px] z-10 w-full text-center">
                             <div className="font-['Brush_Script_MT',cursive,serif] italic font-black text-[#1e3a8a] text-4xl opacity-95 rotate-[-3deg] drop-shadow-sm tracking-tight">
                                 A. Harish Nath
                             </div>
                         </div>
-                        <div className="absolute bottom-[50px] -ml-16 text-[11px] font-black text-[#1e3a8a] font-sans">
+                        <div className="absolute top-[10px] -ml-16 text-[11px] font-black text-[#1e3a8a] font-sans">
                             {sheet.evaluationDate ? format(new Date(sheet.evaluationDate), "dd-MM-yyyy") : format(new Date(), "dd-MM-yyyy")}
                         </div>
                         <div className="font-bold text-[12px] mt-auto border-t border-black w-full pt-2">Signature of the External Guide with date</div>
                     </div>
 
+                    {/* Separator 1 */}
+                    <div className="h-32 border-l border-black mx-2 self-start mt-8" />
+
                     {/* Signature 2: Internal Guide */}
-                    <div className="text-center w-1/3 flex flex-col items-center justify-end">
+                    <div className="text-center w-1/3 flex flex-col items-center justify-end h-full">
                         <div className="font-bold text-[12px] border-t border-black w-full pt-2">Signature of the Internal Guide with date</div>
                     </div>
 
+                    {/* Separator 2 */}
+                    <div className="h-32 border-l border-black mx-2 self-start mt-8" />
+
                     {/* Signature 3: HoD */}
-                    <div className="text-center w-1/3 flex flex-col items-center justify-end">
+                    <div className="text-center w-1/3 flex flex-col items-center justify-end h-full">
                         <div className="font-bold text-[12px] border-t border-black w-full pt-2">Signature of the HoD with date</div>
                     </div>
                 </div>
