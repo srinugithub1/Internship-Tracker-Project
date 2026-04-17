@@ -10,6 +10,7 @@ import { format } from "date-fns";
 export default function Attendance() {
     const { toast } = useToast();
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const isAdmin = user.role?.toLowerCase() === "admin" || user.role?.toLowerCase() === "sadmin";
 
     const { data: attendance, isLoading } = useQuery<any[]>({
         queryKey: [`/api/attendance/${user.id}`],
@@ -79,40 +80,42 @@ export default function Attendance() {
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <Card className="flex flex-col items-center justify-center p-8 space-y-8 glass border-white/20 shadow-xl overflow-hidden relative">
-                            {activeSession && (
-                                <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-pulse" />
-                            )}
-                            <div className={`h-32 w-32 rounded-3xl flex items-center justify-center rotate-3 ${activeSession ? 'bg-emerald-500/20 text-emerald-500' : 'bg-primary/20 text-primary'} shadow-inner border border-white/10`}>
-                                <Clock className={`h-16 w-16 ${activeSession ? 'text-emerald-500' : 'text-primary'}`} />
-                            </div>
-                            <div className="text-center space-y-2">
-                                <h2 className="text-3xl font-black tracking-tight">{activeSession ? "Shift Active" : "Sign In"}</h2>
-                                {activeSession ? (
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Started At</p>
-                                        <p className="text-xl font-black text-emerald-500">
-                                            {format(parseTime(activeSession.loginTime), "hh:mm:ss a")}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <p className="text-sm font-medium text-muted-foreground">
-                                        Ready to start your day? Clock in to track your progress.
-                                    </p>
+                        {!isAdmin && (
+                            <Card className="flex flex-col items-center justify-center p-8 space-y-8 glass border-white/20 shadow-xl overflow-hidden relative">
+                                {activeSession && (
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-pulse" />
                                 )}
-                            </div>
-                            <Button
-                                size="lg"
-                                className={`w-full max-w-xs font-black h-14 rounded-2xl text-lg shadow-lg transition-all active:scale-95 ${activeSession ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-primary hover:bg-primary/90 shadow-primary/20'
-                                    }`}
-                                onClick={() => activeSession ? clockOutMutation.mutate(activeSession.id) : clockInMutation.mutate()}
-                                disabled={clockInMutation.isPending || clockOutMutation.isPending}
-                            >
-                                {activeSession ? "Finish Shift" : "Start Session"}
-                            </Button>
-                        </Card>
+                                <div className={`h-32 w-32 rounded-3xl flex items-center justify-center rotate-3 ${activeSession ? 'bg-emerald-500/20 text-emerald-500' : 'bg-primary/20 text-primary'} shadow-inner border border-white/10`}>
+                                    <Clock className={`h-16 w-16 ${activeSession ? 'text-emerald-500' : 'text-primary'}`} />
+                                </div>
+                                <div className="text-center space-y-2">
+                                    <h2 className="text-3xl font-black tracking-tight">{activeSession ? "Shift Active" : "Sign In"}</h2>
+                                    {activeSession ? (
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Started At</p>
+                                            <p className="text-xl font-black text-emerald-500">
+                                                {format(parseTime(activeSession.loginTime), "hh:mm:ss a")}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm font-medium text-muted-foreground">
+                                            Ready to start your day? Clock in to track your progress.
+                                        </p>
+                                    )}
+                                </div>
+                                <Button
+                                    size="lg"
+                                    className={`w-full max-w-xs font-black h-14 rounded-2xl text-lg shadow-lg transition-all active:scale-95 ${activeSession ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-primary hover:bg-primary/90 shadow-primary/20'
+                                        }`}
+                                    onClick={() => activeSession ? clockOutMutation.mutate(activeSession.id) : clockInMutation.mutate()}
+                                    disabled={clockInMutation.isPending || clockOutMutation.isPending}
+                                >
+                                    {activeSession ? "Finish Shift" : "Start Session"}
+                                </Button>
+                            </Card>
+                        )}
 
-                        <Card>
+                        <Card className={isAdmin ? "col-span-full" : ""}>
                             <CardHeader>
                                 <CardTitle>Recent History</CardTitle>
                             </CardHeader>

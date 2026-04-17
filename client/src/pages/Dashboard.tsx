@@ -277,7 +277,7 @@ export default function Dashboard() {
     const now = useLiveClock();
     const { toast } = useToast();
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const isAdmin = user.role === "admin" || user.role === "sadmin";
+    const isAdmin = user.role?.toLowerCase() === "admin" || user.role?.toLowerCase() === "sadmin";
     const todayStr = format(new Date(), "yyyy-MM-dd");
 
     const [historyDay, setHistoryDay] = useState<{ date: string; sessions: any[] } | null>(null);
@@ -399,19 +399,21 @@ export default function Dashboard() {
                                 </div>
                                 <p className="text-white/60 text-xs font-bold">{format(now, "EEE, MMM dd yyyy")}</p>
                             </div>
-                            <div className="flex flex-col items-center gap-1">
-                                <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">{isClockedIn ? "End your day" : "Start your day"}</p>
-                                {!isClockedIn
-                                    ? <Button className="bg-white text-purple-700 font-black rounded-xl hover:bg-white/90 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockInMutation.mutate()} disabled={clockInMutation.isPending}>
-                                        {clockInMutation.isPending ? "Clocking IN..." : "Clock IN"}
-                                    </Button>
-                                    : <Button className="bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockOutMutation.mutate()} disabled={clockOutMutation.isPending}>
-                                        {clockOutMutation.isPending ? "Saving..." : "Clock Out"}
-                                    </Button>}
-                                {isClockedIn && todayOpenSession && (
-                                    <p className="text-white/50 text-[10px] mt-1">In since {fmtTime12(todayOpenSession.loginTime)}</p>
-                                )}
-                            </div>
+                            {!isAdmin && (
+                                <div className="flex flex-col items-center gap-1">
+                                    <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">{isClockedIn ? "End your day" : "Start your day"}</p>
+                                    {!isClockedIn
+                                        ? <Button className="bg-white text-purple-700 font-black rounded-xl hover:bg-white/90 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockInMutation.mutate()} disabled={clockInMutation.isPending}>
+                                            {clockInMutation.isPending ? "Clocking IN..." : "Clock IN"}
+                                        </Button>
+                                        : <Button className="bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 shadow-lg px-6 py-2 text-sm min-w-[110px]" onClick={() => clockOutMutation.mutate()} disabled={clockOutMutation.isPending}>
+                                            {clockOutMutation.isPending ? "Saving..." : "Clock Out"}
+                                        </Button>}
+                                    {isClockedIn && todayOpenSession && (
+                                        <p className="text-white/50 text-[10px] mt-1">In since {fmtTime12(todayOpenSession.loginTime)}</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
 
