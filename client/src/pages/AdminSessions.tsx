@@ -23,7 +23,6 @@ export default function AdminSessions() {
 
     const { data: sessions = [], isLoading } = useQuery<SessionLink[]>({
         queryKey: ["/api/session-links"],
-        staleTime: 0,
     });
 
     const createMutation = useMutation({

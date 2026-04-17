@@ -22,7 +22,6 @@ export default function AdminSyllabus() {
 
     const { data: syllabus = [], isLoading } = useQuery<Syllabus[]>({
         queryKey: ["/api/syllabus"],
-        staleTime: 0,
     });
 
     const createMutation = useMutation({

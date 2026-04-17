@@ -23,7 +23,6 @@ export default function AdminResources() {
 
     const { data: items = [], isLoading } = useQuery<Resource[]>({
         queryKey: ["/api/resources"],
-        staleTime: 0,
     });
 
     const createMutation = useMutation({

@@ -22,7 +22,6 @@ export default function AdminAnnouncements() {
 
     const { data: items = [], isLoading } = useQuery<Announcement[]>({
         queryKey: ["/api/announcements"],
-        staleTime: 0,
     });
 
     const createMutation = useMutation({

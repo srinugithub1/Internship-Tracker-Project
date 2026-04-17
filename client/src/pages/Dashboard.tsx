@@ -286,6 +286,14 @@ export default function Dashboard() {
         return !isAdmin && user.showInstructionsPopup !== false;
     });
 
+    // ── Pre-fetching for Admins ───────────────────────────────────────────────
+    useEffect(() => {
+        if (isAdmin) {
+            queryClient.prefetchQuery({ queryKey: ["/api/interns"] });
+            queryClient.prefetchQuery({ queryKey: ["/api/tasks"] });
+        }
+    }, [isAdmin]);
+
     // ── Queries ──────────────────────────────────────────────────────────────
     const { data: attendance = [] } = useQuery<any[]>({ queryKey: [`/api/attendance/${user.id}`], enabled: !isAdmin, refetchInterval: 30_000 });
     const { data: tasks = [] } = useQuery<any[]>({ queryKey: [`/api/tasks/${user.id}`], enabled: !isAdmin });
