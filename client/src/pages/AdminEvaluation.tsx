@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-    Search, Plus, RotateCcw, FileText, Download, Users, Check, 
+    Search, Plus, RotateCcw, FileText, Download, Users, 
     ChevronLeft, ChevronRight, RefreshCw, GraduationCap, 
     Printer, Award, Target, BookOpen, TrendingUp, CheckCircle2, 
     AlertCircle, Eye
@@ -156,6 +156,32 @@ export default function AdminEvaluation() {
         });
     };
 
+    const handlePrint = () => {
+        const printContent = document.getElementById("printable-memo");
+        if (!printContent) return;
+        const originalContent = document.body.innerHTML;
+        const printArea = printContent.outerHTML;
+        document.body.innerHTML = `
+            <style>
+                @page { size: portrait; margin: 0; }
+                body { background: white !important; color: black !important; }
+                .memo-container { padding: 40px; margin: 0; width: 100%; box-sizing: border-box; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid black; padding: 12px; font-size: 12px; text-align: center; }
+                .text-left { text-align: left; }
+                .font-bold { font-weight: bold; }
+                .text-center { text-align: center; }
+                .remarks-box { border: 1px solid black; min-height: 80px; padding: 10px; margin-top: 10px; font-size: 12px; }
+            </style>
+            <div class="memo-container">
+                ${printArea}
+            </div>
+        `;
+        window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+    };
+
     const filteredInterns = useMemo(() => interns.filter(intern => 
         intern.name.toLowerCase().includes(search.toLowerCase()) || 
         (intern.rollNumber || "").toLowerCase().includes(search.toLowerCase()) || 
@@ -226,10 +252,10 @@ export default function AdminEvaluation() {
                                     <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Intern Details</th>
                                     <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Roll Number</th>
                                     <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Dept & HOD</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Tech (10)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Ethics (5)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Deliv. (5)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Learn (5)</th>
+                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Tech<br/>(10)</th>
+                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Ethics<br/>(5)</th>
+                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Deliv.<br/>(5)</th>
+                                    <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center w-28 whitespace-normal leading-tight">Ability to learn<br/>independently (5)</th>
                                     <th className="p-4 text-[10px] font-black text-primary uppercase tracking-widest text-center px-6 border-l border-white/5 bg-primary/5">Total (25)</th>
                                     <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5">Actions</th>
                                 </tr>
@@ -621,139 +647,90 @@ export default function AdminEvaluation() {
                 </DialogContent>
             </Dialog>
 
-            {/* Mark Memo Modal (Common for HOD & Admin) */}
+            {/* Formal Mark Memo Modal (Common for HOD & Admin) */}
             <Dialog open={!!viewMemoItem} onOpenChange={(open) => !open && setViewMemoItem(null)}>
-                <DialogContent className="max-w-3xl p-0 border-none bg-transparent shadow-none">
-                    <div className="bg-background rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
-                        <div className="h-2 bg-gradient-to-r from-primary via-indigo-500 to-primary shrink-0" />
-                        
-                        <div className="p-6 lg:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
-                            {/* Document Header */}
-                            <div className="flex justify-between items-start border-b border-white/5 pb-6">
-                                <div className="space-y-3">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                                        <GraduationCap className="h-3.5 w-3.5" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Performance Transcript</span>
-                                    </div>
-                                    <h2 className="text-2xl font-black tracking-tight uppercase leading-tight">
-                                        Formal Evaluation<br/>
-                                        <span className="text-primary italic">Statement of Marks</span>
-                                    </h2>
-                                </div>
-                                <div className="text-right space-y-1">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Issue Date</p>
-                                    <p className="font-bold text-xs tracking-tight">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                                    <div className="pt-2 flex gap-1.5 justify-end">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg bg-white/5 hover:bg-primary hover:text-white transition-all">
-                                            <Printer className="h-3 w-3" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg bg-white/5 hover:bg-primary hover:text-white transition-all">
-                                            <Download className="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </div>
+                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none bg-white shadow-none">
+                    <div className="flex flex-col h-[92vh]">
+                        {/* Control Bar (Hidden on Print) */}
+                        <div className="p-4 bg-muted/20 border-b flex justify-between items-center sticky top-0 z-50">
+                            <div className="flex flex-col">
+                                <h3 className="font-black text-lg text-foreground">Marks Memo</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Download your evaluation sheet</p>
                             </div>
-
-                            {/* Intern Profile */}
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
-                                <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Full Name</p>
-                                    <p className="font-black text-xs text-foreground truncate">{viewMemoItem?.intern.name}</p>
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Roll Number</p>
-                                    <p className="font-black text-xs text-primary">{viewMemoItem?.intern.rollNumber || "N/A"}</p>
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Department</p>
-                                    <p className="font-black text-xs text-foreground">{viewMemoItem?.intern.department || "General"}</p>
-                                </div>
-                                <div className="space-y-0.5 text-right">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Account Context</p>
-                                    <p className="font-black text-[9px] text-foreground truncate">{viewMemoItem?.intern.email}</p>
-                                </div>
-                            </div>
-
-                            {/* Marks Table */}
-                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 shadow-xl">
-                                <table className="w-full text-left border-collapse font-sans">
-                                    <thead>
-                                        <tr className="bg-primary/5 border-b border-white/10">
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest pl-6 w-16">No.</th>
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Skill Rubric</th>
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center w-28">Max</th>
-                                            <th className="p-4 text-[9px] font-black text-primary uppercase tracking-widest text-right pr-6 w-28">Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/5">
-                                        {[
-                                            { id: 1, label: "Technical Competency & Knowledge", max: 10, val: viewMemoItem?.sheet?.technicalKnowledge, icon: Award },
-                                            { id: 2, label: "Professional Ethics & Code Conduct", max: 5, val: viewMemoItem?.sheet?.workEthics, icon: Target },
-                                            { id: 3, label: "Project Deliverables & Outcomes", max: 5, val: viewMemoItem?.sheet?.deliverablesOutcomes, icon: BookOpen },
-                                            { id: 4, label: "Learning Agility & Adaptation", max: 5, val: viewMemoItem?.sheet?.abilityToLearn, icon: TrendingUp }
-                                        ].map((row) => (
-                                            <tr key={row.id} className="hover:bg-white/[0.02]">
-                                                <td className="p-4 pl-6 text-xs font-black text-muted-foreground opacity-40">{row.id}</td>
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <row.icon className="h-3.5 w-3.5 text-primary/40" />
-                                                        <span className="font-bold text-xs tracking-tight">{row.label}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-center font-bold text-xs opacity-50">{row.max}.00</td>
-                                                <td className="p-4 text-right pr-6 font-black text-base text-foreground leading-none">
-                                                    {row.val || "0"}.00
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr className="bg-primary/5 border-t border-white/10">
-                                            <td colSpan={2} className="p-4 pl-6">
-                                                <div className="flex items-center gap-2">
-                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                    <span className="font-black text-xs uppercase tracking-widest text-primary leading-none">Cumulative Performance Index</span>
-                                                </div>
-                                            </td>
-                                            <td className="p-4 text-center font-black text-sm opacity-50 leading-none">25.00</td>
-                                            <td className="p-4 text-right pr-6 font-black text-2xl text-primary leading-none">
-                                                {viewMemoItem?.sheet?.totalMarks || "0"}.00
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            {/* Evaluation Status & Policy */}
-                            <div className="flex gap-3 items-stretch">
-                                <div className={`flex-1 flex items-center justify-between p-5 rounded-2xl border ${viewMemoItem?.sheet ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
-                                    <div className="flex items-center gap-3">
-                                        {viewMemoItem?.sheet ? (
-                                            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-                                        ) : (
-                                            <AlertCircle className="h-6 w-6 text-amber-500" />
-                                        )}
-                                        <div>
-                                            <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60 leading-none">Assessment Verdict</p>
-                                            <p className={`text-base font-black mt-0.5 ${viewMemoItem?.sheet ? 'text-emerald-500' : 'text-amber-500'}`}>
-                                                {viewMemoItem?.sheet ? 'Validated Transcript' : 'Awaiting Audit'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {viewMemoItem?.sheet && (
-                                        <Badge className="bg-emerald-500 text-white border-none rounded-lg px-3 py-1 font-black uppercase tracking-widest text-[9px] shadow-lg">Excellent</Badge>
-                                    )}
-                                </div>
+                            <div className="flex gap-3">
+                                <Button onClick={handlePrint} className="rounded-xl bg-primary text-white hover:bg-primary/90 gap-2 font-bold px-6 h-10">
+                                    <Download className="h-4 w-4" />
+                                    Download PDF
+                                </Button>
+                                <Button variant="ghost" onClick={() => setViewMemoItem(null)} className="h-10 w-10 p-0 rounded-xl">
+                                    <AlertCircle className="rotate-45 h-6 w-6" />
+                                </Button>
                             </div>
                         </div>
 
-                        <div className="p-6 bg-primary/[0.03] border-t border-white/5 flex justify-end gap-3 shrink-0">
-                            <Button variant="ghost" onClick={() => setViewMemoItem(null)} className="rounded-xl px-6 font-black border-white/10 hover:bg-white/5 h-10 text-xs text-muted-foreground">
-                                Dismiss Overlay
-                            </Button>
-                            <Button onClick={() => setViewMemoItem(null)} className="rounded-xl px-12 font-black h-10 bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 active:scale-95 transition-all text-xs">
-                                Close Statement
-                            </Button>
+                        {/* Printable Document Area */}
+                        <div className="flex-1 overflow-y-auto p-12 bg-white flex justify-center custom-scrollbar">
+                            <div id="printable-memo" className="w-full max-w-[800px] bg-white text-black p-4">
+                                {/* Institutional Headers */}
+                                <div className="flex justify-center mb-8">
+                                    <img src="/learners byte expertpedia.jpg" alt="Institutional Header" className="max-w-full h-auto" />
+                                </div>
+
+                                <div className="text-center space-y-4 mb-8">
+                                    <h2 className="text-xl font-bold underline leading-tight">
+                                        VIII SEMESTER: INDUSTRY INTERNSHIP, REVIEW 1 - EVALUATION SHEET (EXTERNAL GUIDE)
+                                    </h2>
+                                    <p className="font-bold text-lg">MAXIMUM MARKS: 25</p>
+                                </div>
+
+                                {/* Main Evaluation Table */}
+                                <div className="border border-black overflow-hidden mb-8">
+                                    <table className="w-full text-center border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-black">
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">USN</th>
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle">Student Name</th>
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Technical Knowledge<br/>(10 Marks)</th>
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Work Ethics<br/>(5 Marks)</th>
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Deliverables and Outcomes<br/>(5 Marks)</th>
+                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-32">Ability to learn independently, adapt to new and emerging technologies, and exhibit critical thinking<br/>(5 Marks)</th>
+                                                <th className="p-4 text-xs font-bold leading-tight align-middle w-24">TOTAL MARKS<br/>(25 Marks)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="border-b border-black h-20">
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.intern.rollNumber || "--"}</td>
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.intern.name}</td>
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.technicalKnowledge || "0.00"}</td>
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.workEthics || "0.00"}</td>
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.deliverablesOutcomes || "0.00"}</td>
+                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.abilityToLearn || "0.00"}</td>
+                                                <td className="p-4 text-sm font-black align-middle text-indigo-700">{viewMemoItem?.sheet?.totalMarks || "0.00"}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Remarks Section */}
+                                <div className="border border-black mb-8 overflow-hidden">
+                                    <div className="bg-gray-50 border-b border-black p-3 text-center">
+                                        <h4 className="font-bold text-sm">Remarks by the External Guide</h4>
+                                    </div>
+                                    <div className="p-6 text-center italic font-bold text-sm min-h-[100px] flex items-center justify-center">
+                                        {viewMemoItem?.sheet?.remarks || "Good performance, keep up the consistent work across all domains."}
+                                    </div>
+                                </div>
+
+                                {/* Footnote */}
+                                <p className="text-[9px] font-bold leading-relaxed mb-12 text-center italic">
+                                    *** The Internal Guide is responsible for maintaining the email correspondence containing feedback from the External Guide, as well as recording the marks awarded by the External Guide based on the provided evaluation rubrics.
+                                </p>
+
+                                {/* Signature Section */}
+                                <div className="flex flex-col items-center">
+                                    <img src="/seal.png" alt="Signature Seal" className="max-w-[180px] h-auto" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </DialogContent>
