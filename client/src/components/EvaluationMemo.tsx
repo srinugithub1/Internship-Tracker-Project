@@ -88,8 +88,10 @@ export default function EvaluationMemo({ user, sheet }: EvaluationMemoProps) {
                                 A. Harish Nath
                             </div>
                         </div>
-                        <div className="absolute top-[10px] -ml-16 text-[11px] font-black text-[#1e3a8a] font-sans">
-                            {sheet.evaluationDate ? format(new Date(sheet.evaluationDate), "dd-MM-yyyy") : format(new Date(), "dd-MM-yyyy")}
+                        <div className="absolute top-[35px] w-full text-center z-10">
+                            <p className="text-[12px] font-black text-[#1e3a8a] font-sans">
+                                {sheet.evaluationDate ? format(new Date(sheet.evaluationDate), "dd-MM-yyyy") : format(new Date(), "dd-MM-yyyy")}
+                            </p>
                         </div>
                         <div className="font-bold text-[12px] mt-auto border-t border-black w-full pt-2">Signature of the External Guide with date</div>
                     </div>
