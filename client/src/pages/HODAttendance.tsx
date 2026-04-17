@@ -1,7 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { type Attendance, type User } from "@shared/schema";
-import { Search, Calendar, Clock, RotateCcw, Eye, Building2, TrendingUp, History, Filter } from "lucide-react";
+import { Search, Calendar, Clock, RotateCcw, Eye, Building2, TrendingUp, History, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useMemo } from "react";
 import { format, getDaysInMonth, differenceInCalendarDays, startOfDay } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,10 @@ export default function HODAttendance() {
     // Main Table Filter State
     const [mainMonth, setMainMonth] = useState(new Date().getMonth().toString());
     const [mainYear, setMainYear] = useState(new Date().getFullYear().toString());
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
 
     // Modal & Filter States
     const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
@@ -113,6 +117,10 @@ export default function HODAttendance() {
         );
     }, [interns, attendance, search, mainMonth, mainYear]);
 
+    // Pagination Logic
+    const totalPages = Math.ceil(summaryData.length / pageSize);
+    const paginatedData = summaryData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
     // Modal Details Filtering
     const selectedIntern = interns.find(i => i.id === selectedInternId);
     const detailLogs = useMemo(() => {
@@ -141,7 +149,10 @@ export default function HODAttendance() {
                         </div>
                         <div className="bg-indigo-500/10 border border-indigo-500/20 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-lg shadow-indigo-500/5">
                             <History className="h-5 w-5 text-indigo-500" />
-                            <span className="text-[10px] font-black uppercase text-indigo-500 tracking-widest">Performance Center</span>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase text-indigo-500 tracking-widest leading-none">Total Students</span>
+                                <span className="text-xl font-black text-foreground">{interns.length}</span>
+                            </div>
                         </div>
                     </header>
 
@@ -153,7 +164,10 @@ export default function HODAttendance() {
                                 placeholder="Search intern or department..." 
                                 className="pl-9 h-11 bg-white/5 border-white/10 rounded-xl"
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                             />
                         </div>
                         
@@ -193,17 +207,17 @@ export default function HODAttendance() {
                     </div>
 
                     {/* Enhanced Table */}
-                    <div className="glass rounded-3xl border-white/10 shadow-2xl overflow-hidden">
+                    <div className="glass rounded-3xl border-white/10 shadow-2xl overflow-hidden relative">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Intern Details</th>
-                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest border-l border-white/5 bg-indigo-500/5">Filtered Month</th>
-                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/5 text-center">P. Days</th>
-                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/5 text-center">A. Days</th>
-                                    <th className="p-6 text-[10px] font-black text-emerald-500 uppercase tracking-widest border-l border-white/5 bg-emerald-500/5 text-center">Total Present (Overall)</th>
-                                    <th className="p-6 text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/5 text-center">Total Absent (Overall)</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5">Action</th>
+                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-4 leading-tight">Intern Details</th>
+                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest border-l border-white/5 bg-indigo-500/5 px-4 leading-tight">Filtered Month</th>
+                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/5 text-center px-4 leading-tight">P. <br/>Days</th>
+                                    <th className="p-6 text-[10px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-500/5 text-center px-4 leading-tight">A. <br/>Days</th>
+                                    <th className="p-6 text-[10px] font-black text-emerald-500 uppercase tracking-widest border-l border-white/5 bg-emerald-500/5 text-center px-4 leading-tight">Total Present (Overall)</th>
+                                    <th className="p-6 text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/5 text-center px-4 leading-tight">Total Absent (Overall)</th>
+                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5 px-4 leading-tight">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -213,11 +227,13 @@ export default function HODAttendance() {
                                             <td colSpan={7} className="p-6 bg-white/5" />
                                         </tr>
                                     ))
-                                ) : summaryData.length === 0 ? (
+                                ) : paginatedData.length === 0 ? (
                                     <tr>
-                                        <td colSpan={7} className="p-20 text-center text-muted-foreground italic">No interns found matching your criteria.</td>
+                                        <td colSpan={7} className="p-20 text-center text-muted-foreground italic font-medium opacity-50">
+                                            No attendance logs found for specified criteria.
+                                        </td>
                                     </tr>
-                                ) : summaryData.map((summary) => (
+                                ) : paginatedData.map((summary) => (
                                     <tr key={summary.id} className="hover:bg-white/[0.02] transition-colors group">
                                         <td className="p-6 min-w-[200px]">
                                             <div className="flex items-center gap-4">
@@ -233,28 +249,31 @@ export default function HODAttendance() {
                                             </div>
                                         </td>
                                         <td className="p-6 border-l border-white/5 bg-indigo-500/[0.02]">
-                                            <span className="font-black text-sm text-indigo-400">{summary.trackedMonthName}</span>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4 text-indigo-500/50" />
+                                                <span className="font-black text-sm text-indigo-400">{summary.trackedMonthName}</span>
+                                            </div>
                                         </td>
                                         <td className="p-6 text-center bg-indigo-500/[0.02]">
-                                            <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 rounded-lg min-w-[40px] justify-center h-8 font-black text-base">
+                                            <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 rounded-lg min-w-[42px] justify-center h-8 font-black text-base">
                                                 {summary.filteredPresent}
                                             </Badge>
                                         </td>
                                         <td className="p-6 text-center bg-indigo-500/[0.02]">
-                                            <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 rounded-lg min-w-[40px] justify-center h-8 font-black text-base">
+                                            <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 rounded-lg min-w-[42px] justify-center h-8 font-black text-base">
                                                 {summary.filteredAbsent}
                                             </Badge>
                                         </td>
                                         <td className="p-6 text-center border-l border-white/5 bg-emerald-500/[0.02]">
                                             <div className="flex flex-col items-center">
                                                 <span className="text-xl font-black text-emerald-500 leading-none">{summary.totalPresentDays}</span>
-                                                <span className="text-[8px] font-black uppercase tracking-tighter text-emerald-500/50 mt-1">Days Present</span>
+                                                <span className="text-[8px] font-black uppercase tracking-tighter text-emerald-500/50 mt-1 whitespace-nowrap">Present Days</span>
                                             </div>
                                         </td>
                                         <td className="p-6 text-center bg-rose-500/[0.02]">
                                             <div className="flex flex-col items-center">
                                                 <span className="text-xl font-black text-rose-500 leading-none">{summary.totalAbsentDays}</span>
-                                                <span className="text-[8px] font-black uppercase tracking-tighter text-rose-500/50 mt-1">Days Absent</span>
+                                                <span className="text-[8px] font-black uppercase tracking-tighter text-rose-500/50 mt-1 whitespace-nowrap">Absent Days</span>
                                             </div>
                                         </td>
                                         <td className="p-6 text-right border-l border-white/5">
@@ -265,16 +284,66 @@ export default function HODAttendance() {
                                                     setDetailMonth(mainMonth);
                                                     setDetailYear(mainYear);
                                                 }}
-                                                className="rounded-xl font-black gap-2 h-10 px-6 hover:bg-white hover:text-black transition-all border-white/10"
+                                                className="rounded-xl font-black gap-2 h-10 px-6 hover:bg-white hover:text-black transition-all border-white/10 shadow-sm"
                                             >
                                                 <Eye className="h-4 w-4" />
-                                                View Details
+                                                View Log
                                             </Button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+
+                        {/* Pagination Footer */}
+                        <div className="p-4 bg-white/5 border-t border-white/5 flex flex-col md:flex-row justify-between items-center px-8 gap-4">
+                            <div className="flex items-center gap-3">
+                                <History className="h-4 w-4 text-muted-foreground" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">
+                                    Showing {paginatedData.length} of {summaryData.length} Records
+                                </p>
+                            </div>
+                            
+                            <div className="flex items-center gap-6">
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="rounded-xl h-9 hover:bg-white/5 text-xs font-bold gap-2"
+                                >
+                                    <ChevronLeft className="h-4 w-4" /> Prev
+                                </Button>
+                                
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        let pageNum = i + 1;
+                                        if (totalPages > 5 && currentPage > 3) pageNum = currentPage - 3 + i + 1;
+                                        if (pageNum > totalPages) return null;
+                                        
+                                        return (
+                                            <button 
+                                                key={pageNum}
+                                                onClick={() => setCurrentPage(pageNum)}
+                                                className={`h-8 w-8 rounded-lg text-[10px] font-black transition-all border ${currentPage === pageNum ? 'bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'border-white/10 text-muted-foreground hover:bg-white/5'}`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages || totalPages === 0}
+                                    className="rounded-xl h-9 hover:bg-white/5 text-xs font-bold gap-2"
+                                >
+                                    Next <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
