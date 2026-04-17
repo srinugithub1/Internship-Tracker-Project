@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import EvaluationMemo from "@/components/EvaluationMemo";
 
 type MarksForm = {
     technicalKnowledge: string;
@@ -689,85 +690,13 @@ export default function AdminEvaluation() {
 
                         {/* Printable Document Area */}
                         <div className="flex-1 overflow-y-auto p-12 bg-white flex justify-center custom-scrollbar">
-                            <div id="printable-memo" className="w-full max-w-[800px] bg-white text-black p-4">
-                                {/* Institutional Headers */}
-                                <div className="flex justify-center mb-8">
-                                    <img src="/learners byte expertpedia.jpg" alt="Institutional Header" className="max-w-full h-auto" />
-                                </div>
-
-                                <div className="text-center space-y-4 mb-8">
-                                    <h2 className="text-xl font-bold underline leading-tight">
-                                        VIII SEMESTER: INDUSTRY INTERNSHIP, REVIEW 1 - EVALUATION SHEET (EXTERNAL GUIDE)
-                                    </h2>
-                                    <p className="font-bold text-lg">MAXIMUM MARKS: 25</p>
-                                </div>
-
-                                {/* Main Evaluation Table */}
-                                <div className="border border-black overflow-hidden mb-8">
-                                    <table className="w-full text-center border-collapse">
-                                        <thead>
-                                            <tr className="border-b border-black">
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">USN</th>
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle">Student Name</th>
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Technical Knowledge<br/>(10 Marks)</th>
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Work Ethics<br/>(5 Marks)</th>
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-24">Deliverables and Outcomes<br/>(5 Marks)</th>
-                                                <th className="border-r border-black p-4 text-xs font-bold leading-tight align-middle w-32">Ability to learn independently, adapt to new and emerging technologies, and exhibit critical thinking<br/>(5 Marks)</th>
-                                                <th className="p-4 text-xs font-bold leading-tight align-middle w-24">TOTAL MARKS<br/>(25 Marks)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr className="border-b border-black h-20">
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.intern.rollNumber || "--"}</td>
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.intern.name}</td>
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.technicalKnowledge || "0.00"}</td>
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.workEthics || "0.00"}</td>
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.deliverablesOutcomes || "0.00"}</td>
-                                                <td className="border-r border-black p-4 text-sm font-bold align-middle">{viewMemoItem?.sheet?.abilityToLearn || "0.00"}</td>
-                                                <td className="p-4 text-sm font-black align-middle text-indigo-700">{viewMemoItem?.sheet?.totalMarks || "0.00"}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Remarks Section */}
-                                <div className="border border-black mb-8 overflow-hidden">
-                                    <div className="bg-gray-50 border-b border-black p-3 text-center">
-                                        <h4 className="font-bold text-sm">Remarks by the External Guide</h4>
-                                    </div>
-                                    <div className="p-6 text-center italic font-bold text-sm min-h-[100px] flex items-center justify-center">
-                                        {viewMemoItem?.sheet?.remarks || "Good performance, keep up the consistent work across all domains."}
-                                    </div>
-                                </div>
-
-                                {/* Footnote */}
-                                <p className="text-[10px] font-bold leading-relaxed mb-12 text-center">
-                                    *** The Internal Guide is responsible for maintaining the email correspondence containing feedback from the External Guide, as well as recording the marks awarded by the External Guide based on the provided evaluation rubrics.
-                                </p>
-
-                                {/* Signature Section */}
-                                <div className="grid grid-cols-3 gap-4 items-end mt-16 pb-8">
-                                    <div className="flex flex-col items-center relative">
-                                        <div className="h-28 flex items-center justify-center mb-2 relative">
-                                            <img src="/seal.png" alt="Signature Seal" className="max-h-full w-auto opacity-70" />
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center pt-6">
-                                                <p className="text-[#1e3a8a] font-black text-2xl rotate-[-5deg] tracking-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                                                    A. Harish Nath
-                                                </p>
-                                                <p className="text-[#1e3a8a] font-black text-[10px] mt-0.5">15-04-2026</p>
-                                            </div>
-                                        </div>
-                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the External Guide with date</p>
-                                    </div>
-                                    <div className="flex flex-col items-center pb-[2px]">
-                                        <div className="h-28 mb-2" />
-                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the Internal Guide with date</p>
-                                    </div>
-                                    <div className="flex flex-col items-center pb-[2px]">
-                                        <div className="h-28 mb-2" />
-                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the HoD with date</p>
-                                    </div>
-                                </div>
+                            <div id="printable-memo" className="w-full flex justify-center">
+                                {viewMemoItem?.intern && viewMemoItem?.sheet && (
+                                    <EvaluationMemo 
+                                        user={viewMemoItem.intern} 
+                                        sheet={viewMemoItem.sheet} 
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
