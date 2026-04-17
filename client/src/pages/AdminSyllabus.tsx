@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -58,79 +58,70 @@ export default function AdminSyllabus() {
     const isPending = createMutation.isPending || updateMutation.isPending;
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-[1400px] mx-auto space-y-6">
-                    <header className="flex justify-between items-start">
-                        <div>
-                            <h1 className="text-3xl font-black tracking-tight text-foreground">Course Syllabus</h1>
-                            <p className="text-muted-foreground mt-1 text-sm font-medium">Structure the learning curriculum</p>
+        <AppLayout>
+            <div className="space-y-6">
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
+                    <div>
+                        <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">Course Syllabus</h1>
+                        <p className="text-muted-foreground mt-0.5 text-xs font-medium">Structure the learning curriculum for interns.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-2 h-9">
+                            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Items</span>
+                            <span className="text-base font-black text-primary tabular-nums">{syllabus.length}</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="bg-secondary/50 px-4 py-2 rounded-2xl border border-white/20 shadow-sm flex items-center gap-2">
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total:</span>
-                                <span className="text-lg font-black text-primary">{syllabus.length}</span>
-                            </div>
-                            <Button onClick={openCreate} className="bg-[#1a4fcf] hover:bg-[#153fab] text-white rounded-xl px-6 h-11 font-bold shadow-lg shadow-blue-500/20">
-                                <Plus className="h-4 w-4 mr-2" /> Add Topic
-                            </Button>
-                        </div>
-                    </header>
+                        <Button onClick={openCreate} size="sm" className="rounded-lg h-9 font-black text-[9px] uppercase tracking-widest gap-1.5 shadow-lg">
+                            <Plus className="h-3.5 w-3.5" /> Add Topic
+                        </Button>
+                    </div>
+                </header>
 
-                    <div className="glass rounded-2xl border-white/10 shadow-2xl overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="border-b border-white/10 bg-white/5">
-                                        <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Course</th>
-                                        <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Module</th>
-                                        <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">Topic</th>
-                                        <th className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading && <tr><td colSpan={4} className="p-20 text-center text-muted-foreground animate-pulse font-bold">Loading curriculum...</td></tr>}
-                                    {syllabus.map(item => (
-                                        <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                                            <td className="p-5 text-sm font-medium">{item.course}</td>
-                                            <td className="p-5 text-sm font-medium">{item.module}</td>
-                                            <td className="p-5 text-sm font-medium text-primary/80">{item.topic}</td>
-                                            <td className="p-5 text-center">
-                                                <div className="flex justify-center gap-2">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-white/10 transition-all" onClick={() => openEdit(item)}>
-                                                        <Pencil className="h-3.5 w-3.5" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                                                        onClick={() => { if (confirm("Delete this syllabus item?")) deleteMutation.mutate(item.id); }}>
-                                                        <Trash2 className="h-3.5 w-3.5" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                <div className="glass rounded-xl border-white/10 shadow-xl overflow-hidden">
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/5">
+                                    {["Course", "Module", "Topic", "Action"].map(h => (
+                                        <th key={h} className="p-4 text-[9px] font-black uppercase text-muted-foreground tracking-[0.1em] first:pl-6 last:pr-6">{h}</th>
                                     ))}
-                                    {!isLoading && syllabus.length === 0 && (
-                                        <tr><td colSpan={4} className="p-20 text-center text-muted-foreground italic">No curriculum items defined. Click "Add Topic" to start.</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="p-4 bg-white/5 border-t border-white/10 flex justify-between items-center">
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total Records: {syllabus.length}</p>
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" size="sm" className="h-8 rounded-xl px-4 border-white/10 bg-white/5" disabled><ChevronLeft className="h-4 w-4 mr-1" />Previous</Button>
-                                <span className="text-xs font-black uppercase tracking-widest">Page 1 of 1</span>
-                                <Button variant="outline" size="sm" className="h-8 rounded-xl px-4 border-white/10 bg-white/5" disabled>Next<ChevronRight className="h-4 w-4 ml-1" /></Button>
-                            </div>
-                        </div>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {isLoading && <tr><td colSpan={4} className="p-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest animate-pulse">Loading curriculum...</td></tr>}
+                                {syllabus.map(item => (
+                                    <tr key={item.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="p-4 first:pl-6 text-[11px] font-black">{item.course}</td>
+                                        <td className="p-4 text-[10px] font-bold text-muted-foreground">{item.module}</td>
+                                        <td className="p-4 text-[10px] font-medium text-primary/80">{item.topic}</td>
+                                        <td className="p-4 last:pr-6">
+                                            <div className="flex gap-1.5">
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary" onClick={() => openEdit(item)}>
+                                                    <Pencil className="h-3 w-3" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive"
+                                                    onClick={() => { if (confirm("Delete this syllabus item?")) deleteMutation.mutate(item.id); }}>
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {!isLoading && syllabus.length === 0 && (
+                                    <tr><td colSpan={4} className="p-20 text-center opacity-30 italic text-[10px] font-black uppercase tracking-widest">No curriculum items defined.</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="p-4 bg-white/5 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{syllabus.length} items</span>
                     </div>
                 </div>
-            </main>
+            </div>
 
             <Dialog open={open} onOpenChange={v => { if (!v) close(); }}>
                 <DialogContent className="glass border-white/10 rounded-2xl max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-black">{editId ? "Edit Syllabus Item" : "Add New Topic"}</DialogTitle>
+                        <DialogTitle className="text-base font-black uppercase tracking-tight">{editId ? "Edit Syllabus Item" : "Add New Topic"}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                         {[
@@ -139,20 +130,20 @@ export default function AdminSyllabus() {
                             { label: "Topic", key: "topic", placeholder: "e.g. Introduction to LLMs" },
                         ].map(({ label, key, placeholder }) => (
                             <div key={key} className="space-y-1.5">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</Label>
-                                <Input placeholder={placeholder} className="h-10 bg-white/5 border-white/10 rounded-xl"
+                                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{label}</Label>
+                                <Input placeholder={placeholder} className="h-9 bg-white/5 border-white/10 rounded-xl text-xs"
                                     value={(form as any)[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} />
                             </div>
                         ))}
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={close} className="rounded-xl">Cancel</Button>
-                        <Button onClick={submit} disabled={isPending || !form.course || !form.module} className="rounded-xl font-bold">
+                        <Button variant="ghost" onClick={close} className="rounded-xl text-xs font-black uppercase tracking-widest">Cancel</Button>
+                        <Button onClick={submit} disabled={isPending || !form.course || !form.module} className="rounded-xl font-black text-xs uppercase tracking-widest">
                             {isPending ? "Saving..." : editId ? "Update Item" : "Save Item"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AppLayout>
     );
 }

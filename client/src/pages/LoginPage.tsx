@@ -374,13 +374,13 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
     }
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             {/* Role Switcher */}
             <div className="flex rounded-xl bg-secondary/30 p-1 gap-1 mb-2 border border-white/5">
                 <button
                     type="button"
                     onClick={() => setSignupRole("intern")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "intern"
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "intern"
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                         }`}
@@ -390,7 +390,7 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                 <button
                     type="button"
                     onClick={() => setSignupRole("hod")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "hod"
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${signupRole === "hod"
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                         }`}
@@ -398,180 +398,177 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
                     <ShieldCheck className="h-3 w-3" /> HOD / College
                 </button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                {/* First Name */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+
+            {/* Name Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <User className="h-3 w-3 text-primary" /> First Name
                     </Label>
                     <Input
                         {...form.register("firstName")}
                         placeholder="John"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.firstName && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.firstName.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.firstName.message}</p>
                     )}
                 </div>
 
-                {/* Last Name */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <User className="h-3 w-3 text-primary" /> Last Name
                     </Label>
                     <Input
                         {...form.register("lastName")}
                         placeholder="Doe"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.lastName && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.lastName.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.lastName.message}</p>
                     )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                {/* Email */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            {/* Email & Phone */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <Mail className="h-3 w-3 text-primary" /> Email
                     </Label>
                     <Input
                         {...form.register("email")}
                         placeholder="student@college.edu"
                         type="email"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.email && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.email.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.email.message}</p>
                     )}
                 </div>
 
-                {/* Phone */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <div className="h-3 w-3 border-2 border-primary rounded-sm" /> Phone
                     </Label>
                     <Input
                         {...form.register("phone")}
-                        placeholder="+1 234 567 8900"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        placeholder="+91 98765 43210"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.phone && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.phone.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.phone.message}</p>
                     )}
                 </div>
             </div>
 
             {/* University */}
-            <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <div className="space-y-1">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                     <div className="h-3 w-3 border-2 border-primary rounded-full" /> University Name
                 </Label>
                 <Input
                     {...form.register("university")}
                     placeholder="Enter University"
-                    className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                    className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                 />
                 {form.formState.errors.university && (
-                    <p className="text-xs font-bold text-destructive">{form.formState.errors.university.message}</p>
+                    <p className="text-[10px] font-bold text-destructive">{form.formState.errors.university.message}</p>
                 )}
             </div>
 
             {/* Student ID / Roll Number (Intern Only) */}
             {signupRole === "intern" && (
-                <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <div className="space-y-1 animate-in slide-in-from-top-2 duration-300">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <div className="h-3 w-3 bg-primary/20 flex items-center justify-center text-[8px] font-black italic">#</div> Student Id / Roll Number
                     </Label>
                     <Input
                         {...form.register("rollNumber")}
                         placeholder="e.g. 21CS001"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                         required
                     />
                     {form.formState.errors.rollNumber && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.rollNumber.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.rollNumber.message}</p>
                     )}
                 </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-                {/* College */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            {/* College & Department */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <div className="h-3 w-3 bg-primary/20 rounded-sm flex items-center justify-center text-[8px]">C</div> College Name
                     </Label>
                     <Input
                         {...form.register("college")}
                         placeholder="Enter College"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.college && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.college.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.college.message}</p>
                     )}
                 </div>
 
-                {/* Department / Branch */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                        <div className="h-3 w-3 bg-primary/20 rounded-full flex items-center justify-center text-[8px]">D</div> 
-                        {signupRole === "intern" ? "Department / Branch" : "Department"}
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                        <div className="h-3 w-3 bg-primary/20 rounded-full flex items-center justify-center text-[8px]">D</div>{" "}
+                        {signupRole === "intern" ? "Dept / Branch" : "Department"}
                     </Label>
                     <Input
                         {...form.register("department")}
                         placeholder={signupRole === "intern" ? "e.g. CSE / IT" : "e.g. Computer Science"}
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.department && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.department.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.department.message}</p>
                     )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                {/* Password */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            {/* Passwords */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <Lock className="h-3 w-3 text-primary" /> Password
                     </Label>
                     <Input
                         {...form.register("password")}
                         type="password"
                         placeholder="Create password"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.password && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.password.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.password.message}</p>
                     )}
                 </div>
 
-                {/* Confirm Password */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                         <Lock className="h-3 w-3 text-primary" /> Confirm
                     </Label>
                     <Input
                         {...form.register("confirmPassword")}
                         type="password"
                         placeholder="Repeat password"
-                        className="h-12 bg-white/5 border-white/10 focus:ring-primary/50 text-base"
+                        className="h-9 bg-white/5 border-white/10 focus:ring-primary/50 text-sm"
                     />
                     {form.formState.errors.confirmPassword && (
-                        <p className="text-xs font-bold text-destructive">{form.formState.errors.confirmPassword.message}</p>
+                        <p className="text-[10px] font-bold text-destructive">{form.formState.errors.confirmPassword.message}</p>
                     )}
                 </div>
             </div>
 
             <Button
-                className="w-full h-12 text-base font-bold rounded-xl shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98] gap-2"
+                className="w-full h-10 text-sm font-bold rounded-xl shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98] gap-2"
                 type="submit"
                 disabled={form.formState.isSubmitting}
             >
                 {form.formState.isSubmitting ? (
-                    <><Loader2 className="h-5 w-5 animate-spin" /> Creating Account...</>
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Creating Account...</>
                 ) : (
-                    <><UserPlus className="h-5 w-5" /> Create Account</>
+                    <><UserPlus className="h-4 w-4" /> Create Account</>
                 )}
             </Button>
 
@@ -603,7 +600,7 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="w-full max-w-md"
+                className="w-full max-w-sm sm:max-w-md"
             >
                 {/* Back + Logo */}
                 <div className="flex flex-col items-center mb-6 gap-2">
@@ -650,7 +647,8 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                         </CardDescription>
                     </CardHeader>
 
-                    <CardContent className="pt-6 px-6 pb-6">
+                    <CardContent className="pt-4 px-5 pb-5">
+                        <div className="max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar -mr-1">
                         <AnimatePresence mode="wait">
                             {tab === "login" ? (
                                 <motion.div
@@ -674,6 +672,7 @@ export default function LoginPage({ initialTab = "login" }: { initialTab?: "logi
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                        </div>
                     </CardContent>
                 </Card>
 

@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -220,224 +220,220 @@ export default function AdminEvaluation() {
     }
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-[1300px] mx-auto space-y-6">
-                    <header className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-3xl font-black tracking-tight">Evaluations & Marks</h1>
-                            <p className="text-muted-foreground mt-1 text-sm font-medium">Evaluate intern performance and generate marks memos</p>
+        <AppLayout>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
+                <div>
+                    <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">
+                        Evaluations & Marks
+                    </h1>
+                    <p className="text-muted-foreground mt-1 text-xs font-medium">
+                        Evaluate intern performance and generate marks memos.
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl shadow-sm h-11">
+                        <div className="flex flex-col items-center border-r border-white/10 pr-4">
+                            <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest leading-none">Total</span>
+                            <span className="text-lg font-black text-primary leading-none tabular-nums">{interns.length}</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl shadow-sm">
-                                <div className="flex flex-col items-center border-r border-white/10 pr-4">
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Total</span>
-                                    <span className="text-lg font-black text-primary leading-none">{interns.length}</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Evaluated</span>
-                                    <span className="text-lg font-black text-green-500 leading-none">{allSheets.length}</span>
-                                </div>
-                            </div>
-                            <Button 
-                                onClick={() => setIsBulkDialogOpen(true)}
-                                className="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 gap-2 font-bold"
-                            >
-                                <Users className="h-5 w-5" />
-                                Bulk Evaluation
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest leading-none">Done</span>
+                            <span className="text-lg font-black text-emerald-500 leading-none tabular-nums">{allSheets.length}</span>
+                        </div>
+                    </div>
+                    <Button 
+                        onClick={() => setIsBulkDialogOpen(true)}
+                        className="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 gap-2 font-bold text-xs uppercase tracking-widest"
+                    >
+                        <Users className="h-4 w-4" />
+                        Bulk
+                    </Button>
+                </div>
+            </header>
+
+            <div className="flex flex-col sm:flex-row gap-4 items-center p-4 glass rounded-xl border-white/10 shadow-sm">
+                <div className="relative flex-1 w-full max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Search interns..." 
+                        className="pl-9 h-10 bg-white/5 border-white/10 rounded-xl text-xs"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
+                <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl" onClick={() => setSearch("")}>
+                    <RotateCcw className="h-4 w-4" />
+                </Button>
+            </div>
+
+            <div className="glass rounded-xl border-white/10 shadow-sm overflow-hidden relative text-xs">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[1000px]">
+                        <thead>
+                            <tr className="border-b border-white/5 bg-white/5">
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Intern Details</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Roll Number</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Dept & HOD</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Tech</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Ethics</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Deliv.</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Ability</th>
+                                <th className="p-4 text-[9px] font-black text-primary uppercase tracking-widest text-center border-l border-white/5 bg-primary/5">Total (25)</th>
+                                <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {loadingInterns || loadingSheets ? (
+                                Array(5).fill(0).map((_, i) => (
+                                    <tr key={i} className="animate-pulse h-16">
+                                        <td colSpan={9} className="p-4" />
+                                    </tr>
+                                ))
+                            ) : paginatedInterns.length === 0 ? (
+                                <tr>
+                                    <td colSpan={9} className="p-20 text-center text-muted-foreground font-bold italic opacity-40 uppercase text-xs tracking-widest">No interns found.</td>
+                                </tr>
+                            ) : (
+                                paginatedInterns.map(intern => {
+                                    const sheet = allSheets.find(s => s.userId === intern.id);
+                                    return (
+                                        <tr key={intern.id} className="hover:bg-white/[0.02] transition-colors group">
+                                            <td className="p-4 min-w-[180px]">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-bold text-xs tracking-tight text-foreground">{intern.name}</span>
+                                                    <span className="text-[9px] font-medium text-muted-foreground opacity-70 truncate max-w-[130px]">{intern.email}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-[10px] font-black text-primary/80 tabular-nums">{intern.rollNumber || "—"}</td>
+                                            <td className="p-4">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">{intern.department || "General"}</p>
+                                                    <p className="text-[9px] font-bold text-indigo-500 truncate max-w-[100px]">{(intern as any).hodName || "—"}</p>
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-center font-black text-sm opacity-70 tabular-nums">{sheet ? sheet.technicalKnowledge : "—"}</td>
+                                            <td className="p-4 text-center font-black text-sm opacity-70 tabular-nums">{sheet ? sheet.workEthics : "—"}</td>
+                                            <td className="p-4 text-center font-black text-sm opacity-70 tabular-nums">{sheet ? sheet.deliverablesOutcomes : "—"}</td>
+                                            <td className="p-4 text-center font-black text-sm opacity-70 tabular-nums">{sheet ? sheet.abilityToLearn : "—"}</td>
+                                            <td className="p-4 text-center border-l border-white/5 bg-primary/5">
+                                                <span className="text-base font-black text-primary tabular-nums">{sheet ? sheet.totalMarks : "—"}</span>
+                                            </td>
+                                            <td className="p-4 text-right border-l border-white/5">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon"
+                                                        onClick={() => setViewMemoItem({ intern, sheet: sheet || null })}
+                                                        disabled={!sheet}
+                                                        className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-all"
+                                                    >
+                                                        <Eye className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                    <Button 
+                                                        variant={sheet ? "outline" : "default"} 
+                                                        size="sm"
+                                                        onClick={() => handleOpenEdit(intern)}
+                                                        className="rounded-lg h-8 gap-1.5 px-3 font-black text-[9px] uppercase tracking-widest"
+                                                    >
+                                                        {sheet ? <FileText className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                                                        {sheet ? "Edit" : "Score"}
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {totalPages > 1 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-white/5 bg-white/5 gap-4">
+                        <div className="flex items-center gap-3">
+                            <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest tabular-nums">
+                                {(safePage - 1) * perPage + 1} - {Math.min(safePage * perPage, filteredInterns.length)} of {filteredInterns.length}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={safePage === 1} className="h-8 rounded-lg text-[10px] uppercase font-black">
+                                <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Prev
+                            </Button>
+                            <span className="text-[10px] font-black px-3 py-1 bg-black/20 rounded-lg border border-white/10 tabular-nums">
+                                {safePage} / {totalPages}
+                            </span>
+                            <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={safePage === totalPages} className="h-8 rounded-lg text-[10px] uppercase font-black">
+                                Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
                             </Button>
                         </div>
-                    </header>
-
-                    <div className="flex gap-4 items-center p-5 glass rounded-2xl border-white/10 shadow-xl">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Search interns by name, email or roll number..." 
-                                className="pl-9 h-10 bg-white/5 border-white/10 rounded-xl"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-primary rounded-xl" onClick={() => setSearch("")}>
-                            <RotateCcw className="h-4 w-4" />
-                        </Button>
                     </div>
-
-                    <div className="bg-card rounded-2xl border shadow-sm overflow-hidden overflow-x-auto relative">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b bg-muted/50">
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Intern Details</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Roll Number</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Dept & HOD</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Tech<br/>(10)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Ethics<br/>(5)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center px-2">Deliv.<br/>(5)</th>
-                                    <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center w-28 whitespace-normal leading-tight">Ability to learn<br/>independently (5)</th>
-                                    <th className="p-4 text-[10px] font-black text-primary uppercase tracking-widest text-center px-6 border-l border-white/5 bg-primary/5">Total (25)</th>
-                                    <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y border-t border-white/5">
-                                {loadingInterns || loadingSheets ? (
-                                    Array(5).fill(0).map((_, i) => (
-                                        <tr key={i} className="animate-pulse h-16">
-                                            <td colSpan={9} className="p-4" />
-                                        </tr>
-                                    ))
-                                ) : paginatedInterns.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={9} className="p-20 text-center text-muted-foreground font-bold italic opacity-40 uppercase text-xs tracking-widest">No interns found.</td>
-                                    </tr>
-                                ) : (
-                                    paginatedInterns.map(intern => {
-                                        const sheet = allSheets.find(s => s.userId === intern.id);
-                                        return (
-                                            <tr key={intern.id} className="hover:bg-muted/30 transition-colors group">
-                                                <td className="p-4">
-                                                    <div className="flex flex-col">
-                                                        <span className="font-bold text-sm tracking-tight">{intern.name}</span>
-                                                        <span className="text-[10px] font-medium text-muted-foreground opacity-70 truncate max-w-[150px]">{intern.email}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-xs font-black text-primary/80">{intern.rollNumber || "—"}</td>
-                                                <td className="p-4">
-                                                    <div className="flex flex-col">
-                                                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60 leading-none mb-1">{intern.department || "General"}</p>
-                                                        <p className="text-[10px] font-bold text-indigo-500 whitespace-nowrap">{(intern as any).hodName || "—"}</p>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-center font-black text-base opacity-70">{sheet ? sheet.technicalKnowledge : "—"}</td>
-                                                <td className="p-4 text-center font-black text-base opacity-70">{sheet ? sheet.workEthics : "—"}</td>
-                                                <td className="p-4 text-center font-black text-base opacity-70">{sheet ? sheet.deliverablesOutcomes : "—"}</td>
-                                                <td className="p-4 text-center font-black text-base opacity-70">{sheet ? sheet.abilityToLearn : "—"}</td>
-                                                <td className="p-4 text-center border-l border-white/5 bg-primary/5">
-                                                    <span className="text-lg font-black text-primary">{sheet ? sheet.totalMarks : "—"}</span>
-                                                </td>
-                                                <td className="p-4 text-right border-l border-white/5">
-                                                    <div className="flex justify-end gap-2">
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="icon"
-                                                            onClick={() => setViewMemoItem({ intern, sheet: sheet || null })}
-                                                            disabled={!sheet}
-                                                            className="h-9 w-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all shadow-sm border border-transparent hover:border-primary/20"
-                                                            title="View Mark Memo"
-                                                        >
-                                                            <Eye className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button 
-                                                            variant={sheet ? "outline" : "default"} 
-                                                            size="sm"
-                                                            onClick={() => handleOpenEdit(intern)}
-                                                            className="rounded-xl h-9 gap-2 px-4 shadow-sm font-bold"
-                                                        >
-                                                            {sheet ? <FileText className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                                                            {sheet ? "Edit" : "Evaluate"}
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-
-                        {/* Pagination Controls */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
-                                <div className="flex items-center gap-3">
-                                    <Users className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest tabular-nums">
-                                        Showing {(safePage - 1) * perPage + 1} to {Math.min(safePage * perPage, filteredInterns.length)} of {filteredInterns.length} Students
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <Button variant="ghost" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={safePage === 1} className="h-9 gap-2 rounded-xl text-xs font-bold hover:bg-white/5">
-                                        <ChevronLeft className="h-4 w-4" /> Prev
-                                    </Button>
-                                    <div className="flex items-center gap-1">
-                                        <span className="h-8 min-w-[32px] flex items-center justify-center font-black text-[10px] border border-primary/20 px-3 rounded-lg bg-primary/10 text-primary">
-                                            {safePage} / {totalPages}
-                                        </span>
-                                    </div>
-                                    <Button variant="ghost" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={safePage === totalPages} className="h-9 gap-2 rounded-xl text-xs font-bold hover:bg-white/5">
-                                        Next <ChevronRight className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </main>
-
-            {/* Evaluation Dialog */}
+                )}
+            </div>
+                   {/* Evaluation Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-2xl border-none bg-transparent p-0 shadow-none">
-                    <div className="bg-background rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
-                        <DialogHeader className="p-8 border-b border-white/5 bg-white/5 shrink-0">
+                <DialogContent className="max-w-2xl border-none bg-transparent p-0 shadow-none w-[95vw] h-[95vh]">
+                    <div className="bg-background rounded-2xl border border-white/10 shadow-2xl overflow-hidden glass flex flex-col h-full">
+                        <DialogHeader className="p-6 border-b border-white/5 bg-white/5 shrink-0">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                                    <FileText className="h-6 w-6" />
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                    <FileText className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <DialogTitle className="text-2xl font-black">Evaluate Intern</DialogTitle>
-                                    <DialogDescription className="font-medium text-muted-foreground text-sm">
-                                        Set performance scores for <span className="text-foreground font-bold">{selectedIntern?.name}</span>
+                                    <DialogTitle className="text-xl font-black">Score Intern</DialogTitle>
+                                    <DialogDescription className="font-medium text-muted-foreground text-[10px] uppercase tracking-widest">
+                                        Performance scores for <span className="text-foreground font-bold">{selectedIntern?.name}</span>
                                     </DialogDescription>
                                 </div>
                             </div>
                         </DialogHeader>
                         
-                        <div className="p-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-none">Technical Knowledge (Max 10)</Label>
+                        <div className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Technical (Max 10)</Label>
                                     <Input 
                                         type="number" step="0.5" min="0" max="10"
-                                        className="h-12 bg-white/5 border-white/10 rounded-xl font-bold text-lg"
+                                        className="h-10 bg-white/5 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                         value={formData.technicalKnowledge}
                                         onChange={(e) => setFormData({...formData, technicalKnowledge: e.target.value})}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-none">Work Ethics (Max 5)</Label>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Ethics (Max 5)</Label>
                                     <Input 
                                         type="number" step="0.5" min="0" max="5"
-                                        className="h-12 bg-white/5 border-white/10 rounded-xl font-bold text-lg"
+                                        className="h-10 bg-white/5 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                         value={formData.workEthics}
                                         onChange={(e) => setFormData({...formData, workEthics: e.target.value})}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-none">Deliverables & Outcomes (Max 5)</Label>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Deliv. (Max 5)</Label>
                                     <Input 
                                         type="number" step="0.5" min="0" max="5"
-                                        className="h-12 bg-white/5 border-white/10 rounded-xl font-bold text-lg"
+                                        className="h-10 bg-white/5 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                         value={formData.deliverablesOutcomes}
                                         onChange={(e) => setFormData({...formData, deliverablesOutcomes: e.target.value})}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-none">Ability to Learn (Max 5)</Label>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Ability (Max 5)</Label>
                                     <Input 
                                         type="number" step="0.5" min="0" max="5"
-                                        className="h-12 bg-white/5 border-white/10 rounded-xl font-bold text-lg"
+                                        className="h-10 bg-white/5 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                         value={formData.abilityToLearn}
                                         onChange={(e) => setFormData({...formData, abilityToLearn: e.target.value})}
                                     />
                                 </div>
                             </div>
                             
-                            <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20 shadow-inner flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">Total Computed Marks</p>
-                                    <p className="text-sm font-bold text-muted-foreground tracking-tight">Out of a maximum 25.00</p>
+                            <div className="p-5 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <p className="text-[9px] font-black uppercase text-primary tracking-widest">Total Computed</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground tracking-tight">Out of 25.00</p>
                                 </div>
-                                <span className="text-4xl font-black text-primary drop-shadow-lg leading-none">
+                                <span className="text-3xl font-black text-primary tabular-nums">
                                     {(
                                         (parseFloat(formData.technicalKnowledge) || 0) +
                                         (parseFloat(formData.workEthics) || 0) +
@@ -447,21 +443,21 @@ export default function AdminEvaluation() {
                                 </span>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-none">Remarks & Observations</Label>
+                            <div className="space-y-1.5">
+                                <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Remarks</Label>
                                 <Textarea 
-                                    placeholder="Enter detailed feedback for the intern..."
-                                    className="min-h-[120px] bg-white/5 border-white/10 rounded-2xl p-4 font-medium resize-none shadow-inner"
+                                    placeholder="Enter feedback..."
+                                    className="min-h-[100px] bg-white/5 border-white/10 rounded-xl p-3 text-xs font-medium resize-none shadow-inner"
                                     value={formData.remarks}
                                     onChange={(e) => setFormData({...formData, remarks: e.target.value})}
                                 />
                             </div>
                         </div>
 
-                        <DialogFooter className="p-8 bg-white/5 border-t border-white/10 shrink-0">
-                            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-2xl px-8 h-12 font-black border-white/10 hover:bg-white/5 text-xs">Dismiss</Button>
-                            <Button onClick={handleSave} disabled={saveMutation.isPending} className="rounded-2xl px-12 h-12 font-black shadow-2xl shadow-primary/40 text-xs">
-                                {saveMutation.isPending ? "Validating..." : "Finalize Evaluation"}
+                        <DialogFooter className="p-6 bg-white/5 border-t border-white/10 shrink-0 flex flex-row gap-2 justify-end">
+                            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl px-6 h-10 font-black text-[10px] uppercase tracking-widest">Dismiss</Button>
+                            <Button onClick={handleSave} disabled={saveMutation.isPending} className="rounded-xl px-10 h-10 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20">
+                                {saveMutation.isPending ? "Saving..." : "Finalize"}
                             </Button>
                         </DialogFooter>
                     </div>
@@ -470,28 +466,28 @@ export default function AdminEvaluation() {
 
             {/* Bulk Evaluation Dialog */}
             <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
-                <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none">
-                    <div className="bg-background rounded-[2.5rem] border border-white/10 h-[92vh] flex flex-col glass overflow-hidden shadow-2xl">
-                        <DialogHeader className="p-8 border-b border-white/5 bg-white/5 shrink-0">
-                            <div className="flex justify-between items-center">
+                <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none w-[95vw] h-[95vh]">
+                    <div className="bg-background rounded-2xl border border-white/10 h-full flex flex-col glass overflow-hidden shadow-2xl">
+                        <DialogHeader className="p-6 border-b border-white/5 bg-white/5 shrink-0">
+                            <div className="flex justify-between items-center gap-4">
                                 <div>
-                                    <DialogTitle className="text-2xl font-black">Bulk Evaluation Suite</DialogTitle>
-                                    <DialogDescription className="font-medium text-muted-foreground text-sm">Apply standardized marks to multiple new interns simultaneously</DialogDescription>
+                                    <DialogTitle className="text-xl font-black uppercase tracking-widest">Batch Tool</DialogTitle>
+                                    <DialogDescription className="font-medium text-muted-foreground text-[10px] uppercase tracking-widest leading-none mt-1">Standardized marks for batch</DialogDescription>
                                 </div>
-                                <Badge className="bg-primary text-white border-none rounded-xl px-4 py-1.5 font-black uppercase tracking-widest shadow-xl">Batch Mode</Badge>
+                                <Badge className="bg-primary text-white border-none rounded-lg px-3 py-1 font-black uppercase text-[10px] tracking-widest">Batch Mode</Badge>
                             </div>
                         </DialogHeader>
 
-                        <div className="flex-1 flex overflow-hidden p-8 gap-8 min-h-0">
+                        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 sm:p-6 gap-6 min-h-0">
                             {/* Left Section: Selection */}
-                            <div className="flex-1 flex flex-col bg-white/5 rounded-[2rem] border border-white/10 overflow-hidden shadow-inner">
-                                <div className="p-5 border-b border-white/10 space-y-4 bg-white/5">
-                                    <div className="flex gap-4">
+                            <div className="flex-1 flex flex-col bg-white/5 rounded-2xl border border-white/10 overflow-hidden shadow-inner min-h-0">
+                                <div className="p-4 border-b border-white/10 space-y-3 bg-white/5">
+                                    <div className="flex gap-2">
                                         <div className="relative flex-1">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                                             <Input 
-                                                placeholder="Search un-evaluated interns..." 
-                                                className="pl-9 h-11 bg-black/20 border-white/10 rounded-xl font-medium"
+                                                placeholder="Search pending..." 
+                                                className="pl-9 h-9 bg-black/20 border-white/10 rounded-xl text-xs"
                                                 value={bulkSearch}
                                                 onChange={(e) => setBulkSearch(e.target.value)}
                                             />
@@ -499,18 +495,18 @@ export default function AdminEvaluation() {
                                         <Button 
                                             variant="ghost" 
                                             size="icon" 
-                                            className="h-11 w-11 text-muted-foreground hover:text-primary rounded-xl shrink-0 bg-white/5 hover:bg-white/10 border border-white/10"
+                                            className="h-9 w-9 text-muted-foreground hover:text-primary rounded-xl shrink-0 bg-white/5 border border-white/10"
                                             onClick={() => { refetchInterns(); refetchSheets(); }}
                                         >
-                                            <RefreshCw className={`h-4 w-4 ${(loadingInterns || loadingSheets) ? "animate-spin" : ""}`} />
+                                            <RefreshCw className={`h-3.5 w-3.5 ${(loadingInterns || loadingSheets) ? "animate-spin" : ""}`} />
                                         </Button>
                                     </div>
 
-                                    <div className="flex items-center justify-between px-2">
-                                        <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-between px-1">
+                                        <div className="flex items-center gap-2">
                                             <Checkbox 
                                                 id="select-all" 
-                                                className="rounded-lg h-5 w-5 border-white/20"
+                                                className="rounded-md h-4 w-4 border-white/20"
                                                 checked={
                                                     interns.filter(i => !allSheets.find(s => s.userId === i.id)).length > 0 &&
                                                     interns.filter(i => !allSheets.find(s => s.userId === i.id)).every(i => selectedInternIds.has(i.id))
@@ -524,18 +520,18 @@ export default function AdminEvaluation() {
                                                     }
                                                 }}
                                             />
-                                            <Label htmlFor="select-all" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground cursor-pointer opacity-80">Select All Pending</Label>
+                                            <Label htmlFor="select-all" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground cursor-pointer opacity-80">All Pending</Label>
                                         </div>
-                                        <div className="bg-primary/20 border border-primary/20 px-4 py-1.5 rounded-xl">
-                                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                                        <div className="bg-primary/20 px-3 py-1 rounded-lg">
+                                            <span className="text-[9px] font-black text-primary uppercase tracking-widest tabular-nums">
                                                 Selected: {selectedInternIds.size}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <ScrollArea className="flex-1 p-6 custom-scrollbar">
-                                    <div className="space-y-3 pr-2">
+                                <ScrollArea className="flex-1 p-4 custom-scrollbar">
+                                    <div className="space-y-2 pr-1">
                                         {interns
                                             .filter(i => !allSheets.find(s => s.userId === i.id))
                                             .filter(i => 
@@ -551,22 +547,18 @@ export default function AdminEvaluation() {
                                                         else newSet.add(intern.id);
                                                         setSelectedInternIds(newSet);
                                                     }}
-                                                    className={`flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
+                                                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
                                                         selectedInternIds.has(intern.id) 
-                                                            ? "bg-primary/20 border-primary/40 shadow-lg shadow-primary/5" 
+                                                            ? "bg-primary/20 border-primary/40 shadow-sm" 
                                                             : "bg-white/5 border-transparent hover:border-white/10 hover:bg-white/[0.08]"
                                                     }`}
                                                 >
-                                                    <Checkbox checked={selectedInternIds.has(intern.id)} className="h-4 w-4 rounded-md" />
+                                                    <Checkbox checked={selectedInternIds.has(intern.id)} className="h-3.5 w-3.5 rounded-md" />
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-black tracking-tight">{intern.name}</p>
-                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+                                                        <p className="text-[11px] font-black tracking-tight">{intern.name}</p>
+                                                        <div className="flex items-center gap-2 mt-0.5 leading-none">
+                                                            <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 tabular-nums">
                                                                 {intern.rollNumber || "ID: N/A"}
-                                                            </p>
-                                                            <span className="h-1 w-1 rounded-full bg-white/20" />
-                                                            <p className="text-[9px] font-medium text-muted-foreground opacity-60 truncate">
-                                                                {intern.email}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -577,57 +569,55 @@ export default function AdminEvaluation() {
                             </div>
 
                             {/* Right Section: Marks Form */}
-                            <div className="w-[380px] flex flex-col gap-6 shrink-0">
-                                <div className="space-y-6 p-8 bg-white/5 rounded-[2rem] border border-white/10 shadow-inner flex-1 flex flex-col">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                            <Award className="h-5 w-5" />
-                                        </div>
-                                        <h4 className="text-sm font-black uppercase tracking-widest text-foreground">Score Batch</h4>
+                            <div className="w-full lg:w-[320px] lg:shrink-0 overflow-y-auto custom-scrollbar pr-1">
+                                <div className="space-y-5 p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Award className="h-4 w-4 text-primary" />
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Score Batch</h4>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Tech Skill (10)</Label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Tech (10)</Label>
                                             <Input 
                                                 type="number" step="0.5" min="0" max="10" placeholder="0.0"
-                                                className="h-12 bg-black/40 border-white/10 rounded-xl font-bold text-lg focus:bg-black/60 transition-all shadow-inner"
+                                                className="h-10 bg-black/40 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                                 value={bulkFormData.technicalKnowledge}
                                                 onChange={(e) => setBulkFormData({...bulkFormData, technicalKnowledge: e.target.value})}
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Ethics (5)</Label>
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Ethics (5)</Label>
                                             <Input 
                                                 type="number" step="0.5" min="0" max="5" placeholder="0.0"
-                                                className="h-12 bg-black/40 border-white/10 rounded-xl font-bold text-lg focus:bg-black/60 transition-all shadow-inner"
+                                                className="h-10 bg-black/40 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                                 value={bulkFormData.workEthics}
                                                 onChange={(e) => setBulkFormData({...bulkFormData, workEthics: e.target.value})}
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Deliv (5)</Label>
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Deliv (5)</Label>
                                             <Input 
                                                 type="number" step="0.5" min="0" max="5" placeholder="0.0"
-                                                className="h-12 bg-black/40 border-white/10 rounded-xl font-bold text-lg focus:bg-black/60 transition-all shadow-inner"
+                                                className="h-10 bg-black/40 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                                 value={bulkFormData.deliverablesOutcomes}
                                                 onChange={(e) => setBulkFormData({...bulkFormData, deliverablesOutcomes: e.target.value})}
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Learn (5)</Label>
+                                        <div className="space-y-1.5">
+                                            <Label className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Learn (5)</Label>
                                             <Input 
                                                 type="number" step="0.5" min="0" max="5" placeholder="0.0"
-                                                className="h-12 bg-black/40 border-white/10 rounded-xl font-bold text-lg focus:bg-black/60 transition-all shadow-inner"
+                                                className="h-10 bg-black/40 border-white/10 rounded-xl font-bold text-base tabular-nums"
                                                 value={bulkFormData.abilityToLearn}
                                                 onChange={(e) => setBulkFormData({...bulkFormData, abilityToLearn: e.target.value})}
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="p-5 rounded-2xl bg-primary/20 border border-primary/20 flex justify-between items-center shadow-lg shadow-primary/5 mt-auto">
-                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">Total Mark</span>
-                                        <span className="text-2xl font-black text-primary leading-none">
+                                    <div className="p-4 rounded-xl bg-primary/20 border border-primary/20 flex justify-between items-center shadow-lg shadow-primary/5">
+                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Batch Score</span>
+                                        <span className="text-xl font-black text-primary tabular-nums">
                                             {(
                                                 (parseFloat(bulkFormData.technicalKnowledge) || 0) +
                                                 (parseFloat(bulkFormData.workEthics) || 0) +
@@ -637,11 +627,11 @@ export default function AdminEvaluation() {
                                         </span>
                                     </div>
 
-                                    <div className="space-y-2 pt-4">
-                                        <Label className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Batch Feedback</Label>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Feedback</Label>
                                         <Textarea 
-                                            placeholder="Standardized remarks for batch..."
-                                            className="min-h-[140px] bg-black/40 border-white/10 rounded-2xl resize-none p-4 font-medium shadow-inner text-xs"
+                                            placeholder="Standard remarks..."
+                                            className="min-h-[100px] bg-black/40 border-white/10 rounded-xl resize-none p-3 text-[11px] font-medium shadow-inner"
                                             value={bulkFormData.remarks}
                                             onChange={(e) => setBulkFormData({...bulkFormData, remarks: e.target.value})}
                                         />
@@ -650,48 +640,46 @@ export default function AdminEvaluation() {
                             </div>
                         </div>
 
-                        <DialogFooter className="p-8 bg-white/5 border-t border-white/10 shrink-0">
-                            <Button variant="ghost" onClick={() => setIsBulkDialogOpen(false)} className="rounded-2xl px-10 h-12 font-black border-white/10 hover:bg-white/5 text-xs">Dismiss</Button>
+                        <DialogFooter className="p-6 bg-white/5 border-t border-white/10 shrink-0 flex flex-row gap-2 justify-end">
+                            <Button variant="ghost" onClick={() => setIsBulkDialogOpen(false)} className="rounded-xl px-10 h-10 font-black text-[10px] uppercase tracking-widest">Dismiss</Button>
                             <Button 
                                 disabled={selectedInternIds.size === 0 || bulkSaveMutation.isPending}
                                 onClick={() => bulkSaveMutation.mutate({ 
                                     userIds: Array.from(selectedInternIds),
                                     ...bulkFormData
                                 })}
-                                className="rounded-2xl h-12 px-12 font-black shadow-2xl shadow-primary/40 text-xs"
+                                className="rounded-xl h-10 px-10 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20"
                             >
-                                {bulkSaveMutation.isPending ? "Applying Suite..." : `Process ${selectedInternIds.size} Interns`}
+                                {bulkSaveMutation.isPending ? "Applying..." : `Process ${selectedInternIds.size}`}
                             </Button>
                         </DialogFooter>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* Formal Mark Memo Modal (Common for HOD & Admin) */}
+            {/* Formal Mark Memo Modal */}
             <Dialog open={!!viewMemoItem} onOpenChange={(open) => !open && setViewMemoItem(null)}>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none bg-white shadow-none">
-                    <div className="flex flex-col h-[92vh]">
-                        {/* Control Bar (Hidden on Print) */}
-                        <div className="p-4 bg-muted/20 border-b flex justify-between items-center sticky top-0 z-50">
+                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none bg-white shadow-none w-[95vw] h-[95vh]">
+                    <div className="flex flex-col h-full bg-white">
+                        <div className="p-4 bg-muted/20 border-b flex justify-between items-center sticky top-0 z-50 shrink-0">
                             <div className="flex flex-col">
-                                <h3 className="font-black text-lg text-foreground">Marks Memo</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Download your evaluation sheet</p>
+                                <h3 className="font-black text-base text-foreground uppercase tracking-widest">Marks Memo</h3>
+                                <p className="text-[9px] font-black text-muted-foreground uppercase opacity-70 tracking-widest">Review & Export</p>
                             </div>
-                            <div className="flex gap-3">
-                                <Button onClick={handlePrint} className="rounded-xl bg-primary text-white hover:bg-primary/90 gap-2 font-bold px-6 h-10">
+                            <div className="flex gap-2">
+                                <Button onClick={handlePrint} className="rounded-lg bg-primary text-white hover:bg-primary/90 gap-2 font-black text-[10px] uppercase tracking-widest px-6 h-9">
                                     <Download className="h-4 w-4" />
-                                    Download PDF
+                                    PDF
                                 </Button>
-                                <Button variant="ghost" onClick={() => setViewMemoItem(null)} className="h-10 w-10 p-0 rounded-xl">
-                                    <AlertCircle className="rotate-45 h-6 w-6" />
+                                <Button variant="ghost" onClick={() => setViewMemoItem(null)} className="h-9 w-9 p-0 rounded-lg">
+                                    <AlertCircle className="rotate-45 h-5 w-5 opacity-40 hover:opacity-100 transition-opacity" />
                                 </Button>
                             </div>
                         </div>
 
-                        {/* Printable Document Area */}
-                        <div className="flex-1 overflow-y-auto p-12 bg-white flex justify-center custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-white flex justify-center custom-scrollbar">
                             <div id="printable-memo" className="w-full flex justify-center">
-                                {viewMemoItem?.intern && viewMemoItem?.sheet && (
+                                {viewMemoItem && viewMemoItem.sheet && (
                                     <EvaluationMemo 
                                         user={viewMemoItem.intern} 
                                         sheet={viewMemoItem.sheet} 
@@ -702,6 +690,6 @@ export default function AdminEvaluation() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AppLayout>
     );
 }

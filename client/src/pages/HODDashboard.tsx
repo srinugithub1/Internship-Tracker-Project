@@ -1,6 +1,6 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { useQuery } from "@tanstack/react-query";
-import { Users, CheckSquare, Clock, TrendingUp } from "lucide-react";
+import { Users, CheckSquare, Clock, TrendingUp, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
 export default function HODDashboard() {
@@ -24,15 +24,15 @@ export default function HODDashboard() {
             icon: Users, 
             color: "text-blue-500", 
             bg: "bg-blue-500/10",
-            description: "Total interns under your supervision"
+            description: "Students under your supervision"
         },
         { 
-            title: "Task Completion", 
+            title: "Completion", 
             value: `${stats?.completionRate || 0}%`, 
             icon: TrendingUp, 
             color: "text-green-500", 
             bg: "bg-green-500/10",
-            description: "Overall productivity of your department"
+            description: "Department productivity"
         },
         { 
             title: "Submitted Tasks", 
@@ -40,7 +40,7 @@ export default function HODDashboard() {
             icon: CheckSquare, 
             color: "text-purple-500", 
             bg: "bg-purple-500/10",
-            description: "Tasks marked as completed by interns"
+            description: "Completed by interns"
         },
         { 
             title: "Active Today", 
@@ -48,74 +48,69 @@ export default function HODDashboard() {
             icon: Clock, 
             color: "text-orange-500", 
             bg: "bg-orange-500/10",
-            description: "Students currently clocked in"
+            description: "Currently clocked in"
         }
     ];
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-[1200px] mx-auto space-y-8">
-                    <header className="animate-in fade-in slide-in-from-left duration-700">
-                        <h1 className="text-4xl font-black tracking-tight text-foreground">
-                            HOD Dashboard
-                        </h1>
-                        <p className="text-muted-foreground mt-2 text-lg font-medium">
-                            Welcome, {user.name}. Monitoring department progress for {user.collegeName || "your institution"}.
-                        </p>
-                    </header>
+        <AppLayout>
+            <div className="space-y-6">
+            <header className="animate-in fade-in slide-in-from-left duration-700">
+                <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">
+                    HOD Dashboard
+                </h1>
+                <p className="text-muted-foreground mt-0.5 text-xs font-medium">
+                    Welcome, {user.name}. Institution: {user.collegeName || "N/A"}.
+                </p>
+            </header>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {statCards.map((card, i) => (
-                            <div 
-                                key={card.title} 
-                                className="glass p-6 rounded-3xl border-white/10 shadow-xl hover:scale-[1.02] transition-all duration-300 animate-in fade-in zoom-in"
-                                style={{ animationDelay: `${i * 100}ms` }}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`p-3 rounded-2xl ${card.bg}`}>
-                                        <card.icon className={`h-6 w-6 ${card.color}`} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-3xl font-black mb-1">{isLoading ? "..." : card.value}</h3>
-                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-[10px]">
-                                        {card.title}
-                                    </p>
-                                    <p className="text-[11px] text-muted-foreground mt-3 leading-relaxed">
-                                        {card.description}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-8">
-                        <div className="glass p-8 rounded-3xl border-white/10 shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <ShieldCheck className="h-32 w-32" />
-                            </div>
-                            <h2 className="text-2xl font-black mb-4">Department Overview</h2>
-                            <p className="text-muted-foreground max-w-2xl leading-relaxed">
-                                You are currently supervising students from **{user.collegeName || "your college"}**. 
-                                Interns who register and enter your HOD email (**{user.email}**) will automatically appear in your record list. 
-                                You can monitor their task completion, check their daily attendance, and review their progress reports.
-                            </p>
-                            <div className="mt-8 flex gap-4">
-                                <a href="/hod/students" className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/20 transition-all">
-                                    View My Students
-                                </a>
-                                <a href="/hod/attendance" className="bg-white/5 border border-white/10 px-6 py-3 rounded-xl font-bold hover:bg-white/10 transition-all">
-                                    Attendance Logs
-                                </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {statCards.map((card, i) => (
+                    <div 
+                        key={card.title} 
+                        className="glass p-5 rounded-2xl border-white/10 shadow-sm hover:translate-y-[-2px] transition-all duration-300 animate-in fade-in zoom-in"
+                        style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                        <div className="flex justify-between items-start mb-3">
+                            <div className={`p-2 rounded-xl ${card.bg}`}>
+                                <card.icon className={`h-4 w-4 ${card.color}`} />
                             </div>
                         </div>
+                        <div>
+                            <h3 className="text-2xl font-black mb-0.5 tracking-tight">{isLoading ? "..." : card.value}</h3>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                                {card.title}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground mt-2 leading-relaxed opacity-70">
+                                {card.description}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 gap-6">
+                <div className="glass p-6 md:p-8 rounded-2xl border-white/10 shadow-lg relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <ShieldCheck className="h-24 w-24" />
+                    </div>
+                    <h2 className="text-xl font-black mb-3 text-primary uppercase tracking-wider">Department Overview</h2>
+                    <p className="text-muted-foreground text-xs leading-relaxed max-w-3xl">
+                        You are supervising students from **{user.collegeName || "your college"}**. 
+                        Interns who use your HOD email (**{user.email}**) during registration will appear in your records. 
+                        Monitor task completion, check attendance logs, and review progress reports from your dedicated portal.
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                        <a href="/hod/students" className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg transition-all shadow-primary/20">
+                            My Students
+                        </a>
+                        <a href="/hod/attendance" className="bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                            Attendance Logs
+                        </a>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+            </div>
+        </AppLayout>
     );
 }
-
-import { ShieldCheck } from "lucide-react";

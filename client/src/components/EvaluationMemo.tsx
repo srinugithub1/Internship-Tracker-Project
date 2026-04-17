@@ -27,30 +27,32 @@ export default function EvaluationMemo({ user, sheet }: EvaluationMemoProps) {
                     MAXIMUM MARKS: 25
                 </h3>
 
-                <table className="w-full memo-table border-collapse text-[13px] md:text-sm mt-10">
-                    <thead>
-                        <tr>
-                            <th className="w-[12%] py-4">USN</th>
-                            <th className="w-[18%] py-4">Student Name</th>
-                            <th className="w-[14%] py-4">Technical Knowledge<br/>(10 Marks)</th>
-                            <th className="w-[12%] py-4">Work Ethics<br/>(5 Marks)</th>
-                            <th className="w-[12%] py-4">Deliverables and Outcomes<br/>(5 Marks)</th>
-                            <th className="w-[20%] py-4 text-xs font-bold leading-tight">Ability to learn independently, adapt to new and emerging technologies, and exhibit critical thinking (5 Marks)</th>
-                            <th className="w-[12%] py-4">TOTAL MARKS<br/>(25 Marks)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="h-20">
-                            <td>{user?.rollNumber || "N/A"}</td>
-                            <td>{user?.name || "N/A"}</td>
-                            <td className="font-bold text-base">{sheet.technicalKnowledge}</td>
-                            <td className="font-bold text-base">{sheet.workEthics}</td>
-                            <td className="font-bold text-base">{sheet.deliverablesOutcomes}</td>
-                            <td className="font-bold text-base">{sheet.abilityToLearn}</td>
-                            <td className="font-black text-xl text-blue-900">{sheet.totalMarks}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="overflow-x-auto custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <table className="w-full memo-table border-collapse text-[13px] md:text-sm mt-10 min-w-[700px]">
+                        <thead>
+                            <tr>
+                                <th className="w-[12%] py-4">USN</th>
+                                <th className="w-[18%] py-4">Student Name</th>
+                                <th className="w-[14%] py-4">Technical Knowledge<br/>(10 Marks)</th>
+                                <th className="w-[12%] py-4">Work Ethics<br/>(5 Marks)</th>
+                                <th className="w-[12%] py-4">Deliverables and Outcomes<br/>(5 Marks)</th>
+                                <th className="w-[20%] py-4 text-xs font-bold leading-tight">Ability to learn independently, adapt to new and emerging technologies, and exhibit critical thinking (5 Marks)</th>
+                                <th className="w-[12%] py-4">TOTAL MARKS<br/>(25 Marks)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="h-20">
+                                <td>{user?.rollNumber || "N/A"}</td>
+                                <td>{user?.name || "N/A"}</td>
+                                <td className="font-bold text-base">{sheet.technicalKnowledge}</td>
+                                <td className="font-bold text-base">{sheet.workEthics}</td>
+                                <td className="font-bold text-base">{sheet.deliverablesOutcomes}</td>
+                                <td className="font-bold text-base">{sheet.abilityToLearn}</td>
+                                <td className="font-black text-xl text-blue-900">{sheet.totalMarks}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* Remarks by External Guide */}
                 <div className="mt-8">

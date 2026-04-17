@@ -1,14 +1,15 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { useQuery } from "@tanstack/react-query";
 import { type Attendance, type User } from "@shared/schema";
-import { Search, Calendar, Clock, RotateCcw, Eye, Building2, TrendingUp, History, Filter, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Search, Calendar, Clock, RotateCcw, Eye, Building2, TrendingUp, History, Filter, ChevronLeft, ChevronRight, Users, ClipboardCheck } from "lucide-react";
 import { useState, useMemo } from "react";
 import { format, getDaysInMonth, differenceInCalendarDays, startOfDay } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const YEARS = ["2024", "2025", "2026"];
@@ -124,323 +125,304 @@ export default function AdminAttendance() {
     }, [selectedInternId, attendance, detailMonth, detailYear]);
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-[1400px] mx-auto space-y-8">
-                    <header className="flex justify-between items-end animate-in fade-in slide-in-from-left duration-700">
-                        <div>
-                            <h1 className="text-4xl font-black tracking-tight text-foreground">
-                                Attendance Tracking
-                            </h1>
-                            <p className="text-muted-foreground mt-2 text-lg font-medium">
-                                Organization-wide attendance summaries and detailed career historical logs.
-                            </p>
+        <AppLayout>
+            <div className="space-y-6">
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
+                    <div>
+                        <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">
+                            Attendance Registry
+                        </h1>
+                        <p className="text-muted-foreground mt-1 text-xs font-medium">
+                            Monitor enterprise-wide clock-in sequences and institutional historical logs.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl shadow-sm h-11">
+                        <History className="h-4 w-4 text-primary opacity-60" />
+                        <div className="flex flex-col items-start pr-2">
+                            <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest leading-none">Total Registry</span>
+                            <span className="text-lg font-black text-primary leading-none tabular-nums">{interns.length}</span>
                         </div>
-                        <div className="bg-primary/10 border border-primary/20 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-lg shadow-primary/5">
-                            <History className="h-5 w-5 text-primary" />
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">Total Interns</span>
-                                <span className="text-xl font-black text-foreground">{interns.length}</span>
-                            </div>
-                        </div>
-                    </header>
+                    </div>
+                </header>
 
-                    {/* Filters Section */}
-                    <div className="flex flex-col lg:flex-row gap-4 items-center p-6 glass rounded-2xl border-white/10 shadow-xl">
-                        <div className="relative flex-1 w-full max-w-md">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Search by name, branch or HOD..." 
-                                className="pl-9 h-11 bg-white/5 border-white/10 rounded-xl"
-                                value={search}
-                                onChange={(e) => {
-                                    setSearch(e.target.value);
-                                    setCurrentPage(1);
-                                }}
-                            />
-                        </div>
-                        
-                        <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-xl border border-primary/10">
-                                <Filter className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Global Filter</span>
+                <div className="glass rounded-xl border-white/10 shadow-xl overflow-hidden">
+                    <div className="p-4 border-b border-white/5 bg-white/5">
+                        <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                            <div className="relative w-full lg:max-w-md group">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                <Input 
+                                    placeholder="Search by identity, department or guide..." 
+                                    className="pl-9 h-10 bg-white/5 border-white/10 rounded-xl text-[10px] font-medium uppercase tracking-tight focus:bg-white/10 transition-all"
+                                    value={search}
+                                    onChange={(e) => {
+                                        setSearch(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                />
                             </div>
-                            <Select value={mainMonth} onValueChange={(v) => { setMainMonth(v); setCurrentPage(1); }}>
-                                <SelectTrigger className="w-[140px] h-11 bg-white/5 border-white/10 rounded-xl font-bold">
-                                    <SelectValue placeholder="Month" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {MONTHS.map((m, idx) => (
-                                        <SelectItem key={m} value={idx.toString()}>{m}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select value={mainYear} onValueChange={(v) => { setMainYear(v); setCurrentPage(1); }}>
-                                <SelectTrigger className="w-[100px] h-11 bg-white/5 border-white/10 rounded-xl font-bold">
-                                    <SelectValue placeholder="Year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {YEARS.map(y => (
-                                        <SelectItem key={y} value={y}>{y}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl" onClick={() => {
-                                setSearch("");
-                                setMainMonth(new Date().getMonth().toString());
-                                setMainYear(new Date().getFullYear().toString());
-                                setCurrentPage(1);
-                            }}>
-                                <RotateCcw className="h-4 w-4" />
-                            </Button>
+                            
+                            <div className="flex items-center gap-2 w-full lg:w-auto">
+                                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-lg border border-primary/10">
+                                    <Filter className="h-3.5 w-3.5 text-primary" />
+                                    <span className="text-[9px] font-black uppercase text-primary tracking-widest whitespace-nowrap">Monthly Index</span>
+                                </div>
+                                <Select value={mainMonth} onValueChange={(v) => { setMainMonth(v); setCurrentPage(1); }}>
+                                    <SelectTrigger className="w-full sm:w-[130px] h-10 bg-white/5 border-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                                        <SelectValue placeholder="Month" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {MONTHS.map((m, idx) => (
+                                            <SelectItem key={m} value={idx.toString()}>{m}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Select value={mainYear} onValueChange={(v) => { setMainYear(v); setCurrentPage(1); }}>
+                                    <SelectTrigger className="w-[90px] h-10 bg-white/5 border-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                                        <SelectValue placeholder="Year" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {YEARS.map(y => (
+                                            <SelectItem key={y} value={y}>{y}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => {
+                                    setSearch("");
+                                    setMainMonth(new Date().getMonth().toString());
+                                    setMainYear(new Date().getFullYear().toString());
+                                    setCurrentPage(1);
+                                }}>
+                                    <RotateCcw className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Paginated Data Table */}
-                    <div className="glass rounded-3xl border-white/10 shadow-2xl overflow-hidden relative">
-                        <table className="w-full text-left border-collapse">
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Intern Details</th>
-                                    <th className="p-6 text-[10px] font-black text-primary uppercase tracking-widest border-l border-white/5 bg-primary/5">Filtered Month</th>
-                                    <th className="p-6 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 text-center px-4">P. Days</th>
-                                    <th className="p-6 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 text-center px-4">A. Days</th>
-                                    <th className="p-6 text-[10px] font-black text-emerald-500 uppercase tracking-widest border-l border-white/5 bg-emerald-500/5 text-center">Total Present (Overall)</th>
-                                    <th className="p-6 text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/5 text-center">Total Absent (Overall)</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right border-l border-white/5">Action</th>
+                                <tr className="border-b border-white/10 bg-white/5">
+                                    <th className="p-4 text-[9px] font-black uppercase text-muted-foreground tracking-[0.1em] first:pl-6">Intern Identity</th>
+                                    <th className="p-4 text-[9px] font-black uppercase text-primary tracking-[0.1em] text-center border-l border-white/5 bg-primary/[0.03]">F. Present</th>
+                                    <th className="p-4 text-[9px] font-black uppercase text-rose-500 tracking-[0.1em] text-center border-l border-white/5 bg-rose-500/[0.03]">F. Absent</th>
+                                    <th className="p-4 text-[9px] font-black uppercase text-emerald-500 tracking-[0.1em] text-center border-l border-white/5 bg-emerald-500/[0.03]">Overall Present</th>
+                                    <th className="p-4 text-[9px] font-black uppercase text-rose-600 tracking-[0.1em] text-center border-l border-white/5 bg-rose-600/[0.03]">Overall Absent</th>
+                                    <th className="p-4 text-[9px] font-black uppercase text-muted-foreground tracking-[0.1em] text-right last:pr-6 border-l border-white/5">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {isLoading ? (
                                     Array(5).fill(0).map((_, i) => (
-                                        <tr key={i} className="animate-pulse h-20">
-                                            <td colSpan={7} className="p-6 bg-white/5" />
+                                        <tr key={i} className="animate-pulse">
+                                            <td colSpan={6} className="p-8"><div className="h-4 w-full bg-white/5 rounded" /></td>
                                         </tr>
                                     ))
                                 ) : paginatedData.length === 0 ? (
                                     <tr>
-                                        <td colSpan={7} className="p-20 text-center text-muted-foreground italic font-medium opacity-50">
-                                            No attendance logs found for specified filters.
+                                        <td colSpan={6} className="p-20 text-center opacity-30 italic text-[10px] font-black uppercase tracking-widest">
+                                            No attendance telemetry found for current criteria.
                                         </td>
                                     </tr>
                                 ) : paginatedData.map((summary) => (
                                     <tr key={summary.id} className="hover:bg-white/[0.02] transition-colors group">
-                                        <td className="p-6 min-w-[250px]">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black border border-primary/20 group-hover:bg-primary group-hover:text-white transition-all">
-                                                    {summary.name.charAt(0)}
+                                        <td className="p-4 first:pl-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xs shadow-inner">
+                                                    {summary.name.charAt(0).toUpperCase()}
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <p className="font-black text-foreground truncate">{summary.name}</p>
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">
-                                                            {summary.department || "General"}
-                                                        </p>
-                                                        <p className="text-[8px] font-black text-primary/70 uppercase tracking-tighter">
-                                                            HOD: {summary.hodName || "N/A"}
-                                                        </p>
-                                                    </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-[11px] text-foreground uppercase tracking-tight leading-none mb-1">{summary.name}</span>
+                                                    <span className="text-[9px] text-muted-foreground font-bold uppercase opacity-60 tracking-tighter">
+                                                        {summary.department || "General"} | HOD: {summary.hodName || "N/A"}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="p-6 border-l border-white/5 bg-primary/[0.02]">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-primary/50" />
-                                                <span className="font-black text-sm text-primary">{summary.trackedMonthName}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-6 text-center bg-primary/[0.02]">
-                                            <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 rounded-lg min-w-[42px] justify-center h-8 font-black text-base">
+                                        <td className="p-4 text-center border-l border-white/5 bg-primary/[0.01]">
+                                            <Badge className="bg-primary/10 text-primary border-primary/20 rounded-lg min-w-[32px] justify-center h-7 font-black text-xs tabular-nums">
                                                 {summary.filteredPresent}
                                             </Badge>
                                         </td>
-                                        <td className="p-6 text-center bg-primary/[0.02]">
-                                            <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 rounded-lg min-w-[42px] justify-center h-8 font-black text-base">
+                                        <td className="p-4 text-center border-l border-white/5 bg-rose-500/[0.01]">
+                                            <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 rounded-lg min-w-[32px] justify-center h-7 font-black text-xs tabular-nums">
                                                 {summary.filteredAbsent}
                                             </Badge>
                                         </td>
-                                        <td className="p-6 text-center border-l border-white/5 bg-emerald-500/[0.02]">
+                                        <td className="p-4 text-center border-l border-white/5 bg-emerald-500/[0.01]">
                                             <div className="flex flex-col items-center">
-                                                <span className="text-xl font-black text-emerald-500 leading-none">{summary.totalPresentDays}</span>
-                                                <span className="text-[8px] font-black uppercase tracking-tighter text-emerald-500/50 mt-1">Present Days</span>
+                                                <span className="text-sm font-black text-emerald-500 leading-none tabular-nums">{summary.totalPresentDays}</span>
+                                                <span className="text-[7px] font-black uppercase tracking-tighter text-emerald-500/50 mt-1">Days Present</span>
                                             </div>
                                         </td>
-                                        <td className="p-6 text-center bg-rose-500/[0.02]">
+                                        <td className="p-4 text-center border-l border-white/5 bg-rose-600/[0.01]">
                                             <div className="flex flex-col items-center">
-                                                <span className="text-xl font-black text-rose-500 leading-none">{summary.totalAbsentDays}</span>
-                                                <span className="text-[8px] font-black uppercase tracking-tighter text-rose-500/50 mt-1">Absent Days</span>
+                                                <span className="text-sm font-black text-rose-600 leading-none tabular-nums">{summary.totalAbsentDays}</span>
+                                                <span className="text-[7px] font-black uppercase tracking-tighter text-rose-600/50 mt-1">Days Absent</span>
                                             </div>
                                         </td>
-                                        <td className="p-6 text-right border-l border-white/5">
+                                        <td className="p-4 text-right last:pr-6 border-l border-white/5">
                                             <Button 
                                                 variant="outline"
+                                                size="sm"
                                                 onClick={() => {
                                                     setSelectedInternId(summary.id);
                                                     setDetailMonth(mainMonth);
                                                     setDetailYear(mainYear);
                                                 }}
-                                                className="rounded-xl font-black gap-2 h-10 px-6 hover:bg-white hover:text-black transition-all border-white/10 shadow-sm"
+                                                className="rounded-lg font-black text-[9px] uppercase tracking-widest h-8 px-4 hover:bg-white/10 transition-all border-white/10"
                                             >
-                                                <Eye className="h-4 w-4" />
-                                                View Log
+                                                History
                                             </Button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    </div>
 
-                        {/* Pagination Footer */}
-                        <div className="p-4 bg-white/5 border-t border-white/5 flex flex-col md:flex-row justify-between items-center px-8 gap-4">
-                            <div className="flex items-center gap-3">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-                                    Showing {paginatedData.length} of {summaryData.length} Interns
-                                </p>
-                            </div>
-                            
-                            <div className="flex items-center gap-6">
-                                <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                    disabled={currentPage === 1}
-                                    className="rounded-xl h-9 hover:bg-white/5 text-xs font-bold gap-2"
-                                >
-                                    <ChevronLeft className="h-4 w-4" /> Prev
-                                </Button>
-                                
-                                <div className="flex items-center gap-1">
-                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                        let pageNum = i + 1;
-                                        if (totalPages > 5 && currentPage > 3) pageNum = currentPage - 3 + i + 1;
-                                        if (pageNum > totalPages) return null;
-                                        
-                                        return (
-                                            <button 
-                                                key={pageNum}
-                                                onClick={() => setCurrentPage(pageNum)}
-                                                className={`h-8 w-8 rounded-lg text-[10px] font-black transition-all border ${currentPage === pageNum ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' : 'border-white/10 text-muted-foreground hover:bg-white/5'}`}
-                                            >
-                                                {pageNum}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-
-                                <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                    className="rounded-xl h-9 hover:bg-white/5 text-xs font-bold gap-2"
-                                >
-                                    Next <ChevronRight className="h-4 w-4" />
-                                </Button>
-                            </div>
+                    <div className="flex items-center justify-between p-4 border-t border-white/5 bg-white/5">
+                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest tabular-nums leading-none">
+                            Identity {(currentPage - 1) * pageSize + 1} – {Math.min(currentPage * pageSize, summaryData.length)} / {summaryData.length} records
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                                disabled={currentPage === 1} 
+                                className="h-8 px-3 rounded-lg text-[10px] font-black uppercase gap-1 border-white/10"
+                            >
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                            </Button>
+                            <span className="text-[10px] font-black tabular-nums border border-white/10 px-3 h-8 flex items-center rounded-lg bg-black/20 text-foreground">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                                disabled={currentPage === totalPages || totalPages === 0} 
+                                className="h-8 px-3 rounded-lg text-[10px] font-black uppercase gap-1 border-white/10"
+                            >
+                                <ChevronRight className="h-3.5 w-3.5" />
+                            </Button>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
 
-            {/* Detailed History Logs Popup */}
             <Dialog open={!!selectedInternId} onOpenChange={(open) => !open && setSelectedInternId(null)}>
-                <DialogContent className="max-w-4xl p-0 border-none bg-transparent shadow-none">
-                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
-                        {/* Modal Header */}
-                        <div className="p-6 lg:p-8 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border-b border-white/5 shrink-0">
-                            <div className="flex gap-6">
-                                <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center text-white text-2xl font-black shadow-2xl shadow-primary/40 border-4 border-white/10">
+                <DialogContent className="max-w-3xl border-none bg-transparent p-0 shadow-none w-[95vw] h-[90vh]">
+                    <div className="bg-background rounded-2xl border border-white/10 shadow-2xl overflow-hidden glass flex flex-col h-full">
+                        <div className="p-6 border-b border-white/5 bg-white/5 shrink-0">
+                            <div className="flex gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xl shadow-inner">
                                     {selectedIntern?.name?.charAt(0)}
                                 </div>
-                                <div className="space-y-1">
-                                    <DialogTitle className="text-2xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+                                <div>
+                                    <DialogTitle className="text-xl font-black uppercase tracking-tight">{selectedIntern?.name}</DialogTitle>
+                                    <div className="flex items-center gap-3 mt-1">
+                                        <p className="text-muted-foreground font-black text-[9px] uppercase tracking-[0.2em] flex items-center gap-1.5 opacity-60">
                                             <Building2 className="h-3 w-3 text-primary" />
-                                            {selectedIntern?.department || "General Department"}
+                                            {selectedIntern?.department || "Department Routing"}
                                         </p>
-                                        <p className="text-muted-foreground/60 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2">
-                                            HOD: {selectedIntern?.hodName || "N/A"}
+                                        <div className="h-1 w-1 rounded-full bg-white/20" />
+                                        <p className="text-primary font-black text-[9px] uppercase tracking-widest">
+                                            Index: {MONTHS[parseInt(detailMonth)]} {detailYear}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Modal Body */}
-                        <div className="p-6 lg:p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <h4 className="font-black text-[10px] uppercase tracking-widest opacity-70">Drill-Down Monthly Log</h4>
-                                <div className="flex gap-3">
+                        <div className="p-4 border-b border-white/5 bg-white/[0.02] shrink-0">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-2">
+                                    <ClipboardCheck className="h-3.5 w-3.5 text-primary" />
+                                    <h4 className="font-black text-[9px] uppercase tracking-widest">Session Drill-Down</h4>
+                                </div>
+                                <div className="flex items-center gap-2">
                                     <Select value={detailMonth} onValueChange={setDetailMonth}>
-                                        <SelectTrigger className="w-[130px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
-                                            <SelectValue placeholder="Month" />
+                                        <SelectTrigger className="w-[110px] h-8 bg-white/5 border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                            <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MONTHS.map((m, idx) => (
-                                                <SelectItem key={m} value={idx.toString()}>{m}</SelectItem>
+                                                <SelectItem key={m} value={idx.toString()} className="text-[10px] font-black uppercase tracking-widest">{m}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                     <Select value={detailYear} onValueChange={setDetailYear}>
-                                        <SelectTrigger className="w-[90px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
-                                            <SelectValue placeholder="Year" />
+                                        <SelectTrigger className="w-[80px] h-8 bg-white/5 border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                            <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {YEARS.map(y => (
-                                                <SelectItem key={y} value={y}>{y}</SelectItem>
+                                                <SelectItem key={y} value={y} className="text-[10px] font-black uppercase tracking-widest">{y}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 shadow-inner">
+                        <ScrollArea className="flex-1">
+                            <div className="p-0">
                                 <table className="w-full text-left border-collapse">
-                                    <thead className="sticky top-0 bg-card/80 backdrop-blur-md z-10 border-b border-white/10">
+                                    <thead className="sticky top-0 bg-background/95 backdrop-blur-md z-10 border-b border-white/10">
                                         <tr className="bg-white/5">
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest px-6 text-center">Date</th>
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock In</th>
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock Out</th>
-                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right px-6">Duration</th>
+                                            <th className="p-4 text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] pl-8">Protocol Date</th>
+                                            <th className="p-4 text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] text-center">Clock In</th>
+                                            <th className="p-4 text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] text-center">Clock Out</th>
+                                            <th className="p-4 text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] pr-8 text-right">Sequence</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {detailLogs.length === 0 ? (
-                                            <tr><td colSpan={4} className="p-12 text-center opacity-40 font-bold italic text-xs tracking-widest uppercase">No tracked sessions for selected period.</td></tr>
+                                            <tr>
+                                                <td colSpan={4} className="p-20 text-center opacity-30 italic text-[9px] font-black uppercase tracking-widest">
+                                                    No session telemetry found for current timeframe.
+                                                </td>
+                                            </tr>
                                         ) : (
                                             detailLogs.map((log) => (
-                                                <tr key={log.id} className="hover:bg-white/[0.02]">
-                                                    <td className="p-4 px-6 font-bold text-xs tracking-tight text-center">{log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}</td>
-                                                    <td className="p-4">
-                                                        <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-[10px]">
-                                                            <Clock className="h-3 w-3" /> {formatTime(log.loginTime)}
-                                                        </div>
+                                                <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                                                    <td className="p-4 pl-8 font-black text-xs text-foreground/80 tracking-tight">
+                                                        {log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}
                                                     </td>
-                                                    <td className="p-4">
-                                                        <div className="flex items-center justify-center gap-2 text-rose-500 font-black text-[10px]">
-                                                            <Clock className="h-3 w-3" /> {log.logoutTime ? formatTime(log.logoutTime) : "Active"}
-                                                        </div>
+                                                    <td className="p-4 text-center">
+                                                        <span className="text-emerald-500 font-black text-[10px] tracking-tight tabular-nums bg-emerald-500/5 px-2 py-1 rounded-md border border-emerald-500/10 grayscale-[0.3]">
+                                                            {formatTime(log.loginTime)}
+                                                        </span>
                                                     </td>
-                                                    <td className="p-4 px-6 text-right font-black text-primary text-xs">{calculateDuration(log.loginTime, log.logoutTime)} hrs</td>
+                                                    <td className="p-4 text-center">
+                                                        {log.logoutTime ? (
+                                                            <span className="text-rose-500 font-black text-[10px] tracking-tight tabular-nums bg-rose-500/5 px-2 py-1 rounded-md border border-rose-500/10 grayscale-[0.3]">
+                                                                {formatTime(log.logoutTime)}
+                                                            </span>
+                                                        ) : (
+                                                            <Badge className="bg-primary/20 text-primary border-primary/20 animate-pulse text-[8px] font-black uppercase tracking-widest">Active Sequence</Badge>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 pr-8 text-right font-black text-foreground/40 text-[10px] tabular-nums">
+                                                        {calculateDuration(log.loginTime, log.logoutTime)} <span className="text-[8px] opacity-40">HRS</span>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </ScrollArea>
 
-                        <div className="p-6 bg-white/5 border-t border-white/5 flex justify-end shrink-0">
-                            <Button onClick={() => setSelectedInternId(null)} className="rounded-2xl px-12 font-black h-11 bg-white text-black hover:bg-white/90 shadow-2xl active:scale-95 transition-all text-xs">
-                                Close Dashboard
+                        <div className="p-6 bg-white/5 border-t border-white/5 shrink-0">
+                            <Button onClick={() => setSelectedInternId(null)} className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest h-11 bg-white text-black hover:bg-white/90 shadow-xl shadow-white/5 transition-all">
+                                Close Registry
                             </Button>
                         </div>
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AppLayout>
     );
 }

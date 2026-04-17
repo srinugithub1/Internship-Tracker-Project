@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -169,22 +169,21 @@ export default function AdminPaidInternship() {
     };
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-7xl mx-auto space-y-8">
-                    <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <AppLayout>
+            <div className="space-y-6">
+                    <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
                         <div>
-                            <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-                                <div className="p-2 rounded-xl bg-primary/10">
-                                    <CreditCard className="h-6 w-6 text-primary" />
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="p-1.5 rounded-lg bg-primary/10">
+                                    <CreditCard className="h-3.5 w-3.5 text-primary" />
                                 </div>
-                                Paid Internships
-                            </h1>
-                            <p className="text-muted-foreground mt-1 text-sm font-medium">Manage and import paid internship applications.</p>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Applications</span>
+                            </div>
+                            <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">Paid Internships</h1>
+                            <p className="text-muted-foreground mt-0.5 text-xs font-medium">Manage and import paid internship applications.</p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <Button variant="outline" className="rounded-xl font-bold h-11" onClick={() => {
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Button variant="outline" size="sm" className="rounded-lg h-9 font-black text-[9px] uppercase tracking-widest gap-1.5 border-white/10" onClick={() => {
                                 const csvContent = "data:text/csv;charset=utf-8," +
                                     ["Name", "Email", "PhoneNumber", "College", "Branch", "Semester", "UniversityName"].join(",") + "\n" +
                                     internships.map((i: any) => [i.name, i.email, i.phoneNumber, i.college, i.branch, i.semester, i.universityName].join(",")).join("\n");
@@ -195,78 +194,81 @@ export default function AdminPaidInternship() {
                                 document.body.appendChild(link);
                                 link.click();
                             }}>
-                                <FileDown className="h-4 w-4 mr-2" /> Export CSV
+                                <FileDown className="h-3.5 w-3.5" /> Export
                             </Button>
-                            <Button className="rounded-xl font-black h-11 shadow-lg shadow-primary/20" onClick={() => setIsImportModalOpen(true)}>
-                                <Upload className="h-4 w-4 mr-2" /> Import Data
+                            <Button size="sm" className="rounded-lg h-9 font-black text-[9px] uppercase tracking-widest gap-1.5 shadow-lg" onClick={() => setIsImportModalOpen(true)}>
+                                <Upload className="h-3.5 w-3.5" /> Import CSV
                             </Button>
                         </div>
                     </header>
 
-                    <Card className="glass border-white/20 shadow-xl overflow-hidden">
-                        <CardHeader className="bg-white/5 border-b border-white/10 p-6 flex flex-row items-center justify-between gap-4">
-                            <div className="relative max-w-md w-full">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Card className="glass border-white/10 shadow-xl overflow-hidden">
+                        <CardHeader className="bg-white/5 border-b border-white/10 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                            <div className="relative flex-1 max-w-sm">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                                 <Input
                                     placeholder="Search by name, email or college..."
-                                    className="pl-10 h-10 bg-white/5 border-white/10 rounded-xl"
+                                    className="pl-9 h-8 bg-white/5 border-white/10 rounded-lg text-xs"
                                     value={searchTerm}
                                     onChange={handleSearchChange}
                                 />
                             </div>
-                            <div className="flex items-center gap-2 pr-2">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <Button
-                                    className="rounded-xl font-black h-10 shadow-lg shadow-primary/20 bg-indigo-600 hover:bg-indigo-700 text-white"
+                                    size="sm"
+                                    className="rounded-lg font-black h-8 text-[9px] uppercase tracking-widest gap-1.5 shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700"
                                     onClick={() => setIsAddModalOpen(true)}
                                 >
-                                    <Plus className="h-4 w-4 mr-2" /> Add Intern
+                                    <Plus className="h-3.5 w-3.5" /> Add Intern
                                 </Button>
-                                <div className="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-xl border border-white/5 ml-2">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground"> Total Records: </span>
-                                    <span className="text-sm font-black text-primary">{totalRecords}</span>
+                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Records</span>
+                                    <span className="text-sm font-black text-primary tabular-nums">{totalRecords}</span>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
+                            <div className="overflow-x-auto custom-scrollbar">
                             <Table>
                                 <TableHeader className="bg-white/5">
                                     <TableRow className="border-white/10">
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5 px-6">Name</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">Email</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">Phone</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">College</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">Branch</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">Semester</TableHead>
-                                        <TableHead className="font-bold text-[10px] uppercase tracking-widest py-5">University</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4 px-6 first:pl-6">Name</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">Email</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">Phone</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">College</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">Branch</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">Semester</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-[0.1em] py-4">University</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {isLoading ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center py-20 animate-pulse font-bold text-muted-foreground uppercase tracking-widest text-xs">Fetching records...</TableCell>
+                                            <TableCell colSpan={7} className="text-center py-20 opacity-30 font-black text-muted-foreground uppercase tracking-widest text-[10px] animate-pulse">Fetching records...</TableCell>
                                         </TableRow>
                                     ) : paginatedInternships.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center py-20 text-muted-foreground italic border-white/5 bg-white/5">No applications found.</TableCell>
+                                            <TableCell colSpan={7} className="text-center py-20 opacity-30 italic text-[10px] font-black uppercase tracking-widest">No applications found.</TableCell>
                                         </TableRow>
                                     ) : (
                                         paginatedInternships.map((intern: any) => (
-                                            <TableRow key={intern.id} className="border-white/5 hover:bg-white/5 transition-colors">
-                                                <TableCell className="py-4 px-6">
-                                                    <p className="font-black text-sm">{intern.name}</p>
-                                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Applied: {new Date(intern.createdAt).toLocaleDateString()}</p>
+                                            <TableRow key={intern.id} className="border-white/5 hover:bg-white/[0.02] transition-colors">
+                                                <TableCell className="py-3 px-6">
+                                                    <p className="font-black text-[11px]">{intern.name}</p>
+                                                    <p className="text-[9px] text-muted-foreground uppercase tracking-widest mt-0.5 opacity-60">Applied: {new Date(intern.createdAt).toLocaleDateString()}</p>
                                                 </TableCell>
-                                                <TableCell className="text-sm font-medium">{intern.email}</TableCell>
-                                                <TableCell className="text-sm font-medium">{intern.phoneNumber}</TableCell>
-                                                <TableCell className="text-sm font-bold opacity-80">{intern.college}</TableCell>
-                                                <TableCell className="text-sm font-medium opacity-80">{intern.branch}</TableCell>
-                                                <TableCell className="text-sm font-bold opacity-80">{intern.semester}</TableCell>
-                                                <TableCell className="text-sm font-medium opacity-80">{intern.universityName}</TableCell>
+                                                <TableCell className="text-[10px] font-medium">{intern.email}</TableCell>
+                                                <TableCell className="text-[10px] font-medium tabular-nums">{intern.phoneNumber}</TableCell>
+                                                <TableCell className="text-[10px] font-bold opacity-80">{intern.college}</TableCell>
+                                                <TableCell className="text-[10px] font-medium opacity-80">{intern.branch}</TableCell>
+                                                <TableCell className="text-[10px] font-bold opacity-80 tabular-nums">{intern.semester}</TableCell>
+                                                <TableCell className="text-[10px] font-medium opacity-80">{intern.universityName}</TableCell>
                                             </TableRow>
                                         ))
                                     )}
                                 </TableBody>
                             </Table>
+                            </div>
                             {totalRecords > 0 && (
                                 <div className="border-t border-white/10 p-4 bg-white/5 flex items-center justify-between gap-4">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -326,7 +328,7 @@ export default function AdminPaidInternship() {
                         </CardContent>
                     </Card>
                 </div>
-            </main>
+
 
             <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>
                 <DialogContent className="max-w-2xl glass border-white/20">
@@ -481,6 +483,6 @@ export default function AdminPaidInternship() {
                     </form>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AppLayout>
     );
 }

@@ -251,12 +251,12 @@ const hodNavItems = [
     { name: "Attendance Logs", href: "/hod/attendance", icon: HistoryIcon },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ className }: { className?: string }) {
     const [location, setLocation] = useLocation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const [user, setUser] = useState(storedUser);
-    const isAdmin = user.role === 'admin' || user.role === 'sadmin';
+    const isAdmin = user.role?.toLowerCase() === 'admin' || user.role?.toLowerCase() === 'sadmin';
     const isHOD = user.role === 'hod';
 
     const navItems = isAdmin 
@@ -276,11 +276,11 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="flex flex-col h-screen w-64 border-r bg-card shadow-sm fixed left-0 top-0 overflow-y-auto">
-            <div className="p-6">
-                <Logo className="h-10" />
-                <p className="text-xs text-muted-foreground mt-2">
-                    {isAdmin ? "Admin Control Panel" : "Intern Portal"}
+        <div className={cn("flex flex-col h-full w-64 border-r bg-card shadow-sm overflow-y-auto", className)}>
+            <div className="p-5">
+                <Logo className="h-8" />
+                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-2">
+                    {isAdmin ? "Admin Panel" : "Intern Portal"}
                 </p>
             </div>
 
@@ -288,12 +288,12 @@ export default function Sidebar() {
                 {navItems.map((item) => (
                     <Link key={item.name} href={item.href}>
                         <div className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors mb-1 cursor-pointer",
+                            "flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors mb-0.5 cursor-pointer",
                             location === item.href
-                                ? "bg-primary text-primary-foreground shadow-md"
+                                ? "bg-primary text-primary-foreground shadow-sm"
                                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                         )}>
-                            <item.icon className="h-4 w-4" />
+                            <item.icon className="h-3.5 w-3.5" />
                             {item.name}
                         </div>
                     </Link>

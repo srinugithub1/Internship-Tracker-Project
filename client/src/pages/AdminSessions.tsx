@@ -1,8 +1,8 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Video } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { type SessionLink } from "@shared/schema";
@@ -75,100 +75,101 @@ export default function AdminSessions() {
     ];
 
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-[1400px] mx-auto space-y-6">
-                    <header className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-3xl font-black tracking-tight">Class Session Links</h1>
-                            <p className="text-muted-foreground mt-1 text-sm font-medium">Manage <span className="text-primary">online class session</span> links and schedules</p>
+        <AppLayout>
+            <div className="space-y-6">
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <Video className="h-4 w-4 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Live Classes</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="bg-secondary/50 px-4 py-2 rounded-2xl border border-white/20 shadow-sm flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total:</span>
-                                <span className="text-lg font-black text-primary">{sessions.length}</span>
-                            </div>
-                            <Button onClick={openCreate} className="rounded-xl h-10 font-bold gap-2 shadow-lg">
-                                <Plus className="h-4 w-4" /> New Session Link
-                            </Button>
+                        <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">Class Session Links</h1>
+                        <p className="text-muted-foreground mt-0.5 text-xs font-medium">Manage online class session links and schedules.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-2 h-9">
+                            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Total</span>
+                            <span className="text-base font-black text-primary tabular-nums">{sessions.length}</span>
                         </div>
-                    </header>
+                        <Button onClick={openCreate} size="sm" className="rounded-lg h-9 font-black text-[9px] uppercase tracking-widest gap-1.5 shadow-lg">
+                            <Plus className="h-3.5 w-3.5" /> New Session
+                        </Button>
+                    </div>
+                </header>
 
-                    <div className="glass rounded-2xl border-white/10 shadow-2xl overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="border-b border-white/10 bg-white/5">
-                                        {["Agenda", "Date", "Start Time", "End Time", "Speaker", "Session URL", "Actions"].map(h => (
-                                            <th key={h} className="p-5 text-[10px] font-black uppercase text-muted-foreground tracking-widest">{h}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {isLoading && <tr><td colSpan={7} className="p-20 text-center text-muted-foreground animate-pulse text-xs font-bold uppercase tracking-widest">Loading sessions...</td></tr>}
-                                    {sessions.map(s => (
-                                        <tr key={s.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                            <td className="p-5 font-bold text-sm">{s.agenda}</td>
-                                            <td className="p-5 text-sm font-medium text-primary">{s.sessionDate ? format(new Date(s.sessionDate), "MMM dd, yyyy") : "—"}</td>
-                                            <td className="p-5 text-sm font-bold text-primary/80">{s.startTime || "—"}</td>
-                                            <td className="p-5 text-sm font-medium">{s.endTime || "—"}</td>
-                                            <td className="p-5 text-sm font-medium">{s.speaker}</td>
-                                            <td className="p-5">
-                                                <a href={s.sessionUrl ?? "#"} target="_blank" rel="noreferrer" className="text-primary text-sm font-bold flex items-center gap-1.5 hover:underline">
-                                                    <ExternalLink className="h-3.5 w-3.5" /> Open Link
-                                                </a>
-                                            </td>
-                                            <td className="p-5">
-                                                <div className="flex items-center gap-2">
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-muted-foreground hover:text-primary" onClick={() => openEdit(s)}>
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-muted-foreground hover:text-red-500" onClick={() => deleteMutation.mutate(s.id)}>
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                <div className="glass rounded-xl border-white/10 shadow-xl overflow-hidden">
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr className="border-b border-white/10 bg-white/5">
+                                    {["Agenda", "Date", "Start", "End", "Speaker", "Session URL", "Actions"].map(h => (
+                                        <th key={h} className="p-4 text-[9px] font-black uppercase text-muted-foreground tracking-[0.1em] first:pl-6 last:pr-6">{h}</th>
                                     ))}
-                                    {!isLoading && sessions.length === 0 && <tr><td colSpan={7} className="p-20 text-center text-muted-foreground italic">No session links added yet.</td></tr>}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="p-4 bg-white/5 border-t border-white/10 flex justify-between items-center px-8">
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total Records: {sessions.length}</p>
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" size="sm" className="h-8 rounded-xl px-4 border-white/10 bg-white/5" disabled><ChevronLeft className="h-4 w-4 mr-1" />Previous</Button>
-                                <span className="text-xs font-black uppercase tracking-widest">Page 1 of 1</span>
-                                <Button variant="outline" size="sm" className="h-8 rounded-xl px-4 border-white/10 bg-white/5" disabled>Next<ChevronRight className="h-4 w-4 ml-1" /></Button>
-                            </div>
-                        </div>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {isLoading && <tr><td colSpan={7} className="p-20 text-center opacity-30 text-[10px] font-black uppercase tracking-widest animate-pulse">Loading sessions...</td></tr>}
+                                {sessions.map(s => (
+                                    <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
+                                        <td className="p-4 first:pl-6 font-black text-[11px]">{s.agenda}</td>
+                                        <td className="p-4 text-[10px] font-black text-primary/80 whitespace-nowrap tabular-nums">
+                                            {s.sessionDate ? format(new Date(s.sessionDate), "MMM dd, yyyy") : "—"}
+                                        </td>
+                                        <td className="p-4 text-[10px] font-bold text-primary/70 tabular-nums">{s.startTime || "—"}</td>
+                                        <td className="p-4 text-[10px] font-medium opacity-60 tabular-nums">{s.endTime || "—"}</td>
+                                        <td className="p-4 text-[10px] font-bold">{s.speaker}</td>
+                                        <td className="p-4">
+                                            <a href={s.sessionUrl ?? "#"} target="_blank" rel="noreferrer"
+                                                className="text-primary text-[9px] font-black flex items-center gap-1.5 hover:underline uppercase tracking-widest">
+                                                <ExternalLink className="h-3 w-3" /> Join
+                                            </a>
+                                        </td>
+                                        <td className="p-4 last:pr-6">
+                                            <div className="flex items-center gap-1.5">
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary" onClick={() => openEdit(s)}>
+                                                    <Pencil className="h-3 w-3" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red-500" onClick={() => deleteMutation.mutate(s.id)}>
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {!isLoading && sessions.length === 0 && (
+                                    <tr><td colSpan={7} className="p-20 text-center opacity-30 italic text-[10px] font-black uppercase tracking-widest">No session links added yet.</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="p-4 bg-white/5 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{sessions.length} sessions</span>
                     </div>
                 </div>
-            </main>
+            </div>
 
             <Dialog open={open} onOpenChange={(v) => { if (!v) close(); }}>
                 <DialogContent className="glass border-white/10 rounded-2xl max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-black">{editId ? "Edit Session Link" : "New Session Link"}</DialogTitle>
+                        <DialogTitle className="text-base font-black uppercase tracking-tight">{editId ? "Edit Session Link" : "New Session Link"}</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4 py-2">
+                    <div className="grid grid-cols-2 gap-3 py-2">
                         {fields.map(({ label, key, type, placeholder }) => (
-                            <div key={key} className="space-y-1.5">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</Label>
-                                <Input type={type} placeholder={placeholder} className="h-10 bg-white/5 border-white/10 rounded-xl"
+                            <div key={key} className={`space-y-1.5 ${key === "agenda" || key === "sessionUrl" ? "col-span-2" : ""}`}>
+                                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{label}</Label>
+                                <Input type={type} placeholder={placeholder} className="h-9 bg-white/5 border-white/10 rounded-xl text-xs"
                                     value={(form as any)[key]} onChange={(e) => setForm(f => ({ ...f, [key]: e.target.value }))} />
                             </div>
                         ))}
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={close} className="rounded-xl">Cancel</Button>
-                        <Button onClick={submit} disabled={isPending} className="rounded-xl font-bold">
+                        <Button variant="ghost" onClick={close} className="rounded-xl text-xs font-black uppercase tracking-widest">Cancel</Button>
+                        <Button onClick={submit} disabled={isPending} className="rounded-xl font-black text-xs uppercase tracking-widest">
                             {isPending ? "Saving..." : editId ? "Update Session" : "Add Session"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AppLayout>
     );
 }

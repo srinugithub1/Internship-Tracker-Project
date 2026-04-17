@@ -1,4 +1,4 @@
-import Sidebar from "@/components/Sidebar";
+import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -219,48 +219,55 @@ export default function Tasks() {
         in_progress: tasks.filter((t) => t.status === "in_progress").length,
         completed: tasks.filter((t) => t.status === "completed").length,
     };
-
     return (
-        <div className="flex bg-secondary/30 min-h-screen">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8">
-                <div className="max-w-6xl mx-auto space-y-8">
-                    {/* Header */}
+        <>
+        <AppLayout>
+            <div className="space-y-6">
+                {/* Header */}
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-left duration-700">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight">My Tasks</h1>
-                        <p className="text-muted-foreground mt-1 text-sm font-medium">Manage and track your assigned tasks.</p>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-4 gap-4">
-                        {[
-                            { label: "Total", value: counts.total, color: "text-foreground", border: "border-white/10" },
-                            { label: "Assigned", value: counts.assigned, color: "text-blue-400", border: "border-blue-500/20" },
-                            { label: "In Progress", value: counts.in_progress, color: "text-yellow-400", border: "border-yellow-500/20" },
-                            { label: "Completed", value: counts.completed, color: "text-green-400", border: "border-green-500/20" },
-                        ].map((stat) => (
-                            <div key={stat.label} className={`glass rounded-2xl border ${stat.border} p-5 text-center`}>
-                                <div className={`text-3xl font-black ${stat.color}`}>{stat.value}</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{stat.label}</div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="p-1.5 rounded-lg bg-primary/10">
+                                <FileText className="h-3.5 w-3.5 text-primary" />
                             </div>
-                        ))}
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Intern Portal</span>
+                        </div>
+                        <h1 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest">My Tasks</h1>
+                        <p className="text-muted-foreground mt-0.5 text-xs font-medium">Manage and track your assigned tasks.</p>
                     </div>
+                </header>
 
-                    {/* Filter Tabs */}
-                    <div className="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl w-fit">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">Filter</span>
-                        {filterOptions.map((f) => (
-                            <button
-                                key={f}
-                                onClick={() => setFilter(f)}
-                                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${filter === f
-                                    ? "bg-primary text-white shadow-md shadow-primary/30"
-                                    : "text-muted-foreground hover:text-foreground"
-                                    }`}>
-                                {f}
-                            </button>
-                        ))}
-                    </div>
+                {/* Stats */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    {[
+                        { label: "Total", value: counts.total, color: "text-foreground", border: "border-white/10" },
+                        { label: "Assigned", value: counts.assigned, color: "text-blue-400", border: "border-blue-500/20" },
+                        { label: "In Progress", value: counts.in_progress, color: "text-yellow-400", border: "border-yellow-500/20" },
+                        { label: "Completed", value: counts.completed, color: "text-green-400", border: "border-green-500/20" },
+                    ].map((stat) => (
+                        <div key={stat.label} className={`glass rounded-xl border ${stat.border} p-4 text-center transition-all hover:scale-[1.02]`}>
+                            <div className={`text-2xl font-black ${stat.color} tabular-nums`}>{stat.value}</div>
+                            <div className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mt-1 opacity-70">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl w-fit">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-2 hidden sm:inline">Filter</span>
+                    {filterOptions.map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f
+                                ? "bg-primary text-white shadow-md shadow-primary/30"
+                                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                                }`}>
+                            {f}
+                        </button>
+                    ))}
+                </div>
+
 
                     {/* Task Cards */}
                     {isLoading ? (
@@ -335,7 +342,7 @@ export default function Tasks() {
                         <Button variant="outline" size="sm" className="rounded-xl px-5 border-white/10 bg-white/5" disabled>Next →</Button>
                     </div>
                 </div>
-            </main>
+            </AppLayout>
 
             {/* Update Modal */}
             <Dialog open={!!selectedTask} onOpenChange={(v) => { if (!v) setSelectedTask(null); }}>
@@ -343,6 +350,6 @@ export default function Tasks() {
                     <UpdateModal task={selectedTask} onClose={() => setSelectedTask(null)} />
                 )}
             </Dialog>
-        </div>
+        </>
     );
 }
