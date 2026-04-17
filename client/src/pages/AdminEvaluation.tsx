@@ -722,13 +722,26 @@ export default function AdminEvaluation() {
                                 </div>
 
                                 {/* Footnote */}
-                                <p className="text-[9px] font-bold leading-relaxed mb-12 text-center italic">
+                                <p className="text-[10px] font-bold leading-relaxed mb-12 text-center">
                                     *** The Internal Guide is responsible for maintaining the email correspondence containing feedback from the External Guide, as well as recording the marks awarded by the External Guide based on the provided evaluation rubrics.
                                 </p>
 
                                 {/* Signature Section */}
-                                <div className="flex flex-col items-center">
-                                    <img src="/seal.png" alt="Signature Seal" className="max-w-[180px] h-auto" />
+                                <div className="grid grid-cols-3 gap-4 items-end mt-16">
+                                    <div className="flex flex-col items-center">
+                                        <div className="h-24 flex items-center justify-center mb-2">
+                                            <img src="/seal.png" alt="Signature Seal" className="max-h-full w-auto" />
+                                        </div>
+                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the External Guide with date</p>
+                                    </div>
+                                    <div className="flex flex-col items-center pb-[2px]">
+                                        <div className="h-24 mb-2" />
+                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the Internal Guide with date</p>
+                                    </div>
+                                    <div className="flex flex-col items-center pb-[2px]">
+                                        <div className="h-24 mb-2" />
+                                        <p className="border-t border-black pt-2 w-full text-center font-bold text-[10px]">Signature of the HoD with date</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
