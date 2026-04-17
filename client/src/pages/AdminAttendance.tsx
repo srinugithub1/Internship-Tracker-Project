@@ -346,22 +346,22 @@ export default function AdminAttendance() {
 
             {/* Detailed History Logs Popup */}
             <Dialog open={!!selectedInternId} onOpenChange={(open) => !open && setSelectedInternId(null)}>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none bg-transparent shadow-none">
-                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass">
+                <DialogContent className="max-w-4xl p-0 border-none bg-transparent shadow-none">
+                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
                         {/* Modal Header */}
-                        <div className="p-8 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border-b border-white/5">
+                        <div className="p-6 lg:p-8 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border-b border-white/5 shrink-0">
                             <div className="flex gap-6">
-                                <div className="h-20 w-20 rounded-3xl bg-primary flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-primary/40 border-4 border-white/10">
+                                <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center text-white text-2xl font-black shadow-2xl shadow-primary/40 border-4 border-white/10">
                                     {selectedIntern?.name?.charAt(0)}
                                 </div>
                                 <div className="space-y-1">
-                                    <DialogTitle className="text-3xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
                                     <div className="flex flex-col gap-1">
-                                        <p className="text-muted-foreground font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                                        <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
                                             <Building2 className="h-3 w-3 text-primary" />
                                             {selectedIntern?.department || "General Department"}
                                         </p>
-                                        <p className="text-muted-foreground/60 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
+                                        <p className="text-muted-foreground/60 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2">
                                             HOD: {selectedIntern?.hodName || "N/A"}
                                         </p>
                                     </div>
@@ -370,12 +370,12 @@ export default function AdminAttendance() {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="p-8 space-y-6">
+                        <div className="p-6 lg:p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
                             <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <h4 className="font-black text-xs uppercase tracking-widest opacity-70">Drill-Down Monthly Log</h4>
+                                <h4 className="font-black text-[10px] uppercase tracking-widest opacity-70">Drill-Down Monthly Log</h4>
                                 <div className="flex gap-3">
                                     <Select value={detailMonth} onValueChange={setDetailMonth}>
-                                        <SelectTrigger className="w-[140px] h-10 bg-white/5 border-white/10 rounded-xl font-bold">
+                                        <SelectTrigger className="w-[130px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
                                             <SelectValue placeholder="Month" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -385,7 +385,7 @@ export default function AdminAttendance() {
                                         </SelectContent>
                                     </Select>
                                     <Select value={detailYear} onValueChange={setDetailYear}>
-                                        <SelectTrigger className="w-[100px] h-10 bg-white/5 border-white/10 rounded-xl font-bold">
+                                        <SelectTrigger className="w-[90px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
                                             <SelectValue placeholder="Year" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -397,34 +397,34 @@ export default function AdminAttendance() {
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 max-h-[350px] overflow-y-auto custom-scrollbar">
+                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 shadow-inner">
                                 <table className="w-full text-left border-collapse">
                                     <thead className="sticky top-0 bg-card/80 backdrop-blur-md z-10 border-b border-white/10">
                                         <tr className="bg-white/5">
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest px-6">Date</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock In</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock Out</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right px-6">Duration</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest px-6 text-center">Date</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock In</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock Out</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right px-6">Duration</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {detailLogs.length === 0 ? (
-                                            <tr><td colSpan={4} className="p-16 text-center opacity-40 font-bold italic text-sm tracking-widest uppercase">No tracked sessions for selected period.</td></tr>
+                                            <tr><td colSpan={4} className="p-12 text-center opacity-40 font-bold italic text-xs tracking-widest uppercase">No tracked sessions for selected period.</td></tr>
                                         ) : (
                                             detailLogs.map((log) => (
                                                 <tr key={log.id} className="hover:bg-white/[0.02]">
-                                                    <td className="p-4 px-6 font-bold text-sm tracking-tight">{log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}</td>
+                                                    <td className="p-4 px-6 font-bold text-xs tracking-tight text-center">{log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}</td>
                                                     <td className="p-4">
-                                                        <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-xs">
+                                                        <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-[10px]">
                                                             <Clock className="h-3 w-3" /> {formatTime(log.loginTime)}
                                                         </div>
                                                     </td>
                                                     <td className="p-4">
-                                                        <div className="flex items-center justify-center gap-2 text-rose-500 font-black text-xs">
+                                                        <div className="flex items-center justify-center gap-2 text-rose-500 font-black text-[10px]">
                                                             <Clock className="h-3 w-3" /> {log.logoutTime ? formatTime(log.logoutTime) : "Active"}
                                                         </div>
                                                     </td>
-                                                    <td className="p-4 px-6 text-right font-black text-primary text-sm">{calculateDuration(log.loginTime, log.logoutTime)} hrs</td>
+                                                    <td className="p-4 px-6 text-right font-black text-primary text-xs">{calculateDuration(log.loginTime, log.logoutTime)} hrs</td>
                                                 </tr>
                                             ))
                                         )}
@@ -433,8 +433,8 @@ export default function AdminAttendance() {
                             </div>
                         </div>
 
-                        <div className="p-8 bg-white/5 border-t border-white/5 flex justify-end">
-                            <Button onClick={() => setSelectedInternId(null)} className="rounded-2xl px-12 font-black h-12 bg-white text-black hover:bg-white/90 shadow-2xl shadow-white/10 active:scale-95 transition-all">
+                        <div className="p-6 bg-white/5 border-t border-white/5 flex justify-end shrink-0">
+                            <Button onClick={() => setSelectedInternId(null)} className="rounded-2xl px-12 font-black h-11 bg-white text-black hover:bg-white/90 shadow-2xl active:scale-95 transition-all text-xs">
                                 Close Dashboard
                             </Button>
                         </div>

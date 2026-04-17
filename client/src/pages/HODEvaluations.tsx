@@ -223,66 +223,66 @@ export default function HODEvaluations() {
             {/* Mark Memo Modal */}
             <Dialog open={!!selectedEval} onOpenChange={(open) => !open && setSelectedEval(null)}>
                 <DialogContent className="max-w-3xl p-0 overflow-hidden border-none bg-transparent shadow-none">
-                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass">
+                    <div className="bg-background rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
                         {/* Certificate Header Decoration */}
-                        <div className="h-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500" />
+                        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shrink-0" />
                         
-                        <div className="p-10 space-y-8">
+                        <div className="p-6 lg:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                             {/* Document Header */}
-                            <div className="flex justify-between items-start border-b border-indigo-500/10 pb-8">
-                                <div className="space-y-4">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                                        <GraduationCap className="h-4 w-4" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Official Transcript</span>
+                            <div className="flex justify-between items-start border-b border-indigo-500/10 pb-6">
+                                <div className="space-y-3">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                                        <GraduationCap className="h-3.5 w-3.5" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Official Transcript</span>
                                     </div>
-                                    <h2 className="text-3xl font-black tracking-tight uppercase leading-tight">
+                                    <h2 className="text-2xl font-black tracking-tight uppercase leading-tight">
                                         Performance Evaluation<br/>
                                         <span className="text-indigo-500 italic">Mark Memo</span>
                                     </h2>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Issue Date</p>
-                                    <p className="font-bold text-sm tracking-tight">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                                    <div className="pt-2 flex gap-2 justify-end">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg bg-white/5 hover:bg-indigo-500 hover:text-white transition-all">
-                                            <Printer className="h-3.5 w-3.5" />
+                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Issue Date</p>
+                                    <p className="font-bold text-xs tracking-tight">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                                    <div className="pt-2 flex gap-1.5 justify-end">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg bg-white/5 hover:bg-indigo-500 hover:text-white transition-all">
+                                            <Printer className="h-3 w-3" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg bg-white/5 hover:bg-indigo-500 hover:text-white transition-all">
-                                            <Download className="h-3.5 w-3.5" />
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg bg-white/5 hover:bg-indigo-500 hover:text-white transition-all">
+                                            <Download className="h-3 w-3" />
                                         </Button>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Intern Profile */}
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white/5 rounded-3xl border border-white/10 shadow-inner">
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Full Name</p>
-                                    <p className="font-black text-sm text-foreground">{selectedEval?.intern.name}</p>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Full Name</p>
+                                    <p className="font-black text-xs text-foreground truncate">{selectedEval?.intern.name}</p>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Roll Number</p>
-                                    <p className="font-black text-sm text-indigo-400">{selectedEval?.intern.rollNumber || "N/A"}</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Roll Number</p>
+                                    <p className="font-black text-xs text-indigo-400">{selectedEval?.intern.rollNumber || "N/A"}</p>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Department</p>
-                                    <p className="font-black text-sm text-foreground">{selectedEval?.intern.department || "General"}</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Department</p>
+                                    <p className="font-black text-xs text-foreground">{selectedEval?.intern.department || "General"}</p>
                                 </div>
-                                <div className="space-y-1 text-right">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Email Address</p>
-                                    <p className="font-black text-[10px] text-foreground truncate">{selectedEval?.intern.email}</p>
+                                <div className="space-y-0.5 text-right">
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-60 leading-none">Email Address</p>
+                                    <p className="font-black text-[9px] text-foreground truncate">{selectedEval?.intern.email}</p>
                                 </div>
                             </div>
 
                             {/* Marks Table */}
-                            <div className="rounded-3xl border border-white/10 overflow-hidden bg-black/20 shadow-xl">
+                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 shadow-xl">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-indigo-500/5 border-b border-white/10">
-                                            <th className="p-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-8 w-20">S.No</th>
-                                            <th className="p-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Assessment Category</th>
-                                            <th className="p-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center w-32">Max Marks</th>
-                                            <th className="p-5 text-[10px] font-black text-indigo-500 uppercase tracking-widest text-right pr-8 w-32">Obtained</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest pl-6 w-16">S.No</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest">Assessment Category</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center w-28">Max</th>
+                                            <th className="p-4 text-[9px] font-black text-indigo-500 uppercase tracking-widest text-right pr-6 w-28">Obtained</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
@@ -293,15 +293,15 @@ export default function HODEvaluations() {
                                             { id: 4, label: "Ability to Learn & Adapt", max: 5, val: selectedEval?.sheet?.abilityToLearn, icon: TrendingUp }
                                         ].map((row) => (
                                             <tr key={row.id} className="hover:bg-white/[0.02]">
-                                                <td className="p-5 pl-8 text-sm font-black text-muted-foreground opacity-50">{row.id}</td>
-                                                <td className="p-5">
-                                                    <div className="flex items-center gap-3">
-                                                        <row.icon className="h-4 w-4 text-indigo-500/40" />
-                                                        <span className="font-bold text-sm tracking-tight">{row.label}</span>
+                                                <td className="p-4 pl-6 text-xs font-black text-muted-foreground opacity-50">{row.id}</td>
+                                                <td className="p-4">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <row.icon className="h-3.5 w-3.5 text-indigo-500/40" />
+                                                        <span className="font-bold text-xs tracking-tight">{row.label}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-5 text-center font-bold text-sm opacity-60">{row.max}.00</td>
-                                                <td className="p-5 text-right pr-8 font-black text-lg text-foreground">
+                                                <td className="p-4 text-center font-bold text-xs opacity-60">{row.max}.00</td>
+                                                <td className="p-4 text-right pr-6 font-black text-base text-foreground">
                                                     {row.val || "--"}.00
                                                 </td>
                                             </tr>
@@ -309,14 +309,14 @@ export default function HODEvaluations() {
                                     </tbody>
                                     <tfoot>
                                         <tr className="bg-indigo-500/5 border-t border-white/10">
-                                            <td colSpan={2} className="p-6 pl-8">
+                                            <td colSpan={2} className="p-4 pl-6">
                                                 <div className="flex items-center gap-2">
-                                                    <CheckCircle2 className="h-5 w-5 text-indigo-500" />
-                                                    <span className="font-black text-base uppercase tracking-widest text-indigo-500">Aggregate Score</span>
+                                                    <CheckCircle2 className="h-4 w-4 text-indigo-500" />
+                                                    <span className="font-black text-xs uppercase tracking-widest text-indigo-500">Aggregate Score</span>
                                                 </div>
                                             </td>
-                                            <td className="p-6 text-center font-black text-lg opacity-60">25.00</td>
-                                            <td className="p-6 text-right pr-8 font-black text-2xl text-indigo-500 shadow-indigo-500/20 drop-shadow-lg">
+                                            <td className="p-4 text-center font-black text-sm opacity-60">25.00</td>
+                                            <td className="p-4 text-right pr-6 font-black text-xl text-indigo-500 leading-none">
                                                 {selectedEval?.sheet?.totalMarks || "--"}.00
                                             </td>
                                         </tr>
@@ -325,34 +325,34 @@ export default function HODEvaluations() {
                             </div>
 
                             {/* Evaluation Status & Policy */}
-                            <div className="flex gap-4 items-stretch">
-                                <div className={`flex-1 flex items-center justify-between p-6 rounded-3xl border ${selectedEval?.sheet ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
-                                    <div className="flex items-center gap-4">
+                            <div className="flex gap-3 items-stretch">
+                                <div className={`flex-1 flex items-center justify-between p-5 rounded-2xl border ${selectedEval?.sheet ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
+                                    <div className="flex items-center gap-3">
                                         {selectedEval?.sheet ? (
-                                            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                                            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
                                         ) : (
-                                            <AlertCircle className="h-8 w-8 text-amber-500" />
+                                            <AlertCircle className="h-6 w-6 text-amber-500" />
                                         )}
                                         <div>
-                                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60 leading-none">Result Status</p>
-                                            <p className={`text-lg font-black mt-1 ${selectedEval?.sheet ? 'text-emerald-500' : 'text-amber-500'}`}>
-                                                {selectedEval?.sheet ? 'Successfully Evaluated' : 'Evaluation Pending'}
+                                            <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest opacity-60 leading-none">Result Status</p>
+                                            <p className={`text-base font-black mt-0.5 ${selectedEval?.sheet ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                                {selectedEval?.sheet ? 'Evaluated' : 'Pending'}
                                             </p>
                                         </div>
                                     </div>
                                     {selectedEval?.sheet && (
-                                        <Badge className="bg-emerald-500 text-white border-none rounded-xl px-4 py-1.5 font-black uppercase tracking-widest shadow-xl">Excellent</Badge>
+                                        <Badge className="bg-emerald-500 text-white border-none rounded-lg px-3 py-1 font-black uppercase tracking-widest text-[9px] shadow-lg">Excellent</Badge>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-10 bg-indigo-500/[0.03] border-t border-white/5 flex justify-end gap-4">
-                            <Button variant="ghost" onClick={() => setSelectedEval(null)} className="rounded-2xl px-8 font-black border-white/10 hover:bg-white/5">
+                        <div className="p-6 bg-indigo-500/[0.03] border-t border-white/5 flex justify-end gap-3 shrink-0">
+                            <Button variant="ghost" onClick={() => setSelectedEval(null)} className="rounded-xl px-6 font-black border-white/10 hover:bg-white/5 h-10 text-xs">
                                 Dismiss
                             </Button>
-                            <Button onClick={() => setSelectedEval(null)} className="rounded-2xl px-12 font-black h-12 bg-indigo-500 text-white hover:bg-indigo-600 shadow-2xl shadow-indigo-500/40 active:scale-95 transition-all">
-                                Close Document
+                            <Button onClick={() => setSelectedEval(null)} className="rounded-xl px-10 font-black h-10 bg-indigo-500 text-white hover:bg-indigo-600 shadow-xl shadow-indigo-500/40 active:scale-95 transition-all text-xs">
+                                Close Memo
                             </Button>
                         </div>
                     </div>

@@ -350,18 +350,18 @@ export default function HODAttendance() {
 
             {/* Detailed Monthly Logs Popup */}
             <Dialog open={!!selectedInternId} onOpenChange={(open) => !open && setSelectedInternId(null)}>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden border-none bg-transparent shadow-none">
-                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass">
+                <DialogContent className="max-w-4xl p-0 border-none bg-transparent shadow-none">
+                    <div className="bg-background rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden glass max-h-[92vh] flex flex-col">
                         {/* Modal Header */}
-                        <div className="p-8 bg-gradient-to-br from-indigo-500/20 via-indigo-500/5 to-transparent border-b border-white/5 relative">
+                        <div className="p-6 lg:p-8 bg-gradient-to-br from-indigo-500/20 via-indigo-500/5 to-transparent border-b border-white/5 relative shrink-0">
                             <div className="flex items-start justify-between relative z-10">
                                 <div className="flex gap-6">
-                                    <div className="h-20 w-20 rounded-3xl bg-indigo-500 flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-indigo-500/40 border-4 border-white/10">
+                                    <div className="h-16 w-16 rounded-2xl bg-indigo-500 flex items-center justify-center text-white text-2xl font-black shadow-2xl shadow-indigo-500/40 border-4 border-white/10">
                                         {selectedIntern?.name?.charAt(0)}
                                     </div>
                                     <div className="space-y-1">
-                                        <DialogTitle className="text-3xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
-                                        <p className="text-muted-foreground font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                                        <DialogTitle className="text-2xl font-black tracking-tight">{selectedIntern?.name}</DialogTitle>
+                                        <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
                                             <Building2 className="h-3 w-3 text-indigo-500" />
                                             {selectedIntern?.department || "General Department"}
                                         </p>
@@ -371,12 +371,12 @@ export default function HODAttendance() {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="p-8 space-y-6">
+                        <div className="p-6 lg:p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
                             <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <h4 className="font-black text-xs uppercase tracking-widest opacity-70">Personalized Logs</h4>
+                                <h4 className="font-black text-[10px] uppercase tracking-widest opacity-70">Personalized Logs</h4>
                                 <div className="flex gap-3">
                                     <Select value={detailMonth} onValueChange={setDetailMonth}>
-                                        <SelectTrigger className="w-[140px] h-10 bg-white/5 border-white/10 rounded-xl font-bold">
+                                        <SelectTrigger className="w-[130px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
                                             <SelectValue placeholder="Month" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -386,7 +386,7 @@ export default function HODAttendance() {
                                         </SelectContent>
                                     </Select>
                                     <Select value={detailYear} onValueChange={setDetailYear}>
-                                        <SelectTrigger className="w-[100px] h-10 bg-white/5 border-white/10 rounded-xl font-bold">
+                                        <SelectTrigger className="w-[90px] h-9 bg-white/5 border-white/10 rounded-xl font-bold text-xs">
                                             <SelectValue placeholder="Year" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -398,32 +398,34 @@ export default function HODAttendance() {
                                 </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 max-h-[350px] overflow-y-auto">
+                            <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/20 shadow-inner">
                                 <table className="w-full text-left border-collapse">
                                     <thead className="sticky top-0 bg-card z-10">
                                         <tr className="border-b border-white/10 bg-white/5">
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Date</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Clock In</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Clock Out</th>
-                                            <th className="p-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Duration</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest px-6">Date</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock In</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Clock Out</th>
+                                            <th className="p-4 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right pr-6">Duration</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {detailLogs.length === 0 ? (
-                                            <tr><td colSpan={4} className="p-10 text-center opacity-40 font-bold italic">No logs for this period.</td></tr>
+                                            <tr><td colSpan={4} className="p-12 text-center opacity-40 font-bold italic text-xs tracking-widest uppercase">No logs for this period.</td></tr>
                                         ) : (
                                             detailLogs.map((log) => (
                                                 <tr key={log.id} className="hover:bg-white/[0.02]">
-                                                    <td className="p-4 font-bold text-sm">{log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}</td>
-                                                    <td className="p-4 flex items-center gap-2 text-emerald-500 font-black text-xs">
-                                                        <Clock className="h-3 w-3" /> {formatTime(log.loginTime)}
+                                                    <td className="p-4 px-6 font-bold text-xs">{log.date ? format(new Date(log.date), "dd MMM yyyy") : "N/A"}</td>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-[10px]">
+                                                            <Clock className="h-3 w-3" /> {formatTime(log.loginTime)}
+                                                        </div>
                                                     </td>
                                                     <td className="p-4">
-                                                        <div className="flex items-center gap-2 text-rose-500 font-black text-xs">
+                                                        <div className="flex items-center justify-center gap-2 text-rose-500 font-black text-[10px]">
                                                             <Clock className="h-3 w-3" /> {log.logoutTime ? formatTime(log.logoutTime) : "Active"}
                                                         </div>
                                                     </td>
-                                                    <td className="p-4 font-black text-indigo-500">{calculateDuration(log.loginTime, log.logoutTime)} hrs</td>
+                                                    <td className="p-4 text-right pr-6 font-black text-indigo-500 text-xs">{calculateDuration(log.loginTime, log.logoutTime)} hrs</td>
                                                 </tr>
                                             ))
                                         )}
@@ -432,9 +434,9 @@ export default function HODAttendance() {
                             </div>
                         </div>
 
-                        <div className="p-8 bg-white/5 border-t border-white/5 flex justify-end">
-                            <Button onClick={() => setSelectedInternId(null)} className="rounded-2xl px-12 font-black h-12 bg-white text-black hover:bg-white/90 shadow-xl">
-                                Close
+                        <div className="p-6 bg-white/5 border-t border-white/5 flex justify-end shrink-0">
+                            <Button onClick={() => setSelectedInternId(null)} className="rounded-2xl px-12 font-black h-11 bg-white text-black hover:bg-white/90 shadow-xl transition-all active:scale-95 text-xs">
+                                Close Dashboard
                             </Button>
                         </div>
                     </div>
